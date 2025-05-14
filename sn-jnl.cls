@@ -67,14 +67,16 @@
 \newif\if@pdflatex\global\@pdflatexfalse%
 \newif\if@remarkboxon\global\@remarkboxonfalse%
 
+\newif\if@Numbered@refstyle\global\@Numbered@refstylefalse% Namedate
+
 \newif\if@Spr@basic@refstyle\global\@Spr@basic@refstylefalse% 1.Basic Springer Nature Reference Style/Chemistry Reference Style -> sn-basic.bst
-\newif\if@Mathphys@refstyle\global\@Mathphys@refstylefalse% 2.Math and Physical Sciences Reference Style -> sn-mathphys.bst
+\newif\if@Mathphys@numrefstyle\global\@Mathphys@numrefstylefalse% 2.Math and Physical Sciences Reference Style -> sn-mathphys.bst
+\newif\if@Mathphys@ayrefstyle\global\@Mathphys@ayrefstylefalse% 2.Math and Physical Sciences Reference Style -> sn-mathphys.bst
 \newif\if@APS@refstyle\global\@APS@refstylefalse% 3.American Physical Society (APS) Reference Style -> sn-APS.bst
 \newif\if@Vancouver@refstyle\global\@Vancouver@refstylefalse% 4.Vancouver Reference Style -> sn-vancouver.bst
 \newif\if@APA@refstyle\global\@APA@refstylefalse% 5.APA-based Social Sciences/Psychology Reference Style -> sn-apacite.bst
 \newif\if@Chicago@refstyle\global\@Chicago@refstylefalse% 6.Chicago-based Humanities Reference Style -> sn-chicago.bst
 \newif\if@Standard@Nature@refstyle\global\@Standard@Nature@refstylefalse% 7.Standard Nature Research Style -> sn-nature.bst
-\newif\if@Default@refstyle\global\@Default@refstylefalse% 8. default reference style - no bib/bst required
 
 %% Template Options
 \DeclareOption{a4paper}{\PassOptionsToPackage{a4}{crop}}
@@ -103,13 +105,17 @@
 \DeclareOption{remarkboxoff}{\global\@remarkboxonfalse}%
 
 \DeclareOption{sn-basic}{\global\@Spr@basic@refstyletrue}%
-\DeclareOption{sn-mathphys}{\global\@Mathphys@refstyletrue}%
+\DeclareOption{sn-mathphys-num}{\global\@Mathphys@numrefstyletrue}%
+\DeclareOption{sn-mathphys-ay}{\global\@Mathphys@ayrefstyletrue}%
 \DeclareOption{sn-aps}{\global\@APS@refstyletrue}%
 \DeclareOption{sn-vancouver}{\global\@Vancouver@refstyletrue}%
 \DeclareOption{sn-apa}{\global\@APA@refstyletrue}%
 \DeclareOption{sn-chicago}{\global\@Chicago@refstyletrue}%
-\DeclareOption{sn-standardnature}{\global\@Standard@Nature@refstyletrue}%
-\DeclareOption{default}{\global\@Default@refstyletrue}%
+\DeclareOption{sn-nature}{\global\@Standard@Nature@refstyletrue}%
+
+\DeclareOption{Numbered}{\global\@Numbered@refstyletrue}%
+\DeclareOption{NameDate}{\global\@Numbered@refstylefalse}%
+
 
 %%\ExecuteOptions{twosidecrop,crop,centre,info,croppage}
 \ProcessOptions
@@ -124,11 +130,12 @@
 
 %% General Packages Used
 %
-\AtBeginDocument{%
+%\AtBeginDocument{%
 %%\newcommand*\ExtraParaSkip{12pt}%
-\SetFootnoteHook{\hspace*{-8pt}}%
-\DeclareNewFootnote{A}[gobble]%
-\setlength{\skip\footinsA}{0pt}}%
+%\SetFootnoteHook{\hspace*{-8pt}}%
+%\DeclareNewFootnote{A}[gobble]%
+%\setlength{\skip\footinsA}{0pt}
+%}%
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% Fonts & Sizes %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -219,12 +226,6 @@
 %
 %% for double column used sn-medium design trim and page size %%
 %
-\setlength\paperwidth{193mm}%
-\setlength\paperheight{260mm}%
-%
-\setlength\textwidth{160mm}%
-\setlength\textheight{216mm}%
-%
 \setlength\headheight{12pt}%
 \setlength\headsep{5.15mm}%
 %
@@ -237,9 +238,9 @@
 %
 \RequirePackage[%
     reversemp,
-    paperwidth=193mm,
-    paperheight=260mm,
-    top={19.29mm},
+    paperwidth=210mm,
+    paperheight=297mm,
+    top={26mm},
     headheight={12pt},
     headsep={5.15mm},
     text={160mm,216mm},
@@ -257,12 +258,12 @@
 %% For single column used smallcond design trim and page size %%
 \RequirePackage[%
     reversemp,
-    paperwidth=155mm,
-    paperheight=235mm,
-    top={19.5mm},
+    paperwidth=210mm,
+    paperheight=297mm,
+    top={26mm},
     headheight={5.5pt},
     headsep={5.6mm},
-    text={119mm,194.25mm},
+    text={31pc,194.25mm},
     marginparsep=5mm,
     marginparwidth=12mm,
     bindingoffset=6mm,
@@ -291,25 +292,6 @@
 %
 \def\StepUpCounter#1{\global\advance#1by 1\relax}%
 \def\StepDownCounter#1{\global\advance#1by -1\relax}%
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%% Standard LaTeX Packages %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-\usepackage{graphicx}%
-\usepackage{multirow}%
-\usepackage{amsmath,amssymb,amsfonts}%
-\usepackage{amsthm}%
-\usepackage{mathrsfs}%
-\usepackage[figuresright]{rotating}%
-\usepackage[title]{appendix}%
-\usepackage{xcolor}%
-\usepackage{textcomp}%
-\usepackage{manyfoot}%
-\usepackage{booktabs}%
-\usepackage{algorithm}%
-\usepackage{algorithmicx}%
-\usepackage{algpseudocode}%
-\usepackage{program}%
-\usepackage{listings}%
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% Pagination Settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -457,7 +439,7 @@
 \def\addressfont{\reset@font\fontsize{11bp}{13.5bp}\selectfont\titraggedcenter}%
 \def\abstractheadfont{\reset@font\fontsize{9bp}{11bp}\bfseries\selectfont\titraggedcenter}%
 \def\abstractsubheadfont{\reset@font\fontsize{9bp}{11bp}\bfseries\selectfont}%
-\def\abstractfont{\reset@font\fontsize{9bp}{11bp}\selectfont\leftskip=24pt\rightskip=24pt}%
+\def\abstractfont{\reset@font\fontsize{9bp}{11bp}\selectfont\leftskip=24pt\rightskip=24pt\parfillskip=0pt plus 1fil}%
 \def\keywordfont{\reset@font\fontsize{8bp}{9.5bp}\selectfont\leftskip=24pt\rightskip=24pt plus0.5fill}%
 \def\historyfont{\reset@font\fontsize{8bp}{9.5bp}\selectfont\leftskip=24pt\rightskip=24pt plus0.5fill}%
 
@@ -465,18 +447,15 @@
 
 \newbox\artcatbox%
 
-\AtBeginDocument{\definecolor{artcatboxgray}{cmyk}{0.0,0.0,0.0,0.30}}%
+
 
 \def\articletype#1{\if!#1!\else\setbox\artcatbox\hbox{\Artcatfont\hskip1mm#1\hskip1mm}\fi%
-\gdef\ArtType{\fboxsep=0pt\colorbox{artcatboxgray}{\vbox to 4mm{\vfil%
+\gdef\ArtType{\fboxsep=0pt{\vbox to 4mm{\vfil%
               {\raggedright\box\artcatbox}\vfil}}}%
 \gdef\@ArtType{#1}}%
 %%\articletype{RESEARCH ARTICLE}%
 \articletype{}%
 
-%% Meta Info
-\def\@jyear{{0000}}%
-\def\jyear#1{\gdef\@jyear{#1}}%
 
 %% Article Title
 
@@ -503,11 +482,11 @@
 \newif\if@auemail%
 \newif\if@corauemail%
 %
-\def\au@and{\ifnum\punctcount=2\ and\else\unskip,\advance\punctcount by -1 \fi}%
+\def\au@and{\ifnum\punctcount=2\ and\else\unskip, \advance\punctcount by -1 \fi}%
 %
 \def\author{\advance\aucount by 1\@ifstar\@@corrauthor\@@author}%
 %
-\newcommand{\@@author}[2][]{\@corauemailfalse%
+\newcommand{\@@author}[2][]{\def\@authfrstarg{#1}\@corauemailfalse%
 \g@addto@macro\artauthors{%
     \ifnum\aucount=1%
     \global\@auemailtrue%
@@ -516,20 +495,20 @@
     \fi%
     \Authorfont%
     \def\baselinestretch{1}%
-    \authorsep{#2}\unskip\ifx#1\empty\else\textsuperscript{\smash{{%
-      \@for\@@affmark:=#1\do{\edef\affnum{\@ifundefined{X@\@@affmark}{1}{\jmkRef{\@@affmark}}}%
+    \authorsep{#2}\unskip\ifx\@authfrstarg\empty\else\textsuperscript{\smash{{%
+      \@for\@@affmark:=#1\do{\edef\affnum{\@ifundefined{X@\@@affmark}{\@@affmark}{\jmkRef{\@@affmark}}}%
      \unskip\sep\affnum\let\sep=,}}}}\fi%
-    \def\authorsep{\au@and~}%%% 
+    \def\authorsep{{\au@and} }%%% 
     \global\let\sep\@empty\global\let\@corref\@empty%
 }}%
 %
-\newcommand{\@@corrauthor}[2][]{\@corauemailtrue\advance\corraucount by 1%
+\newcommand{\@@corrauthor}[2][]{\def\@authfrstarg{#1}\@corauemailtrue\advance\corraucount by 1%
 \g@addto@macro\artauthors{%
     \global\@auemailtrue%
     \Authorfont%
     \def\baselinestretch{1}%
-    \authorsep{#2}\unskip\ifx#1\empty\else\textsuperscript{\smash{{%
-      \@for\@@affmark:=#1\do{\edef\affnum{\@ifundefined{X@\@@affmark}{1}{\jmkRef{\@@affmark}}}%
+    \authorsep{#2}\unskip\ifx\@authfrstarg\empty\else\textsuperscript{\smash{{%
+      \@for\@@affmark:=#1\do{\edef\affnum{\@ifundefined{X@\@@affmark}{\@@affmark}{\jmkRef{\@@affmark}}}%
      \unskip\sep\affnum\let\sep=,}}}{*}\hskip-1pt}\fi\unskip%
     \def\authorsep{\au@and~}%%% 
     \global\let\sep\@empty\global\let\@corref\@empty%
@@ -537,8 +516,8 @@
 %%
 %% Miscellaneous macros %%
 %%
-\def\fnm#1{#1}%
-\def\sur#1{#1}%
+\def\fnm#1{\leavevmode\hbox{#1}}%
+\def\sur#1{\unskip~\nobreak\leavevmode\hbox{#1}}%
 \def\spfx#1{#1}%
 \def\pfx#1{#1}%
 \def\sfx#1{#1}%
@@ -649,7 +628,7 @@
 \newcommand\subabstracthead{\@startsection{subsection}{2}{\z@}{3pt \@plus0ex \@minus0ex}{-.5em}{\abstractsubheadfont}}
 
 \def\@abstract{}%
-\long\def\abstract#1 \par{\def\@abstract{%
+\long\def\abstract#1{\def\@abstract{%
 \let\paragraph\subabstracthead%
 \abstractfont%
 \abstracthead*{\abstractname}%
@@ -790,7 +769,12 @@
     %%{\ifx\@motto\empty\else\@motto\fi}%
     \removelastskip\vskip36pt\vskip0pt}%
 
+\usepackage{cuted}%
+\@ifpackageloaded{cuted}{\gdef\@setmarks{}}{}%
+
 %% Printing Article Header
+\newdimen\firstpagehtcheck
+
 \renewcommand\maketitle{\par
   \@afterindentfalse%
   \begingroup
@@ -799,19 +783,31 @@
     \def\@makefnmark{\rlap{\@textsuperscript{\normalfont\smash{\@thefnmark}}}}%
     \long\def\@makefntext##1{\parindent 1em\noindent\small\selectfont
             \hbox{\@textsuperscript{\normalfont\@thefnmark}}##1}%
-    \thispagestyle{titlepage}%
     \if@twocolumn
       \ifnum \col@number=\@ne%
-        \twocolumn[\@maketitle]%
-      \else
-        \twocolumn[\@maketitle]%
-      \fi%
+\setbox0=\vbox{\@maketitle}
+\firstpagehtcheck=\ht0%
+\advance\firstpagehtcheck by \dp0%
+\ifdim\firstpagehtcheck>\textheight%
+\setbox1=\vsplit0to2\textheight%
+\setbox1=\vbox{\unvbox1}%
+\setbox2=\vbox{\unvbox0}%
+\unvbox1%
+\stripsep=0pt%
+\begin{strip}
+\unvbox2%
+\end{strip}
+\else
+\twocolumn[\@maketitle]%
+\fi      
+\else
+\@maketitle
+\fi%
     \else%
       \newpage%
       \global\@topnum\z@% Prevents figures from going at top of page.
       \@maketitle%
     \fi%
-    %%\thispagestyle{plain}%
   \endgroup%
   \ifx\@artnote\@empty\else\footnoteA{\@artnote}\fi%
   \ifx\@miscnote\@empty\else\footnoteA{\@miscnote\par}\fi%
@@ -843,34 +839,19 @@
 
 %% Regular Page Style      
 \def\ps@headings{%
-    \def\@oddfoot{\hfill}%
+    \def\@oddfoot{\hfill\thepage\hfill}%
     \let\@evenfoot\@oddfoot%
-      %%\def\@evenhead{{\headerfont\thepage\qquad\rightmark\hfill\includegraphics{springer-nature-logo}}}%
-      %%\def\@oddhead{{\headerfont\includegraphics{springer-nature-logo}\hfill\leftmark\qquad\thepage}}%
       \def\@evenhead{%
-      \vbox to 0pt{\vspace*{-39pt}%
-         \hbox to \textwidth{\hfill Springer Nature 2021 \LaTeX\ template\hfill}}\par%%
-      \hspace*{-\textwidth}\hbox to \textwidth{\headerfont\thepage\qquad\rightmark\hfill}}%
+      \vbox to 0pt{\vspace*{-48pt}%
+         \hbox to \hsize{\hfill \relax\hfill}}\par%%
+      \hspace*{-\textwidth}\hbox to \hsize{\hfill}}%
       \def\@oddhead{%
-      \vbox to 0pt{\vspace*{-39pt}%
-         \hbox to \textwidth{\hfill Springer Nature 2021 \LaTeX\ template\hfill}}\par%%
-      \hspace*{-\textwidth}\hbox to \textwidth{\headerfont\hfill\leftmark\qquad\thepage}}%
+      \vbox to 0pt{\vspace*{-48pt}%
+         \hbox to \hsize{\hfill \relax\hfill}}\par%%
+      \hspace*{-\textwidth}\hbox to \hsize{\hfill}}%
       \let\@mkboth\markboth%
       }%
 
-\newdimen\opshortpage%
-
-\def\printcopyright#1{#1}%%
-
-\gdef\@copyrighttext{}%
-\gdef\@copyrightyear{\@jyear}%
-
-\def\copytext#1#2{\gdef\@copyrightyear{#2}\def\@copyrighttext{\begin{minipage}[t]{\textwidth}\footerfont\textcopyright\ #1\ \@copyrightyear\end{minipage}}}
-
-\copytext{Springer Science+Business Media B.V.}{\@jyear}%
-
-\def\@opjournalheader{\leftmark\space\ {{(\@jyear),\ \textbf{\@jvol}:\@artid}} {\thepage{--}\pageref*{LastPage}}\\
-{\@DOI}}%
 
 %% Opening Page Style      
 \def\ps@titlepage{%
@@ -878,14 +859,14 @@
      %%\let\@oddhead\@empty\let\@evenhead\@empty%
       \def\@oddhead{%
       \vbox to 0pt{\vspace*{-38pt}%
-         \hbox to \textwidth{\hfill Springer Nature 2021 \LaTeX\ template\hfill}}}%%
+         \hbox to \hsize{\hfill \hfill}}}%%
      \let\@evenhead\@oddhead%
      \def\@oddfoot{\vbox to 18pt{\vfill\reset@font\rmfamily\hfil\thepage\hfil}}%%
      \def\@evenfoot{}}%
 
 \def\ps@plain{\let\@mkboth\@gobbletwo%
 \let\@oddhead\@empty\let\@evenhead\@empty%
-\def\@oddfoot{\vbox to 18pt{\vfill\reset@font\rmfamily\hfil\thepage\hfil}}%
+\def\@oddfoot{\vbox to 18pt{\vfill\reset@font\rmfamily\hfil ddd\thepage\hfil}}%
 \let\@evenfoot\@oddfoot}%
 
 %
@@ -1037,9 +1018,9 @@
 \@itempenalty     -\@lowpenalty
 \def\labelitemi{$\bullet$}          \def\labelitemii{$\cdot$}
 \def\labelenumi{\theenumi.}         \def\theenumi{\arabic{enumi}}
-\def\labelenumii{(\alph{enumii})}   \def\theenumii{\theenumi\alph{enumii}}
-\def\labelenumiii{(\roman{enumiii})}\def\theenumiii{\theenumii.\roman{enumiii}}
-\def\labelenumiv{(\Alph{enumiv})}   \def\theenumiv{\theenumiii.\Alph{enumiv}}
+\def\labelenumii{(\alph{enumii})}   \def\theenumii{\alph{enumii}}
+\def\labelenumiii{(\roman{enumiii})}\def\theenumiii{\roman{enumiii}}
+\def\labelenumiv{(\Alph{enumiv})}   \def\theenumiv{\Alph{enumiv}}
 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%% Ordered & Unordered List  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1336,35 +1317,36 @@
    \ifnum0=`{\fi}}
 \let\cline\cmidrule
 
+\usepackage[figuresright]{rotating}%
+\usepackage{threeparttable}
+
 \let\tableorg\table%
 \let\endtableorg\endtable%
 
+\let\sidewaystableorg\sidewaystable%
+\let\endsidewaystableorg\endsidewaystable%
+
 \renewenvironment{table}[1][]%
 {\begin{tableorg}[#1]%
+\begin{center}
+\begin{threeparttable}
 \tablebodyfont%
 \renewcommand\footnotetext[2][]{{\removelastskip\vskip3pt%
 \let\tablebodyfont\tablefootnotefont%
 \hskip0pt\if!##1!\else{\smash{$^{##1}$}}\fi##2\par}}%
-}{\end{tableorg}}
+}{\end{threeparttable}\end{center}\end{tableorg}}
 
-% \let\sidewaystableorg\sidewaystable%
-% \let\endsidewaystableorg\endsidewaystable%
-% 
-% \newenvironment{sidewaystable}%
-% {\begin{sidewaystableorg}%
-% \tablebodyfont%
-% \renewcommand\@makefntext[1]{{\vskip3pt%
-% \let\tablebodyfont\tablefootnotefont%
-% \hskip0pt{\smash{\@makefnmark}}##1\par}}%
-% }{\end{sidewaystableorg}}
-
-\def\sidewaystablefn{\renewcommand\footnotetext[2][]{{\removelastskip\vskip3pt%
+\renewenvironment{sidewaystable}[1][]%
+{\begin{sidewaystableorg}[#1]%
+\begin{center}
+\begin{threeparttable}
+\tablebodyfont%
+\renewcommand\footnotetext[2][]{{\removelastskip\vskip3pt%
 \let\tablebodyfont\tablefootnotefont%
 \hskip0pt\if!##1!\else{\smash{$^{##1}$}}\fi##2\par}}%
-}%
-%
+}{\end{threeparttable}\end{center}\end{sidewaystableorg}}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% Other Env. %%%%%%%%%%%%%%%%%%%%%%%%%
-%
 
 \def\quotefont{\reset@font\fontfamily{\rmdefault}\fontsize{9}{11}\selectfont}%
 
@@ -1463,7 +1445,7 @@
 \gdef\breakurldefns{%
 \if@pdflatex\else%
   \RequirePackage[hyphenbreaks]{breakurl}%
-  \let\href\burlalt%
+%  \let\href\burlalt%
 \fi}%
 \breakurldefns%
 %    \bgroup
@@ -1570,9 +1552,11 @@
 
 \AtBeginDocument{%
 %
+\DeclareRobustCommand{\S}{\ifmmode\mathsection\else\textsection\fi}
+
 \DeclareSymbolFont{AMSa}{U}{msa}{m}{n}%
 \DeclareMathSymbol{\opensquare}{\mathord}{AMSa}{"03}%
-\def\qedsymbol{\opensquare}%
+\def\qedsymbol{\ensuremath{\opensquare}}%
 %
 \newenvironment{spiproof}[1][\proofname]{\par\removelastskip%\vspace*{2pt}%
   \pushQED{\qed}%
@@ -1655,19 +1639,32 @@
 \def\bibcommenthead{}%
 
 \if@Spr@basic@refstyle%
-  \usepackage[authoryear]{natbib}%
+\if@Numbered@refstyle%
+  \usepackage[numbers,sort&compress]{natbib}%
+  \gdef\NumBib{YES}%
+\else%
+ \usepackage[authoryear]{natbib}%
   \gdef\NumBib{NO}%
+\fi%
   \bibliographystyle{sn-basic}%
   \setlength{\bibsep}{1em}%
   \def\bibfont{\reset@font\fontfamily{\rmdefault}\normalsize\selectfont}%
 \fi%
-\if@Mathphys@refstyle%
+
+\if@Mathphys@numrefstyle%
   \usepackage[numbers,sort&compress]{natbib}%
   \gdef\NumBib{YES}%
-  \bibliographystyle{sn-mathphys}%
+  \bibliographystyle{sn-mathphys-num}%
   \setlength{\bibsep}{1em}%
   \def\bibfont{\reset@font\fontfamily{\rmdefault}\normalsize\selectfont}%
-\fi%
+\else%
+\if@Mathphys@ayrefstyle%
+ \usepackage[authoryear]{natbib}%
+  \gdef\NumBib{NO}%
+  \bibliographystyle{sn-mathphys-ay}%
+  \setlength{\bibsep}{1em}%
+  \def\bibfont{\reset@font\fontfamily{\rmdefault}\normalsize\selectfont}%
+\fi\fi%
 \if@APS@refstyle%
   \usepackage[numbers,sort&compress]{natbib}%
   \gdef\NumBib{YES}%
@@ -1676,15 +1673,25 @@
   \def\bibfont{\reset@font\fontfamily{\rmdefault}\normalsize\selectfont}%
 \fi%
 \if@Vancouver@refstyle%
+\if@Numbered@refstyle%
   \usepackage[numbers,sort&compress]{natbib}%
   \gdef\NumBib{YES}%
+\else%
+ \usepackage[authoryear]{natbib}%
+  \gdef\NumBib{NO}%
+\fi%
   \bibliographystyle{sn-vancouver}%
   \setlength{\bibsep}{1em}%
   \def\bibfont{\reset@font\fontfamily{\rmdefault}\normalsize\selectfont}%
 \fi%
 \if@APA@refstyle%
+\if@Numbered@refstyle%
+  \usepackage[natbibapa]{apacite}%
+  \gdef\NumBib{YES}%
+\else%
   \usepackage[natbibapa]{apacite}%
   \gdef\NumBib{NO}%
+\fi%
   \bibliographystyle{sn-apacite}%
   \def\refdoi#1{\urlstyle{rm}\url{#1}}%
   \renewcommand{\doiprefix}{}%
@@ -1695,8 +1702,13 @@
   \def\bibfont{\reset@font\fontfamily{\rmdefault}\normalsize\selectfont}%
 \fi%
 \if@Chicago@refstyle%
-  \usepackage[authoryear]{natbib}%
+\if@Numbered@refstyle%
+  \usepackage[numbers,sort&compress]{natbib}%
+  \gdef\NumBib{YES}%
+\else%
+ \usepackage[authoryear]{natbib}%
   \gdef\NumBib{NO}%
+\fi%
   \bibliographystyle{sn-chicago}%
   \hypersetup{urlcolor=black,colorlinks=false,pdfborder={0 0 0}}\urlstyle{same}%
   \setlength{\bibsep}{1em}%
@@ -1705,13 +1717,7 @@
 \if@Standard@Nature@refstyle%
   \usepackage[numbers,sort&compress]{natbib}%
   \gdef\NumBib{YES}%
-  \bibliographystyle{sn-standardNature}%
-  \setlength{\bibsep}{1em}%
-  \def\bibfont{\reset@font\fontfamily{\rmdefault}\normalsize\selectfont}%
-\fi%
-\if@Default@refstyle%
-  \usepackage[numbers,sort&compress]{natbib}%
-  \gdef\NumBib{YES}%
+  \bibliographystyle{sn-nature}%
   \setlength{\bibsep}{1em}%
   \def\bibfont{\reset@font\fontfamily{\rmdefault}\normalsize\selectfont}%
 \fi%
@@ -1773,7 +1779,13 @@ $\kern\wd\@ne\kern -\@tempdima\left\@firstoftwo#1%
 \linenoon%
 \def\lineno@off{\unsetvruler}%
 \fi%
-
 %% url macros %%
+
+\gdef\orcidlogo{%
+\includegraphics{Orcidlogo.eps}%
+}%
+
+\gdef\orcid#1{\href{#1}{\orcidlogo}}%
+
 
 \endinput

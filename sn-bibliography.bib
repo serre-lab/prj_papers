@@ -1,3 +1,34 @@
+@string{bmvc={Proceedings of the British Machine Vision Conference (BMVC)}}
+@string{cviu={Computer Vision and Image Understanding (CVIU)}}
+@string{cvpr={Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR)}}
+@string{eccv={Proceedings of the IEEE European Conference on Computer Vision (ECCV)}}
+@string{iccv={Proceedings of the IEEE International Conference on Computer Vision (ICCV)}}
+@string{iclr={Proceedings of the International Conference on Learning Representations (ICLR)}}
+@string{wiclr={Workshop Proceedings of the International Conference on Learning Representations (ICLR)}}
+@string{ijcv={International Journal of Computer Vision (IJCV)}}
+@string{jmlr={The Journal of Machine Learning Research (JMLR)}}
+@string{nips={Advances in Neural Information Processing Systems (NIPS)}}
+@string{neurips={Advances in Neural Information Processing Systems (NeurIPS)}}
+@string{tpami={IEEE Transactions on Pattern Analysis and Machine Intelligence (TPAMI)}}
+@string{tnnls={IEEE Transactions on Neural Networks and Learning Systems (TNNLS)}}
+@string{aaai={Proceedings of the AAAI Conference on Artificial Intelligence (AAAI)}}
+@string{emnlp={Proceedings of the Conference on Empirical Methods in Natural Language Processing (EMNLP)}}
+@string{sigir={ACM Conference on Research and Development in Information Retrieval (SIGIR)}}
+@string{icip={Proceedings of the IEEE International Conference on Image Processing (ICIP)}}
+@string{naacl={Proceedings of the Conference of the North American Chapter of the Association for Computational Linguistics (NAACL)}}
+@string{acl={Proceedings of the Annual Meeting of the Association for Computational Linguistics (ACL)}}
+@string{icml={Proceedings of the International Conference on Machine Learning (ICML)}}
+@string{ijcai={Proceedings of the International Joint Conference on Artificial Intelligence (IJCAI)}}
+@string{kdd={Proceedings of the International Conference on Knowledge Discovery and Data Mining (KDD)}}
+@string{dsaa={Proceedings of the IEEE International Conference on data science and advanced analytics (DSAA)}}
+@string{icde={IEEE International Conference Data Engineering (ICDE)}}
+@string{jstars={IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing (JSTARS)}}
+@string{springer={Springer International Publishing}}
+@string{wacv={Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)}}
+
+@string{arxiv = {{A}r{X}iv e-print}}
+
+
 %% Journal article
 @article{bib1,
   author		= "Campbell, S. L. and Gear, C. W.",
@@ -8,6 +39,171 @@
   pages			= "173--196",
   year			= "1995"
 }
+@misc{kirillov2023segment,
+      title={Segment Anything}, 
+      author={Alexander Kirillov and Eric Mintun and Nikhila Ravi and Hanzi Mao and Chloe Rolland and Laura Gustafson and Tete Xiao and Spencer Whitehead and Alexander C. Berg and Wan-Yen Lo and Piotr Dollár and Ross Girshick},
+      year={2023},
+      eprint={2304.02643},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
+
+@inproceedings{craft,
+      title={CRAFT: Concept Recursive Activation FacTorization for Explainability}, 
+      author={Fel, Thomas and Agustin, Picard and Louis, Bethune and Thibaut, Boissin and David, Vigouroux and Julien, Colin and Rémi, Cadène and Thomas, Serre},
+      year={2023},
+      booktitle=cvpr,
+}
+
+@inproceedings{holistic,
+  title={A Holistic Approach to Unifying Automatic Concept Extraction and Concept Importance Estimation},
+  author={Fel, Thomas and Boutin, Victor and Moayeri, Mazda and Cad{\`e}ne, R{\'e}mi and Bethune, Louis and Chalvidal, Mathieu and Serre, Thomas and others},
+  journal=neurips,
+  year={2023}
+}
+
+@inproceedings{maco,
+  title         = {Unlocking Feature Visualization for Deeper Networks with 
+                  MAgnitude Constrained Optimization},
+  author        = {Thomas Fel and Thibaut Boissin and Victor Boutin and Agustin Picard and
+                  Paul Novello and Julien Colin and Drew Linsley and Tom Rousseau and
+                  Rémi Cadène and Laurent Gardes, Thomas Serre},
+  journal       = neurips,
+  year          = {2023}
+}
+
+@article{wilf2021dataset,
+	abstract = {Leaves are the most abundant and visible plant organ, both in the modern world and the fossil record. Identifying foliage to the correct plant family based on leaf architecture is a fundamental botanical skill that is also critical for isolated fossil leaves, which often, especially in the Cenozoic, represent extinct genera and species from extant families. Resources focused on leaf identification are remarkably scarce; however, the situation has improved due to the recent proliferation of digitized herbarium material, live-plant identification applications, and online collections of cleared and fossil leaf images. Nevertheless, the need remains for a specialized image dataset for comparative leaf architecture. We address this gap by assembling an open-access database of 30,252 images of vouchered leaf specimens vetted to family level, primarily of angiosperms, including 26,176 images of cleared and x-rayed leaves representing 354 families and 4,076 of fossil leaves from 48 families. The images maintain original resolution, have user-friendly filenames, and are vetted using APG and modern paleobotanical standards. The cleared and x-rayed leaves include the Jack A. Wolfe and Leo J. Hickey contributions to the National Cleared Leaf Collection and a collection of high-resolution scanned x-ray negatives, housed in the Division of Paleobotany, Department of Paleobiology, Smithsonian National Museum of Natural History, Washington D.C.; and the Daniel I. Axelrod Cleared Leaf Collection, housed at the University of California Museum of Paleontology, Berkeley. The fossil images include a sampling of Late Cretaceous to Eocene paleobotanical sites from the Western Hemisphere held at numerous institutions, especially from Florissant Fossil Beds National Monument (late Eocene, Colorado), as well as several other localities from the Late Cretaceous to Eocene of the Western USA and the early Paleogene of Colombia and southern Argentina. The dataset facilitates new research and education opportunities in paleobotany, comparative leaf architecture, systematics, and machine learning.},
+	author = {Peter Wilf and Scott L. Wing and Herbert W. Meyer and Jacob A. Rose and Rohit Saha and Thomas Serre and N.Rub{\'e}n C{\'u}neo and Michael P. Donovan and Diane M. Erwin and Maria A. Gandolfo and Erika Gonzalez-Akre and Fabiany Herrera and Shusheng Hu and Ari Iglesias and Kirk R. Johnson and Talia S. Karim and Xiaoyu Zou},
+	doi = {10.3897/phytokeys.187.72350},
+	eprint = {https://doi.org/10.3897/phytokeys.187.72350},
+	issn = {1314-2011},
+	journal = {PhytoKeys},
+	pages = {93-128},
+	publisher = {Pensoft Publishers},
+	title = {An image dataset of cleared, x-rayed, and fossil leaves vetted to plant family for human and machine learning},
+	url = {https://doi.org/10.3897/phytokeys.187.72350},
+	volume = {187},
+	year = {2021},
+	bdsk-url-1 = {https://doi.org/10.3897/phytokeys.187.72350}}
+
+
+@article{
+wilf2016leaves,
+author = {Peter Wilf  and Shengping Zhang  and Sharat Chikkerur  and Stefan A. Little  and Scott L. Wing  and Thomas Serre },
+title = {Computer vision cracks the leaf code},
+journal = {Proceedings of the National Academy of Sciences},
+volume = {113},
+number = {12},
+pages = {3305-3310},
+year = {2016},
+doi = {10.1073/pnas.1524473113},
+URL = {https://www.pnas.org/doi/abs/10.1073/pnas.1524473113},
+eprint = {https://www.pnas.org/doi/pdf/10.1073/pnas.1524473113},
+abstract = {Understanding the extremely variable, complex shape and venation characters of angiosperm leaves is one of the most challenging problems in botany. Machine learning offers opportunities to analyze large numbers of specimens, to discover novel leaf features of angiosperm clades that may have phylogenetic significance, and to use those characters to classify unknowns. Previous computer vision approaches have primarily focused on leaf identification at the species level. It remains an open question whether learning and classification are possible among major evolutionary groups such as families and orders, which usually contain hundreds to thousands of species each and exhibit many times the foliar variation of individual species. Here, we tested whether a computer vision algorithm could use a database of 7,597 leaf images from 2,001 genera to learn features of botanical families and orders, then classify novel images. The images are of cleared leaves, specimens that are chemically bleached, then stained to reveal venation. Machine learning was used to learn a codebook of visual elements representing leaf shape and venation patterns. The resulting automated system learned to classify images into families and orders with a success rate many times greater than chance. Of direct botanical interest, the responses of diagnostic features can be visualized on leaf images as heat maps, which are likely to prompt recognition and evolutionary interpretation of a wealth of novel morphological characters. With assistance from computer vision, leaves are poised to make numerous new contributions to systematic and paleobotanical studies.}}
+@book{mcginitie1953fossil,
+  title={Fossil Plants of the Florissant Beds, Colorado},
+  author={McGinitie, H.D.},
+  lccn={a53008185},
+  series={Carnegie Institution of Washington publication},
+  url={https://books.google.com/books?id=Ge-EzQEACAAJ},
+  year={1953},
+  publisher={Carnegie Institution of Washington}
+}
+@misc{herbarium-2022-fgvc9,
+    author = {Brendan Hogan and damon and inversion and John Park and Riccardo de Lutio},
+    title = {Herbarium 2022 - FGVC9},
+    year = {2022},
+    howpublished = {\url{https://kaggle.com/competitions/herbarium-2022-fgvc9}},
+    note = {Kaggle}
+}
+@incollection{Wilf2008FossilLeaves,
+  author       = {Peter Wilf},
+  title        = {Fossil angiosperm leaves: paleobotany’s difficult children prove themselves},
+  booktitle    = {From Evolution to Geobiology: Research Questions Driving Paleontology at the Start of a New Century},
+  series       = {Paleontological Society Papers},
+  volume       = {14},
+  editor       = {Patricia H. Kelley and Richard K. Bambach},
+  pages        = {320--333},
+  year         = {2008},
+  publisher    = {The Paleontological Society},
+  url          = {https://personal.ems.psu.edu/~pdw3/2008_Wilf_PS_Short_Course_Notes.pdf},
+  note         = {Paleontological Society Short Course, October 4 2008}
+}
+
+@book{florissant,
+author = {Meyer, Herbert},
+year = {2003},
+month = {01},
+pages = {},
+title = {The Fossils of Florissant},
+isbn = {1-58834-107-0}
+}
+@inproceedings{taha2020triplet,
+title = "Boosting standard classification architectures through a ranking regularizer",
+abstract = "We employ triplet loss as a feature embedding regularizer to boost classification performance. Standard architectures, like ResNet and Inception, are extended to support both losses with minimal hyper-parameter tuning. This promotes generality while fine-tuning pretrained networks. Triplet loss is a powerful surrogate for recently proposed embedding regularizers. Yet, it is avoided due to large batch-size requirement and high computational cost. Through our experiments, we re-assess these assumptions.During inference, our network supports both classification and embedding tasks without any computational overhead. Quantitative evaluation highlights a steady improvement on five fine-grained recognition datasets. Further evaluation on an imbalanced video dataset achieves significant improvement. Triplet loss brings feature embedding capabilities like nearest neighbor to classification models. Code available at http://bit.ly/2LNYEqL.",
+author = "Ahmed Taha and Yi-Ting Chen and Teruhisa Misu and Abhinav Shrivastava and Larry Davis",
+note = "Publisher Copyright: {\textcopyright} 2020 IEEE.; 2020 IEEE/CVF Winter Conference on Applications of Computer Vision, WACV 2020 ; Conference date: 01-03-2020 Through 05-03-2020",
+year = "2020",
+month = mar,
+doi = "10.1109/WACV45572.2020.9093279",
+language = "English",
+series = "Proceedings - 2020 IEEE Winter Conference on Applications of Computer Vision, WACV 2020",
+publisher = "Institute of Electrical and Electronics Engineers Inc.",
+pages = "747--755",
+booktitle = "Proceedings - 2020 IEEE Winter Conference on Applications of Computer Vision, WACV 2020",
+address = "United States",
+}
+
+@inproceedings{
+bao2022beit,
+title={{BE}iT: {BERT} Pre-Training of Image Transformers},
+author={Hangbo Bao and Li Dong and Songhao Piao and Furu Wei},
+booktitle={International Conference on Learning Representations},
+year={2022},
+url={https://openreview.net/forum?id=p-BhZSz59o4}
+}
+@misc{zhang2023adding,
+      title={Adding Conditional Control to Text-to-Image Diffusion Models}, 
+      author={Lvmin Zhang and Anyi Rao and Maneesh Agrawala},
+      year={2023},
+      eprint={2302.05543},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
+
+@misc{RISE2018,
+      title={RISE: Randomized Input Sampling for Explanation of Black-box Models}, 
+      author={Vitali Petsiuk and Abir Das and Kate Saenko},
+      year={2018},
+      eprint={1806.07421},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/1806.07421}, 
+}
+
+@article{Selvaraju_2019,
+   title={Grad-CAM: Visual Explanations from Deep Networks via Gradient-Based Localization},
+   volume={128},
+   ISSN={1573-1405},
+   url={http://dx.doi.org/10.1007/s11263-019-01228-7},
+   DOI={10.1007/s11263-019-01228-7},
+   number={2},
+   journal={International Journal of Computer Vision},
+   publisher={Springer Science and Business Media LLC},
+   author={Selvaraju, Ramprasaath R. and Cogswell, Michael and Das, Abhishek and Vedantam, Ramakrishna and Parikh, Devi and Batra, Dhruv},
+   year={2019},
+   month=oct, pages={336–359} 
+}
+
+@article{fel2022xplique,
+  title={Xplique: A Deep Learning Explainability Toolbox},
+  author={Fel, Thomas and Hervier, Lucas and Vigouroux, David and Poche, Antonin and Plakoo, Justin and Cadene, Remi and Chalvidal, Mathieu and Colin, Julien and Boissin, Thibaut and Bethune, Louis and Picard, Agustin and Nicodeme, Claire 
+          and Gardes, Laurent and Flandin, Gregory and Serre, Thomas},
+  journal={Workshop on Explainable Artificial Intelligence for Computer Vision (CVPR)},
+  year={2022}
+}
+
 
 %% Journal article with DOI
 @article{bib2,
@@ -161,6 +357,16 @@
   booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
   pages={9365--9374},
   year={2019}
+}
+@article{spagnuolo22,
+author = {Spagnuolo, Edward and Wilf, Peter and Serre, Thomas},
+year = {2022},
+month = {03},
+pages = {},
+title = {Decoding family-level features for modern and fossil leaves from computer-vision heat maps},
+volume = {109},
+journal = {American journal of botany},
+doi = {10.1002/ajb2.1842}
 }
 
 %%============================================================================%%

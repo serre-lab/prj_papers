@@ -1,0 +1,384 @@
+%Version 3 October 2023
+% See section 11 of the User Manual for version history
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                 %%
+%% Please do not use \input{...} to include other tex files.       %%
+%% Submit your LaTeX manuscript as one .tex document.              %%
+%%                                                                 %%
+%% All additional figures and files should be attached             %%
+%% separately and not embedded in the \TeX\ document itself.       %%
+%%                                                                 %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%\documentclass[referee,sn-basic]{sn-jnl}% referee option is meant for double line spacing
+
+%%=======================================================%%
+%% to print line numbers in the margin use lineno option %%
+%%=======================================================%%
+
+%%\documentclass[lineno,sn-basic]{sn-jnl}% Basic Springer Nature Reference Style/Chemistry Reference Style
+
+%%======================================================%%
+%% to compile with pdflatex/xelatex use pdflatex option %%
+%%======================================================%%
+
+%%\documentclass[pdflatex,sn-basic]{sn-jnl}% Basic Springer Nature Reference Style/Chemistry Reference Style
+
+
+%%Note: the following reference styles support Namedate and Numbered referencing. By default the style follows the most common style. To switch between the options you can add or remove Numbered in the optional parenthesis. 
+%%The option is available for: sn-basic.bst, sn-vancouver.bst, sn-chicago.bst%  
+ 
+%%\documentclass[sn-nature]{sn-jnl}% Style for submissions to Nature Portfolio journals
+%%\documentclass[sn-basic]{sn-jnl}% Basic Springer Nature Reference Style/Chemistry Reference Style
+\documentclass[pdflatex,sn-mathphys-num]{sn-jnl}% Math and Physical Sciences Numbered Reference Style 
+%%\documentclass[sn-mathphys-ay]{sn-jnl}% Math and Physical Sciences Author Year Reference Style
+%%\documentclass[sn-aps]{sn-jnl}% American Physical Society (APS) Reference Style
+%%\documentclass[sn-vancouver,Numbered]{sn-jnl}% Vancouver Reference Style
+%%\documentclass[sn-apa]{sn-jnl}% APA Reference Style 
+%%\documentclass[sn-chicago]{sn-jnl}% Chicago-based Humanities Reference Style
+
+%%%% Standard Packages
+%%<additional latex packages if required can be included here>
+
+\usepackage{graphicx}%
+\usepackage{multirow}%
+\usepackage{amsmath,amssymb,amsfonts}%
+\usepackage{amsthm}%
+\usepackage{mathrsfs}%
+\usepackage[title]{appendix}%
+\usepackage{xcolor}%
+\usepackage{textcomp}%
+\usepackage{manyfoot}%
+\usepackage{booktabs}%
+\usepackage{algorithm}%
+\usepackage{algorithmicx}%
+\usepackage{algpseudocode}%
+\usepackage{listings}%
+\usepackage{bm}
+%%%%
+
+%%%%%=============================================================================%%%%
+%%%%  Remarks: This template is provided to aid authors with the preparation
+%%%%  of original research articles intended for submission to journals published 
+%%%%  by Springer Nature. The guidance has been prepared in partnership with 
+%%%%  production teams to conform to Springer Nature technical requirements. 
+%%%%  Editorial and presentation requirements differ among journal portfolios and 
+%%%%  research disciplines. You may find sections in this template are irrelevant 
+%%%%  to your work and are empowered to omit any such section if allowed by the 
+%%%%  journal you intend to submit to. The submission guidelines and policies 
+%%%%  of the journal take precedence. A detailed User Manual is available in the 
+%%%%  template package for technical guidance.
+%%%%%=============================================================================%%%%
+
+%% as per the requirement new theorem styles can be included as shown below
+\theoremstyle{thmstyleone}%
+\newtheorem{theorem}{Theorem}%  meant for continuous numbers
+%%\newtheorem{theorem}{Theorem}[section]% meant for sectionwise numbers
+%% optional argument [theorem] produces theorem numbering sequence instead of independent numbers for Proposition
+\newtheorem{proposition}[theorem]{Proposition}% 
+%%\newtheorem{proposition}{Proposition}% to get separate numbers for theorem and proposition etc.
+
+\theoremstyle{thmstyletwo}%
+\newtheorem{example}{Example}%
+\newtheorem{remark}{Remark}%
+
+\theoremstyle{thmstylethree}%
+\newtheorem{definition}{Definition}%
+
+\raggedbottom
+%%\unnumbered% uncomment this for unnumbered level heads
+
+\begin{document}
+
+\title{Identifying fossil leaves to family using deep neural networks: example from the Florissant flora. }
+\author*[1,2]{\fnm{First} \sur{Author}}\email{iauthor@gmail.com}
+
+\author[2,3]{\fnm{Second} \sur{Author}}\email{iiauthor@gmail.com}
+\equalcont{These authors contributed equally to this work.}
+
+\author[1,2]{\fnm{Third} \sur{Author}}\email{iiiauthor@gmail.com}
+\equalcont{These authors contributed equally to this work.}
+
+\affil*[1]{\orgdiv{Department}, \orgname{Organization}, \orgaddress{\street{Street}, \city{City}, \postcode{100190}, \state{State}, \country{Country}}}
+
+\affil[2]{\orgdiv{Department}, \orgname{Organization}, \orgaddress{\street{Street}, \city{City}, \postcode{10587}, \state{State}, \country{Country}}}
+
+\affil[3]{\orgdiv{Department}, \orgname{Organization}, \orgaddress{\street{Street}, \city{City}, \postcode{610101}, \state{State}, \country{Country}}}
+
+\abstract{
+The identification of fossil angiosperm leaves is a well-known challenge in paleobotany. Recent advances in deep learning offer a promising pathway toward developing AI systems to assist paleobotanists. However, a major obstacle is the scarcity of taxonomically vetted fossil leaf samples, which makes it difficult to train AI models that typically require large volumes of labeled data. In this study, we leveraged existing collections of extant leaf images (including cleared-leaf and X-ray images) and employed deep generative techniques to automatically synthesize photorealistic images of fossil leaves. We then developed a novel deep learning architecture capable of classifying taxonomically vetted extant and vetted fossil leaves from the florissant collection at the family level with a top-5 accuracy of 91.8\% (chance level: 3.5\%). Notably, the system generalized to fossil families with no real fossil samples in the training set, achieving a top-5 accuracy of 73.4\% on those cases. Using novel model interpretability techniques, we performed an in-depth analysis to characterize the visual features learned by the neural network for leaf classification. As a proof of concept, we applied our model to classify 1723 previously unidentified fossil leaf specimens from the Florissant fossil beds, we provide machine identifications as well as heatmaps and explainability concepts, providing novel input for paleobotanists. We have made the complete system freely available to the community, accompanied by a comprehensive interpretability analysis, with the aim of spurring further research in AI-assisted paleobotany. 
+
+}
+\maketitle
+
+\section{Introduction}
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=1\linewidth]{Figures/Figure_1_v5.jpg}
+    \caption{Summary of model improvements and their effects on fossil leaf family identification: 
+    \textbf{Performance bounds.}  The bar chart reports classification accuracy as the Top-5 $F_{1}$ score under two test conditions: ("Upper bound"): Real fossil leafs are present during training. ("Lower bound")  only synthetic fossils were available during training, forcing the model to work fully out-of-distribution.  Chance for 142 families is~3.5\,\% (dashed line).  Successive upgrades raise accuracy to \textbf{93.2\,\%} (upper) and \textbf{77.3\,\%} (lower).  When calculated over all the dataset including synthetic fossils, the system accuracy (dashed line on the right) is 91.8\%.  
+    \textbf{Illustrated upgrades (panels 1–5)}  
+    (1) Two raw photographs from the extant leaf collection.  
+    (2) The same leaves after automatic background removal, exposing diagnostic margins and venation.  
+    (3) Five-scale image pyramid of one segmented leaf, illustrating how input is processed at varying resolutions to capture both coarse and fine-grained features. 
+    (4) Two-dimensional \textit{t}\nobreakdash-SNE map of the learned feature space before/after adding a triplet-loss constraint, extant leaves and fossil leaves from the same family cluster tightly and separate from other families, indicating clearer discrimination, and joint representation despite the different domain.   
+    (5) High-fidelity synthetic fossils generated by our ControlNet model to augment under-represented families.    }
+    \label{fig:system}
+\end{figure}
+
+Isolated leaves dominate the angiosperm fossil record yet remain notoriously difficult to identify accurately, representing paleobotany’s largely untapped source of “dark data.”  Historical literature is riddled with botanically incorrect identifications because of the inherent complexity of leaf morphology, the scarcity of vetted reference samples, and substantial variation within and among fossil sites.  Although artificial-intelligence (AI) methods can in principle handle such morphological complexity, limited sample size and site-to-site variability pose the same challenges for AI models as for human experts.  \textbf{Our initial attempts confirmed that extreme preservational (taphonomic) variation across localities severely hampered model performance, motivating us to restrict this pilot study to a single site in order to minimize that source of noise.}
+
+We therefore focus on one exceptionally well-documented locality the late-Eocene Florissant Fossil Beds National Monument, Colorado, where taphonomic conditions are relatively uniform.  The Florissant flora, first synthesized in Harry MacGinitie’s 1953 monograph \cite{mcginitie1953fossil} and expanded by subsequent systematics work by Steven Manchester and others, offers a uniquely robust dataset.  Herb Meyer’s digital archive of Florissant leaf photographs \cite{florissant}, comprising thousands of specimens, is among the earliest large-scale palaeobotanical image databases available online.  From this resource we extracted 3,200 vetted leaves spanning 23 plant families (16 families with \(\ge{}5\) specimens each).These vetted fossils were selected from a much larger Florissant dataset containing  over 1723 additional specimens that could not be confidently assigned to family. Together these images form part of a broader open-access compilation of fossil, cleared, and X-rayed leaves totalling 30,252 samples \cite{wilf2021dataset}, bolstered by 4,076 recently added specimens from the National Museum of Nature and Science in Ibaraki, Japan.
+
+Most well-identified fossil leaves come from a handful of families that are morphologically distinctive and well-represented in the literature, while the vast majority of angiosperm diversity recorded in the fossil record remains unrecognized or unnamed \cite{Wilf2008FossilLeaves}. Addressing the fundamental limitation that fossil leaves frequently represent families with minimal or no direct fossil training samples, we employed generative AI to synthesize fossil-like images from a large dataset of cleared and x-rayed leaves spanning 142 modern families, each with at least 25 specimens, as well as the 16 families of vetted fossils available.  This innovative augmentation greatly increases the number of angiosperm families that can be used as "training fossils." , substantially increasing the available training data and improving model accuracy and reliability see Figure~\ref{fig:system}. 
+
+We used a type of convolutional neural network called Resnet-101 (101 layers deep), pretrained on natural images (imageNet). We considered alternatives including pre-training on herbarium sheets from the FGVC9 challenge\cite{herbarium-2022-fgvc9} but obtained worse results. We also trained and evaluated a transformer network based on the BEiT model~\citep{bao2022beit}.
+
+All reported results correspond to model accuracies as Top-5, meaning that the system found the correct plant family among its five most probable plant families. The chance level for this scenario was $3.5\%$ ($5/142$).
+
+The training/validation/test split was $80\%/10\%/10\%$. Grid search was used across all hyperparameters (including learning rate and regularization) and selected based on average accuracy on the validation set. Reported test accuracy is based on average across all splits. 
+
+One challenge in evaluating the accuracy of the system is that we do not have real vetted fossils for most families  (i.e., for 142-16=126 families). Here, we only evaluate the accuracy of the system on real fossils. We  provide  a lower and upper bound on the expected accuracy of the system based on whether or not real fossils were included in the training for the families used during test, we evaluated the system on families that contained real fossils in the training set.
+
+Although the system makes predictions for all 142 families the closest scenario to real-world application will be to evaluate it  on the 16 families for which we have vetted real fossils. To provide and upper/lower bounds we trained a system with/without real fossils available for each of the 16 families (leaving one family out and averaging over all permutations corresponding to training of 16 distinct models). As well we perform evaluation on all the dataset (including synthetic fossils) and the average accuracy of this system is $91.8\%$ ( dashed line; Figure~\ref{fig:system})).  We reached  77.3\%  lower and 93.2\% upper bounds, these are shown in Figure~\ref{fig:system}. 
+
+To further validate the system we performed an explainability analysis based on the saliency method~\ref{fig:system2} using the Xplique toolbox~\citep{fel2022xplique}. We noticed that the system learned shortcuts and leveraged textual and other cues (e.g., ruler) present on the cleared leaf slides.
+
+To prevent the system from leveraging these shortcuts we developed an approach to clean up the image database. We fine-tuned a standard object segmentation algorithm called `segment anything model'' (SAM)~\cite{kirillov2023segment} on a small set of $576$ manually annotated cleared leaf images. Visual inspection on the remaining images from the database revealed that the system worked well at segmenting out leaves from the background. We ran SAM on the entire dataset and masked out the background (Figure~\ref{fig:system}b). 
+We confirmed that the accuracy of the identification system remained high (yellow in Figure~\ref{fig:system}a), and most importantly, visual inspection of distribution maps for the system confirmed that it relies on the leaf (see Figure~\ref{fig:attribution_maps}).
+
+We further hypothesized that leaf contains information at multiple scales from the coarsest scales where shape can be encoded to the finest details associated with the pattern of leaf venation. We thus extended our base architecture to process images at multiple scales. For each image, we created 5 samples at different scales which included: (i) the original masked image, a tighter crop of the image corresponding to the smallest bounding box to include the mask, as well as three additional crops corresponding to the top, middle and bottom one-third of the leaf image (see SI).  Again, we confirmed that this extension improved further the accuracy of the system (ADD).
+
+Our database includes a disproportionate number of cleared leaves to fossils ratio ($34328/3200 \simeq 10:1$). To evaluate the impact of the imbalance we calculated the average distance within the class between leaves and between leaves and fossils normalized by the average distance between class for leaves and fossils. We found that on average fossils were further away from extant leaves than typical leaves. This is due to differences in appearance between leaves and fossils (for instance the presence of a rock, etc). To try to remediate this issue we added a regularization term to our initial classification loss which we will refer to as the ``triplet loss''. The idea is to enforce a penalty during training to encourage fossil and cleared leaves from the same class to be closer together than fossil and extant leaves across families. See Methods (Eq.~\ref{} for details). This led to a significant improvement in the accuracy of the system, especially for families for which no real (vetted) fossil was available during training for that class (purple color; Figure~\ref{fig:system}A.).
+
+The final challenge to address is a complete lack of fossils for most families in our dataset ($119/142$) in addition to seven families that contained less than five samples. To address this challenge, we turned to generative AI. We leverage a state-of-the-art stable diffusion model based on the ControlNet approach~\citep{zhang2023adding}. The original model is a conditional diffusion model that generates controlled images using text prompts. This open-source model was trained on LAION 5 billion dataset. Here, we trained the ControlNet to generate synthetic cleared leaves and fossils. The ControlNet was trained end-to-end together with the classifier by minimizing one joint loss aimed at simultaneously classifying cleared and fossil leaf images correctly together with the triplet loss to encourage good family representations of cleared and fossil leaf images together with the ControlNet loss. Representative sample synthetic fossils are shown in Figure~\ref{fig:system}. Synthesizing fossils in this way yields massive improvement in the system's ability to identify leaves for which real fossils are not available for training, improving accuracy from just above chance ($4.31\%$) (Figure~\ref{fig:system} A lower-bound) to $77.3\%$ (upper-bound).
+        
+
+One of the challenges in the modern deep learning  era, is that models albeit high performance in challenging datasets, they act as black boxes, making it hard to interpret the rationale for certain decisions. In order to study the models we trained, we employ explainability methods to study the concepts that are employed by the models  to identify the family of the presented leafs.  This opens the opportunity to find patterns difficult to identify for humans \cite{spagnuolo22}. 
+
+
+
+Finally, we present the first machine-assisted classification of over 1,723 fossil samples from the Florissant collection with previously unknown family labels. The model’s predictions on these unknown fossils were carefully shared with domain experts, along with interpretability results, to evaluate its performance. The expert review found that 28.2\% of the fossil specimens—i.e., 485 samples—were heavily degraded or lacked sufficient morphological detail to be assessed by human experts. These fossils were excluded from the evaluation. Out of the remaining 1,238 samples, experts were confident in the model’s predictions for 585 samples and considered an additional 505 samples to be plausible classifications, resulting in 88\% overall coverage. The review also indicated that the model's predictions for 143 samples were inaccurate, corresponding to an error rate of 12\%.
+
+
+
+
+\subsection{Segmentation and Preprocessing}
+Our dataset comprises images from two domains: extant (cleared and x-rayed) leaves and fossil leaves. The extant leaves, though abundant, often include artifacts (e.g., hand-written labels, rulers, stains) that can bias a classifier. To mitigate this, we leverage the Segment Anything Model (SAM) \cite{kirillov2023segment}. 
+
+We fine-tune SAM on 500 manually annotated cleared leaf images using an 80/20 split, achieving a 95\% Intersection over Union (IOU). This fine-tuned model is then applied as a preprocessing step to segment the remainder of the dataset. See Figure~\ref{fig:system} for sample outputs. This segmentation not only removes artifacts but also ensures that the network focuses on intrinsic leaf morphology.
+
+\subsection{Style Transfer / Domain Adaptation}
+Let \(X\) denote the fossil domain and \(Y\) the extant (leaves) domain. Although they share certain morphological features, their visual properties differ substantially. In many cases, families represented in \(Y\) lack corresponding fossil samples in \(X\).
+
+Inspired by \cite{CycleGAN2017}, we adopt a generative approach. We define two mappings, \(G: X \rightarrow Y\) and \(F: Y \rightarrow X\), implemented as ControlNet modules \cite{zhang2023adding} with fixed random seeds. These modules are guided by text prompts:
+\begin{itemize}
+    \item ``A cleared leaf of the family: \textless Family Name\textgreater''
+    \item ``A fossilized leaf of the family: \textless Family Name\textgreater''
+\end{itemize}
+These prompts ensure that the generated images preserve family-specific traits. A triplet regularizer is used to enforce proximity among images of the same family across domains. Additionally, we apply SAM during generation to guarantee that the leaf shape remains consistent between the input and generated images.
+
+\subsection{Triplet Loss and Forcing Structure}\label{sec:triplet}
+Following \cite{taha2020triplet}, our BEiT model is modified with two output heads: a classification head trained via cross-entropy loss and an embedding head optimized using triplet loss. For each class, we sample an anchor, a positive sample (same family), and a negative sample (different family) from the two domains, enforcing that the anchor-positive distance is minimized relative to the anchor-negative distance. The triplet loss is defined as:
+\begin{align}
+    \mathcal{L}_{trip} = \frac{1}{b} \sum_{i=1}^{b} \left[ D(a_{i,x}, p_{i,x}) - D(a_{i,x}, n_{i,x}) + m \right],
+\end{align}
+where \(b\) is the batch size, \(D\) is a distance function, \(a\) denotes the anchor, \(p\) the positive sample, \(n\) the negative sample, and \(m\) is a fixed margin. The overall loss is:
+\begin{equation}
+    \mathcal{L} = \mathcal{L}_{softmax} + \lambda \mathcal{L}_{trip}.
+\end{equation}
+Synthetic images generated from extant leaves are added to augment families with little or no fossil data. \textcolor{purple}{This design enforces both local and global structure in the embedding space, a key factor for robust classification when real fossil samples are limited.}
+
+
+
+\subsection{Explainability}
+\begin{figure}[]
+\includegraphics[width=\linewidth]{Figures/Figure_3_v2.jpg}
+    \caption{Shared concepts used by the model to classify an example from the class  Berberidaceae. }
+    \label{fig:shared_concepts}
+\end{figure}
+
+\subsection{Explainability: Extract, Quantify, Visualize}
+
+To interpret the predictions of our fossil leaf classification system, we introduce a three-stage explainability framework comprising: (\textbf{\textit{i}}) concept extraction, (\textbf{\textit{ii}}) importance estimation, and (\textbf{\textit{iii}}) concept visualization.
+First, we extract a structured basis of concepts from the model’s internal representations. This step is essential because the feature space utilized by the model is potentially overcomplete relative to the number of neurons, resulting in the superposition of multiple semantic factors within individual units. Direct analysis of raw activations would therefore obscure the true structure underlying the model’s computations. Instead, we aim to recover a sparse, disentangled basis that more faithfully captures the primitives the model relies upon. To this end, we apply sparse dictionary learning to the intermediate activations, yielding a compact set of interpretable concepts.
+Second, once this conceptual basis is established, we quantify the contribution of each concept to the model’s predictions. Rather than treating all concepts equally, we perform attribution directly in concept space, assigning to each concept a class-specific importance score that reflects its influence on the decision boundary.
+Third, to render these concepts accessible to human interpretation, we visualize them both spatially and semantically: spatially, by mapping concept activations back onto the input domain to reveal their localization; and semantically, by synthesizing prototypical inputs that selectively and maximally activate each concept. Together, these steps provide a faithful and structured decomposition of the model’s internal reasoning mechanisms.
+
+\textbf{Concept Extraction.}  
+We consider a dataset of input images \( \bm{X} = \{ \bm{x}_i \}_{i=1}^n \), where each \( \bm{x}_i \in \mathbb{R}^{H \times W \times 3} \). Each image is processed by a visual encoder \( \bm{f} \), yielding a latent feature tensor \( \bm{A}_i = \bm{f}(\bm{x}_i) \in \mathbb{R}^{h \times w \times d} \), where \( (h, w) \) denote the spatial dimensions and \( d \) the feature dimension.  
+To aggregate activations across the dataset, we flatten the spatial dimensions of each \( \bm{A}_i \) and concatenate them into a global activation matrix \( \bm{A} \in \mathbb{R}^{nwh \times d} \).
+
+Our objective is to recover a structured, interpretable representation of the feature space by learning a sparse decomposition. Specifically, we seek to approximate the activation matrix \( \bm{A} \) as a sparse linear combination of a small set of learned dictionary elements. Formally, we solve the constrained optimization problem:
+\begin{equation}
+\label{eq:dictionary_learning_enhanced}
+\min_{\bm{Z}, \bm{D}} \quad \| \bm{A} - \bm{Z} \bm{D} \|_F^2, \quad \text{subject to} \quad \| \bm{Z}_i \|_0 \leq k, \quad \bm{Z}_i \geq 0, \quad \| \bm{D}_j \|_2 = 1, \quad \forall i, j,
+\end{equation}
+where \( \| \cdot \|_F \) denotes the Frobenius norm, \( \| \cdot \|_0 \) the \( \ell_0 \) sparsity norm, \( k \) controls the sparsity level (set to 5 in our experiments), and the unit-norm constraint on each dictionary atom enforces scale invariance.
+
+This formulation encourages each feature activation to be reconstructed from a small, non-negative combination of dictionary elements, promoting interpretability and disentanglement.
+
+In practice, we implement this objective using a Top-\(k\) Sparse Autoencoder (Top-\(k\) SAE). The resulting encoder is  a fixed operator that we denote \( \bm{\Pi}_k \), composed of a learned linear projection, a ReLU non-linearity, and a Top-\(k\) sparsification that retains only the \( k \) largest activations at each spatial location. Formally, the sparse codes are obtained via:
+\begin{equation}
+    \bm{Z} = \bm{\Pi}_k(\bm{A}).
+\end{equation}
+The decoder is parameterized by the learned dictionary \( \bm{D} \in \mathbb{R}^{k \times d} \), reconstructing the activations as \( \bm{Z} \bm{D} \).
+
+Each learned dictionary atom \( \bm{D}_j \) corresponds to a distinct, reusable visual concept, capturing a recurrent pattern or morphological feature across the dataset. By enforcing sparsity and non-negativity, the model ensures that concepts are combined additively and selectively, reflecting an interpretable compositional structure within the latent space.
+
+
+
+\textbf{Concept Quantification.}  
+After learning the dictionary, we reparametrize the classifier in terms of the extracted sparse codes \( \bm{Z} \).  
+Recall that the original prediction logits for a given feature activation \( \bm{A} \) are computed as $\bm{y} = \bm{A} \bm{W}$, where \( \bm{W} \in \mathbb{R}^{d \times c} \) denotes the weight matrix of the classification head and \( c \) is the number of output families. Substituting the dictionary decomposition \( \bm{A} = \bm{Z} \bm{D} \), we obtain $\bm{y} = \bm{Z} \bm{D} \bm{W}$. We define the effective concept-to-class mapping matrix
+\begin{equation}
+    \bm{\Gamma} = \bm{D} \bm{W}, ~ \text{so that the prediction simplifies to} ~ \bm{y} = \bm{Z} \bm{\Gamma}.
+\end{equation}
+Thus, each entry \( \Gamma_{ij} \) encodes the influence of concept \( i \) on class \( j \), providing a direct and interpretable mapping from extracted concepts to prediction outputs.
+
+Given a specific target class \( t \), the contribution \( s_i \) of concept \( i \) to the predicted logit \( y_t \) is
+\begin{equation}
+    s_i = \Gamma_{i t} Z_i,
+\end{equation}
+where \( Z_i \) denotes the activation strength of concept \( i \) at the corresponding spatial location.
+
+This reparametrization enables a faithful and fully linear attribution of the model's predictions to the underlying learned concepts, without relying on surrogate models, gradient approximations, or post-hoc interpretability techniques. It provides an intrinsic, mathematically grounded decomposition of the decision process directly in concept space. Furthermore, owing to the linearity of the model, the gradient of the target logit \( y_t \) with respect to the sparse codes \( \bm{Z} \) is simply
+\begin{equation}
+    \nabla_{\bm{Z}} y_t = \bm{\Gamma}_{:,t}.
+\end{equation}
+Thus, the full vector of contribution scores \( \bm{s} \in \mathbb{R}^k \) across all concepts can be expressed compactly as the elementwise (Hadamard) product between the sparse activations and the gradient:
+\begin{equation}
+    \bm{s} = \bm{Z} \odot \nabla_{\bm{Z}} y_t,
+\end{equation}
+where \( \odot \) denotes elementwise multiplication. This perspective highlights that each concept’s contribution naturally emerges from the interaction between its activation magnitude and its sensitivity to the output, thereby reinforcing both the faithfulness and interpretability of the decomposition.
+
+
+\textbf{Concept Visualization.}
+After extracting concepts, we seek to interpret them by providing both spatial localization and prototypical representations.
+
+First, to understand \emph{where} each concept activates in an input image, we compute spatial concept activation maps.  
+Given the activation tensor \( \bm{A} \in \mathbb{R}^{h \times w \times d} \) obtained from the encoder \( \bm{f} \), we apply the previously defined encoder of the SAE \( \bm{\Pi}_k \) independently at each spatial location.  
+Formally, for each coordinate \((h, w)\), we define
+\begin{equation}
+    \bm{Z}_{\text{spatial}}(h,w) = \bm{\Pi}_k(\bm{A}(h,w)),
+\end{equation}
+where \( \bm{Z}_{\text{spatial}}(h,w) \in \mathbb{R}^k \) contains the sparse activations of the concepts at location \((h,w)\).  
+This spatial decomposition enables the construction of a \((h \times w)\) grid for each concept, effectively providing a \emph{concept heatmap} that highlights the regions of the image responsible for activating specific morphological features.
+
+In practice, we visualize these spatial activations by overlaying the per-concept heatmaps onto the input images, allowing us to precisely localize which parts of the fossil structure are associated with which learned concepts.  
+Such spatial maps offer direct, interpretable evidence of the model's internal reasoning about morphological patterns.
+
+However, spatial localization alone does not provide a full understanding of the \emph{visual signature} captured by each concept.  
+To complement these maps, we further generate fully synthetic prototypes that \emph{maximize} the activation of a given concept.  
+Concretely, for a selected concept index \( i \), we solve the optimization problem
+\begin{equation}
+    \bm{x}^\ast = \arg\max_{\bm{x}} Z_i\big( \bm{\Pi}_k(\bm{f}(\bm{x})) \big),
+\end{equation}
+where the loss is designed to maximize the post-projection activation of concept \( i \) starting from a random input.  
+We optimize this objective via gradient ascent directly on the input image \( \bm{x} \).
+
+To perform this feature visualization efficiently and produce meaningful, natural-looking synthetic images, we employ MACO~\cite{}, which provides regularization strategies for stabilizing the optimization and producing coherent prototypes. These synthetic samples offer an additional, complementary view into the types of visual patterns each concept is tuned to detect.
+
+Together, the spatial activation maps and feature visualization prototypes provide a rich, two-fold interpretability for each learned concept: one grounded in the spatial structure of the input -- the ``where'' -- and one based on the underlying visual pattern captured by the model -- the ``what''.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{Figures/Figure_6_v1.jpg}
+    \caption{Examples of concepts used for the model for classification. 
+Concept 351: Connection between primary and secondary veins.
+Concept 1792: Secondary veins.
+Concept 1680: Teeth.
+Concept 1871: FILL.
+Concept 1703: Base.
+Concept 1297: FILL.}
+    \label{fig:enter-label}
+\end{figure}
+
+\textbf{Summary.}
+In summary, our interpretability framework relies on three key steps. First, we \emph{extract} a sparse dictionary of visual concepts from the internal representations of the model using a Top-\(k\) Sparse Autoencoder. Second, we \emph{quantify} the importance of each concept for a given prediction by reparametrizing the classifier and directly attributing model outputs to the underlying concepts through a simple linear mapping. Finally, we \emph{visualize} the learned concepts both spatially, via dense concept activation maps, and visually, by synthesizing prototype inputs that maximally activate each concept.
+
+% To understand the decision-making process of our models, we employ explainability techniques such as Grad-CAM \cite{Selvaraju_2019} and RISE \cite{RISE2018} through the Xplique toolbox \cite{fel2022xplique}. These methods generate attribution maps highlighting the image regions that most influence predictions. 
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=\linewidth]{Figures/Figure_2_v5.jpg}
+    \caption{On top the distribution of the responses from the expert paleo-botanist evaluators. 8.3\% are predictions that are not possible, due to the fossil configuration. The  28.2\% of the fossils  were not applicable, meaning that their images were not properly taken and key features may have left out, or multiple leafs were present. 29.5\% are predictions that the expert are not sure and may constitute valuable cases were the concepts discovered by the system  can shed some light. 34\% of the cases were identified as plausible. The next row, there is an example of the Unidentified fossil, and the key concepts that were utilized for its classification, including the leaf formation on the left, the paternary vein in the middle and the junction between the paternary vein and the secondary veins.  }
+    \label{fig:system2}
+\end{figure}
+
+\subsection{Metrics}
+We evaluate our method using two scenarios:
+\begin{enumerate}
+    \item \textbf{Upper-bound scenario:} A 90/10 cross-validation where real fossils are used in both training and testing.
+    \item \textbf{Lower-bound scenario:} A leave-one-family-out approach where, for the test family, no real fossils are used during training (only 90\% of the real fossils from other families are available), and evaluation is performed solely on the withheld family.
+\end{enumerate}
+This framework provides both an upper and lower bound on classification accuracy.
+
+Additional analyses, such as embedding visualizations (with and without the triplet loss) and qualitative assessments of attribution maps (via Grad-CAM and RISE), further confirm that our approach substantially improves performance. Preliminary expert feedback indicates that our method provides clear, family-specific visual cues, assisting paleobotanists in identifying unknown fossils.
+
+\section{Conclusion}
+In summary, our framework integrates state-of-the-art segmentation, domain adaptation, and embedding regularization techniques to improve fossil leaf classification. By generating synthetic fossil images from extant leaves and enforcing consistent latent representations via triplet loss, our system achieves robust performance even in the presence of limited real fossil data. This work represents an important step toward developing an AI assistant for macrofossil paleobotany and sets the stage for broader applications across diverse fossil floras.
+\begin{appendices}
+\section*{Supplementary Information}
+
+\textbf{SI Appendix: Shortcut Removal via SAM}\\
+We conducted a qualitative evaluation of the attribution maps generated by our Baseline and Segmented models using RISE (Randomized Input Sampling for Explanation) ~\citep{RISE2018} and GradCAM (Gradient-weighted Class Activation Mapping) ~\citep{Selvaraju_2019}. These methods were implemented using the Xplique Toolbox ~\citep{fel2022xplique}, developed in our lab. Our findings indicate that the attribution maps of the Segmented model, trained with segmentation, predominantly focus on the leaf regions within the image, demonstrating alignment with relevant features. In contrast, the Baseline model exhibited attribution patterns that relied on spurious shortcuts, such as text and rulers present in the images, as illustrated in Figure~\ref{fig:system2} and ~\ref{fig:system3}.
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=\linewidth]{Figures/Figure_4_v1.jpg}
+    \caption{Attribution map generated using Grad-Cam showing before and after segmentation. For each sample , you will find on the left, attributions when no segmentation is performed, showing that the model relies on non leaf features to classify. On the right you will find same sample , but attribution maps from the model trained on segmented leafs.}
+    \label{fig:system2}
+\end{figure}
+\textbf{System}
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{Figures/Figure_5_v2.jpg}
+    \caption{Illustration of the System. On the left top a represenation of the Leaves domain dataset, we have 142 families. We use them as input of the Controlnet to create synthetic fossils. On the bottom we see a representation of the Fossil dataset, we only have 16 families, but we complete the rest of 142 by using this generative approach. In the middle find the details for the cllasification architecture and the ControlNet prompting approach. Finally, on the right, find the sampling procedure for the triplet calculation, cross-domain and same-domain, taking the furthest positive to bring closer to the anchor and the closest negative to push from the anchor. Finally, right bottom, there is the cycle consistent approach illustration, we take a sample, use controlnet to create a synthetic fossil, then from that fossil we create a synthetic leave that aims fo be as close as possible to the original sample. }
+    \label{fig:enter-label}
+\end{figure}
+% \begin{figure}[ht!]
+%     \centering
+%     \includegraphics[width=\linewidth]{Figures/GradCAM2.png}
+%     \caption{Attribution map generated using GradCAM showing before and after segmentation. For each sample , you will find on the left, attributions when no segmentation is performed, showing that the model relies on non leaf features to classify. On the right you will find same sample , but attribution maps from the model trained on segmented leafs. }
+%     \label{fig:attribution_maps}
+% \end{figure}
+\textbf{Results of BeIT}
+We also studied BeIT architecture, however the result shows slightly lower performance than the Resnet101 presented in the main thex. See  Table~\ref{tab:beit} summarizes the Top-5 accuracy For these results :
+\begin{table}[ht!]
+\centering
+{%
+\begin{tabular}{|c|c|c|c|}
+\hline
+Condition &
+  \begin{tabular}[c]{@{}c@{}}Top 5\\ Lower Bound\end{tabular} &
+  \begin{tabular}[c]{@{}c@{}}Top 5 \\ Upper Bound\end{tabular} &
+  \#families \\ \hline
+Unsegmented                                                   & 4.21\% & 64.3\% & 142 \\ \hline
+Segmented                                                     & 6.21\% & 65.1\% & 142 \\ \hline
+\begin{tabular}[c]{@{}c@{}}Triplet +\\ Segmented\end{tabular} & 21.4\% & 72\%   & 142 \\ \hline
+\begin{tabular}[c]{@{}c@{}}Triplet + \\ Segmented +\\ Synthetic Fossils\end{tabular} &
+  \textbf{75.1\%} &
+  \textbf{86.4\%} &
+  142 \\ \hline
+\end{tabular}%
+\caption{BEiT classification results under the different conditions studied.}
+\label{tab:beit}
+\end{table}
+
+\textbf{Details for Training the cycle-control-Net}
+We use a Large Memory IBM Node with 4 V100 GPUS and 1tB of RAM with fast interconnect between RAM and GPU. One GPU was exclusively hosting the SAM model trained for image silhouette detection, while the other three hosted the Control Net running on stable difussion 2.1.  The Batch size was 64 with a total resolution of 512x512. 
+\end{appendices}
+\newpage
+\bibliography{sn-bibliography}
+
+% \bibliographystyle{sn-mathphys}
+% \bibliography{sn-bibliography}% common bib file
+
+%% if required, the content of .bbl file can be included here once bbl is generated
+%%\input sn-article.bbl
+
+
+\end{document}
