@@ -57,6 +57,7 @@
 \usepackage{listings}%
 \usepackage{bm}
 \usepackage{macros}
+
 %%%%
 
 %%%%%=============================================================================%%%%
@@ -128,9 +129,8 @@ We focused on the late Eocene Florissant Fossil Beds National Monument in Colora
 
 Most well-identified fossil leaves represent a handful of morphologically distinctive families that are well-represented in the literature, leaving the vast majority of angiosperm diversity in the fossil record unrecognized~\cite{Wilf2008FossilLeaves}. To address the fundamental limitation that fossil leaves frequently represent families with minimal or no direct fossil training samples, we employed generative AI to synthesize fossil-like images from a large dataset of cleared and X-rayed leaves spanning 142 modern families (each with at least 25 specimens) plus the 16 families of vetted fossils available. This approach greatly increases the number of angiosperm families available as "training fossils," substantially expanding the training data (Fig.~\ref{fig:system}). Adding synthetic fossil samples to the training dataset yielded considerable accuracy gains not only for families with real fossil examples available during training, but also for families represented only by synthetic fossils. This demonstrates the effectiveness of generative AI in overcoming inherent data scarcity in paleobotany, enabling robust identification even when direct fossil representatives are lacking.
 
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=1\linewidth]{Figures/Figure_1_v6.jpg}
+\begin{figure}[H]
+    \centering\includegraphics[width=\linewidth]{Figures/Figure_1_v6.jpg}
     \caption{Model improvements for fossil leaf family identification and their cumulative effects on classification performance.
     \textbf{Performance bounds.} Bar chart shows Top-5 $F_1$ scores under two generalization scenarios: ``in-distribution (ID)'' uses real fossil leaves during training , while ``out-of-distribution (OOD)'' uses only synthetic fossils during training (simulated-to-real). Chance performance for 142 families is 3.5\% (dashed black  line). The final model achieves 91.8\% accuracy on combined extant and fossil leaves, with expected performance of 77.3\% (OOD) and 93.2\% (ID) on real fossils alone. \textbf{Model improvements (panels A–E):} (A) Raw extant leaf samples; (B) samples after automatic shortcut removal; (C) five-scale image pyramid enabling multi-resolution classification; (D) Using our triplet loss to enforce joint representation for both domains: On the left, visualization of clusters using UMAP showing that distance between samples of the same family are farther away than samples of the same domain. On the right, the impact of our loss, bringing samples of the same family closer on the feature space regardless of the domain ; (5) high-fidelity synthetic fossils generated to augment under-represented families and those lacking fossil specimens. On top examples of our generated synthetic fossils, on the bottom samples of existing fossils from a sample of the same family and two original extant leaves that serve as a source when real family not available.}
     \label{fig:system}
@@ -166,7 +166,7 @@ We hypothesized that leaves encode diagnostic features across multiple spatial s
 
 % One remaining significant challenge is the complete absence of fossil specimens for most families in our dataset (119 of 142 families), with an additional seven families having fewer than five samples. To address this limitation, we leveraged generative AI by adapting a state-of-the-art stable diffusion model based on the ControlNet architecture~\citep{zhang2023adding}. Originally pre-trained on the LAION 5-billion image dataset, this conditional diffusion model synthesizes images guided by text prompts. We fine-tuned ControlNet to generate realistic images of cleared leaves and fossil specimens, training it jointly with our ResNet-101 family-level classifier. This joint training optimized a combined objective: classification accuracy for cleared and fossil leaves, a triplet-loss term to align extant and fossil representations within families, and the ControlNet loss itself. Representative synthetic fossil samples are shown in Figure~\ref{fig:system}. Crucially, this generative augmentation substantially improved the system's out-of-distribution generalization—classifying fossil leaves from families without real fossil examples available during training—raising accuracy dramatically from near-chance levels (3.82\%; Fig.~\ref{fig:system}, lower bound) to 77.3\% (upper bound), and narrowing the gap between in-distribution and out-of-distribution performance.
 
-Our dataset exhibits significant imbalance, comprising 34,328 extant and 3,200 fossil leaves—approximately a 10:1 ratio. Moreover, fossil leaves often differ markedly from extant specimens due to damage, partial preservation, compression artifacts, and rock matrix that can obscure fine venation patterns. We hypothesized that these differences might lead the model to treat extant and fossil leaves as distinct domains. To investigate this, we computed average within-family distances across both domains. Fossil leaves  and extant leaves  are generally cluster together regardless of their family. A pattern evident in the UMAP visualization of the neural network's penultimate layer embeddings (Fig.~\ref{fig:sytem}), highlighting the domain shift between extant and fossil specimens.
+Our dataset exhibits significant imbalance, comprising 34,328 extant and 3,200 fossil leaves—approximately a 10:1 ratio. Moreover, fossil leaves often differ markedly from extant specimens due to damage, partial preservation, compression artifacts, and rock matrix that can obscure fine venation patterns. We hypothesized that these differences might lead the model to treat extant and fossil leaves as distinct domains.To investigate this, we measured the average distance in embedding space between fossil and extant samples within each family, and normalized this by the average distance between different families. After applying the triplet loss, these normalized distances decreased substantially, indicating that the model learns to cluster fossil and extant leaves from the same family together. A pattern evident in the UMAP visualization of the neural network's penultimate layer embeddings (Fig.~\ref{fig:sytem}).
 
 To address this domain shift, we turned to representation learning and introduced a \textbf{triplet-loss} regularizer to the classification objective during model training (\textit{Methods}). This approach explicitly encourages embedding representations that position fossil and extant leaves from the same family closer together than those from different families. Incorporating this constraint substantially improved model accuracy to 82.3\% ID and 24.6\% OOD accuracy, with the greatest gains observed in the OOD condition where vetted fossil examples were unavailable during training.
 
@@ -191,7 +191,7 @@ Third, we visualize these concepts using Feature Visualization~\cite{olah2017fea
 
 
 % \subsection{Explainability}
-\begin{figure}[th!]
+\begin{figure}[ht!]
 \includegraphics[width=\linewidth]{Figures/Figure_3_v2.jpg}
     \caption{Shared concepts used by the model to classify an example from the class  Berberidaceae. }
     \label{fig:shared_concepts}
@@ -199,7 +199,7 @@ Third, we visualize these concepts using Feature Visualization~\cite{olah2017fea
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{Figures/Figure_6_v1.jpg}
+    \includegraphics[width=\linewidth]{Figures/Figure_6_v2.jpg}
     \caption{Examples of concepts used for the model for classification. 
 Concept 351: Connection between primary and secondary veins.
 Concept 1792: Secondary veins.
@@ -207,7 +207,7 @@ Concept 1680: Teeth.
 Concept 1871: FILL.
 Concept 1703: Base.
 Concept 1297: FILL.}
-    \label{fig:enter-label}
+    \label{fig:concepts}
 \end{figure}
 
 
@@ -216,13 +216,20 @@ Concept 1297: FILL.}
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics[width=\linewidth]{Figures/Figure_2_v5.jpg}
-    \caption{On top the distribution of the responses from the expert paleo-botanist evaluators. 8.3\% are predictions that are not possible, due to the fossil configuration. The  28.2\% of the fossils  were not applicable, meaning that their images were not properly taken and key features may have left out, or multiple leafs were present. 29.5\% are predictions that the expert are not sure and may constitute valuable cases were the concepts discovered by the system  can shed some light. 34\% of the cases were identified as plausible. The next row, there is an example of the Unidentified fossil, and the key concepts that were utilized for its classification, including the leaf formation on the left, the paternary vein in the middle and the junction between the paternary vein and the secondary veins.  }
+    \includegraphics[width=0.9\linewidth]{Figures/Figure_2_v8.jpg}
+    \caption{On top the distribution of the responses from the expert paleo-botanist evaluators. Examples of unidentified fossils their top 5 predictions from the model and the concepts used by the model to make such predictions. For instance, we find the arrangement of secondary veins, the pattern of dentation, the honey-comb pattern  and the junction between paternary and secondary veins.   }
     \label{fig:system2}
 \end{figure}
 
+% \begin{figure}[ht!]
+%     \centering
+%     \includegraphics[width=\linewidth]{Figures/Figure_2_v7.jpg}
+%     \caption{On top the distribution of the responses from the expert paleo-botanist evaluators. 8.3\% are predictions that are not possible, due to the fossil configuration. The  28.2\% of the fossils  were not applicable, meaning that their images were not properly taken and key features may have left out, or multiple leafs were present. 29.5\% are predictions that the expert are not sure and may constitute valuable cases were the concepts discovered by the system  can shed some light. 34\% of the cases were identified as plausible. The next row, there is an example of the Unidentified fossil, and the key concepts that were utilized for its classification, including the leaf formation on the left, the paternary vein in the middle and the junction between the paternary vein and the secondary veins.  }
+%     \label{fig:system2}
+% \end{figure}
 
-Finally, we present the first machine-assisted classification of 1,723 fossil samples from the Florissant collection, encompassing specimens with previously unknown family labels or historical identifications no longer considered robust. The model's predictions and accompanying interpretability results were evaluated by two expert paleobotanists (P.W. and H.M.). Their assessment revealed that 485 specimens (28.2\%) were either severely degraded, belonged to fossil categories other than dicot leaves, or lacked sufficient morphological detail for reliable human identification; these samples were therefore excluded from further evaluation. Among the remaining 1,238 specimens, experts identified 585 classifications as intriguing and an additional 505 classifications as plausible, collectively representing promising candidates for detailed follow-up studies and offering new opportunities for paleobotanical research within the Florissant flora. The experts found the model's predictions to be implausible for only 143 specimens (approximately 12\%), highlighting the system's robustness and potential utility for assisting paleobotanical classification tasks.
+
+Finally, we present the first machine-assisted classification of 1,723 fossil samples from the Florissant collection, encompassing specimens with previously unknown family labels or historical identifications no longer considered robust. The model's predictions and accompanying interpretability results were evaluated by two expert paleobotanists (P.W. and H.M.). Their assessment revealed that 485 specimens (28.2\%) were either severely degraded, belonged to fossil categories other than dicot leaves, or lacked sufficient morphological detail for reliable human identification; these samples were therefore excluded from further evaluation. Among the remaining 1,238 specimens, experts identified 585 classifications as intriguing and an additional 505 classifications as plausible, collectively representing promising candidates for detailed follow-up studies and offering new opportunities for paleobotanical research within the Florissant flora. The experts found the model's predictions to be implausible for only 143 specimens (approximately 12\%), highlighting the system's robustness and potential utility for assisting paleobotanical classification tasks. Please find the extensive list of specimens in our website \footnote{\url{https://serre-lab.github.io/prj_fossil_unknown/}}.  
 
 
 
@@ -267,7 +274,11 @@ While our current model significantly advances the classification of previously 
 
 \section*{Methods}
 
-\subsection{Dataset}
+\subsection{Families selected for this study}
+
+The dataset used in this study comprises specimens from the following plant families: Acanthaceae, Achariaceae, Actinidiaceae, Altingiaceae, Amaranthaceae, Anacardiaceae, Annonaceae, Apiaceae, Apocynaceae, Aquifoliaceae, Araliaceae, Aristolochiaceae, Asteraceae, Atherospermataceae, Berberidaceae, Betulaceae, Bignoniaceae, Boraginaceae, Burseraceae, Buxaceae, Calophyllaceae, Calycanthaceae, Campanulaceae, Canellaceae, Cannabaceae, Capparaceae, Caprifoliaceae, Cardiopteridaceae, Celastraceae, Cercidiphyllaceae, Chloranthaceae, Chrysobalanaceae, Clusiaceae, Combretaceae, Connaraceae, Coriariaceae, Cornaceae, Crassulaceae, Cucurbitaceae, Cunoniaceae, Dilleniaceae, Dipterocarpaceae, Ebenaceae, Elaeagnaceae, Elaeocarpaceae, Ericaceae, Euphorbiaceae, Eupteleaceae, Fabaceae, Fagaceae, Flacourtiaceae, Garryaceae, Grossulariaceae, Hamamelidaceae, Icacinaceae, Iteaceae, Juglandaceae, Lauraceae, Lardizabalaceae, Lythraceae, Magnoliaceae, Malpighiaceae, Malvaceae, Melastomataceae, Meliaceae, Menispermaceae, Monimiaceae, Moraceae, Myristicaceae, Myrtaceae, Nyssaceae, Oleaceae, Papaveraceae, Passifloraceae, Phyllanthaceae, Pinaceae, Pittosporaceae, Platanaceae, Polygonaceae, Proteaceae, Rhamnaceae, Rhizophoraceae, Rosaceae, Rubiaceae, Rutaceae, Salicaceae, Sapindaceae, Sapotaceae, Saxifragaceae, Schisandraceae, Simaroubaceae, Smilacaceae, Solanaceae, Staphyleaceae, Stemonuraceae, Symplocaceae, Tapisciaceae, Theaceae, Thymelaeaceae, Trochodendraceae, Ulmaceae, Urticaceae, Vitaceae, Winteraceae, and Zingiberaceae.
+
+The families for which there were also Fossils samples available are: Anacardiaceae, Berberidaceae, Betulaceae, Fabaceae, Fagaceae, Juglandaceae, Lauraceae, Meliaceae, Myrtaceae, Rhamnaceae, Rosaceae, Salicaceae, Sapindaceae, Ulmaceae, Viburnaceae,  and Vitaceae. 
 
 \paragraph{Accuracy measures}
 We evaluate our method using two distinct scenarios to establish in-distribution (ID) and out-of-distribution (OOD) as upper and lower bounds on performance:
@@ -293,6 +304,8 @@ where \(b\) denotes batch size, \(D(\cdot)\) is a suitable distance metric, and 
 \end{equation}
 where \(\lambda\) controls the relative contribution of the triplet loss. To further enhance robustness, synthetic fossil images generated from extant leaves were introduced to augment families with limited or absent fossil data. This strategy reinforces both local (within-family) and global (cross-family) structure within the embedding space, significantly improving model generalization, especially for families lacking representative fossil samples.
 
+To quantitatively assess the effect of domain differences and the impact of our triplet loss, we analyzed the learned embedding space by measuring how closely samples from the same family cluster together, regardless of whether they are extant or fossil. Specifically, for each family, we computed the average Euclidean distance between embeddings of extant and fossil leaves within that family (i.e., the "inter-domain, intra-family" distance). We then compared these intra-family, inter-domain distances to the average distance between embeddings from different families ("inter-family" distances). To ensure comparability across families, we normalized the intra-family, inter-domain distances by the mean inter-family distance for each family. This normalization allows us to interpret the results as a relative measure: values less than one indicate that, on average, extant and fossil leaves from the same family are closer to each other in the embedding space than to leaves from other families. Our results show that, after applying the triplet loss, the normalized inter-domain, intra-family distances are substantially reduced. This demonstrates that the model learns to align fossil and extant leaves from the same family in the embedding space, effectively bridging the domain gap. In other words, the triplet loss encourages the network to focus on family-level morphological features that are consistent across domains, rather than domain-specific artifacts. This effect is also visually apparent in the UMAP projection of the embeddings (Fig.~\ref{fig:system}), where fossil and extant leaves from the same family form tight, overlapping clusters.
+
 \paragraph{Synthetic fossil generation}
 Let \(X\) denote the fossil domain and \(Y\) the extant (cleared leaves) domain. While these domains share morphological characteristics, their visual appearance often differs substantially due to preservation conditions, artifacts, and inherent variability in fossilization. Furthermore, many families represented in domain \(Y\) lack corresponding fossil examples in domain \(X\).
 
@@ -301,7 +314,12 @@ To bridge this domain gap, we adopted a generative image-to-image translation ap
     \item ``A cleared leaf of the family: \textless Family Name\textgreater''
     \item ``A fossilized leaf of the family: \textless Family Name\textgreater''
 \end{itemize}
-These text-based prompts guide ControlNet to generate synthetic images that preserve family-specific morphological features. We employed the triplet-loss regularizer described above to ensure consistent embedding representations of generated and real images within the same family across domains. Additionally, we applied the fine-tuned SAM model during synthetic image generation, ensuring that leaf shapes in synthetic images remain faithful to their input counterparts, thereby improving both visual realism and model generalization.
+These text-based prompts guide ControlNet to generate synthetic images that preserve family-specific morphological features. Importantly, the generative model (ControlNet) and the classifier are trained together in an end-to-end fashion, with the triplet-loss regularizer and classification loss applied jointly during training. This joint optimization ensures that the embeddings of both real and generated images are aligned within the same family across domains, and that the synthetic images produced are directly beneficial for the classification objective. At each training step, both the generator and classifier parameters are updated simultaneously, ensuring that synthetic fossil generation and classification performance are tightly coupled. The overall loss function is a weighted sum of the classification loss, the triplet loss, and the generative (ControlNet) loss, with all components optimized jointly during end-to-end training. Specifically,
+\begin{equation}
+    \mathcal{L}_{total} = \mathcal{L}_{crossentropy} + \lambda_{triplet} \mathcal{L}_{triplet} + \lambda_{gen} \mathcal{L}_{gen}
+\end{equation}
+where $\mathcal{L}_{crossentropy}$ is the standard classification loss, $\mathcal{L}_{triplet}$ is the triplet loss as defined above, $\mathcal{L}_{gen}$ is the generative loss for ControlNet, and $\lambda_{triplet}$ and $\lambda_{gen}$ are weighting coefficients for the triplet and generative losses, respectively.
+Additionally, we applied the fine-tuned SAM model during synthetic image generation, ensuring that leaf shapes in synthetic images remain faithful to their input counterparts, thereby improving both visual realism and model generalization.
 
 
 % \paragraph{Concept Extraction}  
@@ -456,30 +474,29 @@ P.W. and T.S. conceptualized and supervised the research. I.F.R., M.V., T.F., an
 
 \section*{Competing Interests}
 None
-	
-\clearpage
 
-\begin{appendices}
+
+\begin{oldappendices}
 \section*{Supplementary Information}
 
 \subsection*{Shortcut Removal via SAM}
 We conducted a qualitative evaluation of the attribution maps generated by our Baseline and Segmented models using RISE (Randomized Input Sampling for Explanation) ~\citep{RISE2018} and GradCAM (Gradient-weighted Class Activation Mapping) ~\citep{Selvaraju_2019}. These methods were implemented using the Xplique Toolbox ~\citep{fel2022xplique}, developed in our lab. Our findings indicate that the attribution maps of the Segmented model, trained with segmentation, predominantly focus on the leaf regions within the image, demonstrating alignment with relevant features. In contrast, the Baseline model exhibited attribution patterns that relied on spurious shortcuts, such as text and rulers present in the images, as illustrated in Figure~\ref{fig:system2} and ~\ref{fig:system3}.
 
-\begin{figure}[t]
+\begin{figure}[ht!]
     \centering
-    \includegraphics[width=\linewidth]{Figures/Figure_4_v1.jpg}
-    \caption{Attribution map generated using Grad-Cam showing before and after segmentation. For each sample , you will find on the left, attributions when no segmentation is performed, showing that the model relies on non leaf features to classify. On the right you will find same sample , but attribution maps from the model trained on segmented leafs.}
-    \label{fig:attribution_maps}
+    \includegraphics[width=0.6\linewidth]{Figures/SI_Gradcam.jpg}
+    \includegraphics[width=0.6\linewidth]{SI_Gradcam2.jpg}
+    \caption{Attribution map generated using Grad-Cam showing before and after segmentation. For each sample , you will find on the left, attributions when no segmentation is performed, showing that the model relies on non leaf features to classify. On the right you will find same sample , but attribution maps from the model trained on segmented leafs.}\label{fig:attribution_maps}
 \end{figure}
 
-
-\subsection*{System}
-
-\begin{figure}[t]
+\clearpage
+\subsection{System}
+Illustration of the system modules. 
+\begin{figure}[ht!]
     \centering
     \includegraphics[width=\linewidth]{Figures/Figure_5_v2.jpg}
      \caption{Illustration of the System. On the left top a represenation of the Leaves domain dataset, we have 142 families. We use them as input of the Controlnet to create synthetic fossils. On the bottom we see a representation of the Fossil dataset, we only have 16 families, but we complete the rest of 142 by using this generative approach. In the middle find the details for the cllasification architecture and the ControlNet prompting approach. Finally, on the right, find the sampling procedure for the triplet calculation, cross-domain and same-domain, taking the furthest positive to bring closer to the anchor and the closest negative to push from the anchor. Finally, right bottom, there is the cycle consistent approach illustration, we take a sample, use controlnet to create a synthetic fossil, then from that fossil we create a synthetic leave that aims fo be as close as possible to the original sample. }
-    \label{fig:enter-label}
+\label{fig:SI_Full_system}
 \end{figure}
 % \begin{figure}[ht!]
 
@@ -489,7 +506,7 @@ We conducted a qualitative evaluation of the attribution maps generated by our B
 %     \label{fig:attribution_maps}
 % \end{figure}
 
-
+\clearpage
 \subsection*{Results of BeIT}
 We also studied BeIT architecture, however the result shows slightly lower performance than the Resnet101 presented in the main thex. See  Table~\ref{tab:beit} summarizes the Top-5 accuracy For these results :
 \begin{table}[ht!]
@@ -515,11 +532,31 @@ Segmented                                                     & 6.21\% & 65.1\% 
 \label{tab:beit}
 \end{table}
 
-\subsection*{Details for Training the cycle-control-Net}
+\subsection{Details for Training the cycle-control-Net}
 We use a Large Memory IBM Node with 4 V100 GPUS and 1tB of RAM with fast interconnect between RAM and GPU. One GPU was exclusively hosting the SAM model trained for image silhouette detection, while the other three hosted the Control Net running on stable difussion 2.1.  The Batch size was 64 with a total resolution of 512x512. 
-\end{appendices}
+
+\subsection*{Additional Concepts}
+Find Examples of more concepts that our model finds below, and please Please visit our website \footnote{\url{https://fel-thomas.github.io/Leaf-Lens/classes/Salicaceae/}} for an exhaustive list of concepts.  
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{Figures/SI_6A.jpg}
+    
+    \caption{Examples of more concepts used by the model. }
+    % Footnote moved outside caption
+
+\label{fig:SI_concepts}
+\end{figure}
 
 
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{Figures/SI_6B.jpg}
+    
+    \caption{Additional examples  of concepts used by the model.}
+    % Footnote moved outside caption
+
+\label{fig:SI_concepts}
+\end{figure}
 
 % \bibliographystyle{sn-mathphys}
 % \bibliography{sn-bibliography}% common bib file
@@ -527,5 +564,5 @@ We use a Large Memory IBM Node with 4 V100 GPUS and 1tB of RAM with fast interco
 %% if required, the content of .bbl file can be included here once bbl is generated
 %%\input sn-article.bbl
 
-
+\end{oldappendices}
 \end{document}
