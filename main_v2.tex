@@ -109,7 +109,7 @@
 
 \author[3]{\fnm{Herbert} \sur{Meyer}}
 
-\author*[4]{\fnm{Peter} \sur{Wilf}}\email{pwilf@psu.edu}
+\author[4]{\fnm{Peter} \sur{Wilf}}
 
 \author*[1]{\fnm{Thomas} \sur{Serre}}\email{thomas\_serre@brown.edu}
 
@@ -137,7 +137,7 @@ By overcoming data scarcity through generative AI and representational learning 
 \section*{Introduction}
 Isolated leaves dominate the angiosperm fossil record yet remain notoriously difficult to identify accurately, representing paleobotany’s largely untapped source of “dark data”~\cite{Dilcher_1971}. Historical literature is riddled with botanically incorrect identifications due to the inherent complexity of leaf morphology, insufficient vetted reference samples, and considerable variation within and across fossil sites. Consequently, most well-identified fossil leaves represent a handful of morphologically distinctive families that are well-represented in the literature, leaving the vast majority of angiosperm diversity in the fossil record unrecognized ~\cite{Hickey1975, Wilf2008FossilLeaves}.  Accurate fossil leaf classification is crucial because leaf fossils provide essential data for evolutionary radiations and extinctions, biome evolution, plant–animal interactions, biogeography, and biotic responses to climate change~\cite{Giraldo2025, Hickey1977, Johnson1989, Kooyman2014, Wing2005}. The family level, targeted here, is the traditional first step for most extant and especially fossil plant identifications because nearly all plant fossils represent extinct species and many belong to extinct genera.
 
-Artificial intelligence (AI) shows promise for automated classification of plants and palynomorphs~\cite{plantclassificationGunjal2024,machinelearningspecies,Adaime2024}, but faces the same bottlenecks as human experts: small labeled sample sizes and strong site-to-site taphonomic variation. To control these factors, we focus on the late Eocene Florissant flora of Colorado, a uniquely well-documented lacustrine assemblage~\cite{Harding2000} rooted in MacGinitie’s monograph~\cite{mcginitie1953fossil} and subsequent revisions~\cite{manchester1983fagopsis,Manchester2001Florissant,Jia2014Cercis,Herendeen2019Arcoa}. From Meyer’s public digital archive~\cite{florissant}, recently recompiled with cleared, X-rayed, and fossil leaves~\cite{Wilf2024LeafDatasetV2}, we extracted 3{,}200 vetted Florissant leaves spanning 23 families (16 families with ≥5 specimens). A further  1{,}723 unvetted   Florissant specimens that lack confident family assignment under modern standards, were used as test to check validity of the predictions from our model. 
+Artificial intelligence (AI) shows promise for automated classification of plants and palynomorphs~\cite{plantclassificationGunjal2024,machinelearningspecies,Adaime2024}, but faces the same bottlenecks as human experts: small labeled sample sizes and strong site-to-site taphonomic variation. To control these factors, we focus on the late Eocene Florissant flora of Colorado, a uniquely well-documented lacustrine assemblage~\cite{Harding2000} rooted in MacGinitie’s monograph~\cite{mcginitie1953fossil} and subsequent revisions~\cite{manchester1983fagopsis,Manchester2001Florissant,Jia2014Cercis,Herendeen2019Arcoa}. From Meyer’s public digital archive~\cite{florissant}, recently recompiled with cleared, X-rayed, and fossil leaves~\cite{Wilf2024LeafDatasetV2}, we extracted 3{,}200 vetted Florissant leaves spanning 23 families (16 families with $\greq 5$ specimens). A further  1{,}723 unvetted   Florissant specimens that lack confident family assignment under modern standards, were used as test to check validity of the predictions from our model. 
 
 We focused on the late Eocene Florissant flora of Colorado, one of the best understood Cenozoic fossil plant assemblages, preserved under relatively consistent lacustrine conditions ~\cite{Harding2000} that yielded a large suite of visually similar rock matrix and leaf impressions. The Florissant flora  was systematically described in MacGinitie's seminal 1953 monograph~\cite{mcginitie1953fossil} and has been expanded and revised ever since \cite{manchester1983fagopsis,Manchester2001Florissant,Jia2014Cercis,Herendeen2019Arcoa}. Meyer's digital archive~\cite{florissant} comprises thousands of specimens and represents one of the earliest large-scale paleobotanical image datasets available online. From this resource, recently recompiled \citep{Wilf2024LeafDatasetV2} as part of an openly accessible compilation of fossil, cleared, and X-rayed leaves now totaling 34,368 leaf images~\cite{Wilf2024LeafDatasetV2}, we extracted 3,200 vetted Florissant leaves covering 23 plant families, including 16 families with at least five specimens each. These vetted fossils were selected from a larger Florissant dataset containing over 1,723 additional specimens that could not be confidently assigned to the family level under modern standards. 
 
@@ -197,7 +197,7 @@ High-performing AI models often function as black boxes, making the rationale be
 \begin{figure}
     \centering
     \includegraphics[width=1\linewidth]{Figures/Figure_5_features.png}
-    \caption{Sample of high level features used by the model to perform classification. Note the dentation patterns and venation patterns, that are characteristic of different families.}
+    \caption{Sample of high-level features used by the model to perform classification. Note the dentation patterns and venation patterns that are characteristic of different families.}
     \label{fig:high_level_features}
 \end{figure}
 
@@ -251,7 +251,7 @@ Finally, we present the first machine-assisted classification of 1,723 fossil sa
 \section*{Conclusion}
 We present a robust framework that advance one of paleobotany’s central challenges—accurate identification of fossil angiosperm leaves—and, importantly, ongoing cross-domain training and refinement promise broader applicability across diverse fossil sites, substantially extending its scientific impact. By harnessing modern generative AI to synthesize realistic fossil images from extant leaf data, our system attains high identification F1-scores even for families lacking fossil training examples. Using state-of-the-art interpretability methods, it also surfaces botanically meaningful cues by visually summarizing subtle morphological features that define families across fossil and extant specimens, suggesting new diagnostic characters.
 
-Although our current model substantially improves classification of previously unknown Florissant fossils, the same cross-domain strategy is readily generalizable to other deposits, positioning this approach for broad use. In the near term, it offers paleobotanists a practical, interpretable tool to reduce longstanding uncertainties in Florissant flora identifications and, more broadly, to advance our understanding of the evolution and ecological dynamics of ancient terrestrial ecosystems.
+Although our current model substantially improves the classification of previously unknown Florissant fossils, the same cross-domain strategy is readily generalizable to other deposits, positioning this approach for broad use. In the near term, it offers paleobotanists a practical, interpretable tool to reduce longstanding uncertainties in Florissant flora identifications and, more broadly, to advance our understanding of the evolution and ecological dynamics of ancient terrestrial ecosystems.
 
 
 % In summary, We worked around the sample size limitations by successfully using synthetic fossils, resulting in correct identifications for families even when no fossil training data were available.
@@ -344,7 +344,7 @@ Specifically,
     \mathcal{L}_{total} = \mathcal{L}_{classif} + \lambda_{trip} \mathcal{L}_{trip} + \lambda_{gen} \mathcal{L}_{gen}
 \end{equation}
 where $\mathcal{L}_{classif}$ is the standard classification loss, $\mathcal{L}_{triplet}$ is the triplet loss as defined above, $\mathcal{L}_{gen}$ is the generative loss for ControlNet, and $\lambda_{triplet}$ and $\lambda_{gen}$ are weighting coefficients for the triplet and generative losses, respectively.
-Additionally, we applied the fine-tuned SAM model during synthetic image generation, ensuring that leaf shapes in synthetic images remain faithful to their input counterparts, thereby improving both visual realism and model generalization, please find details for training in (SI: Details for training) . 
+Additionally, we applied the fine-tuned SAM model during synthetic image generation, ensuring that leaf shapes in synthetic images remain faithful to their input counterparts, thereby improving both visual realism and model generalization. Please find details for training in (SI: Details for training) . 
 
 
 
@@ -415,11 +415,12 @@ Combined, spatial activation maps and synthetic prototypes provide complementary
 
 \bibliography{sn-bibliography,xai,dictionary_learning}
 
-\section*{Acknowledgments}
 
 
 \section*{Funding sources and technical assistance}
-This work was funded by an NSF FRES grant (EAR-1925481 to T.S. and EAR-1925755 to P.W.). We thank Jacob Rose for technical assistance. Computing support was provided by the Center for Computation and Visualization (CCV) (via NIH Office of the Director grant S10OD025181). We also acknowledge the Cloud TPU hardware resources that Google graciously makes available via the TensorFlow Research Cloud (TFRC) program. We thank Edward Spagnuolo, Teng-Xiang Wang, L. Alejandro Giraldo, and Steven Manchester for helpful discussions on the paleobotanical aspects of this work. Many thanks to Yuxian Wang who developed the gradio app that will help to host the models and allow people around the world to test our system in their samples. Also Paula Vargas who helped in final editing of the figures of this paper. 
+Yuxian Wang developed the gradio demo app. Paula Vargas provided assistance with the final figure editing, and Jacob Rose with the initial curation of the image datasets. We thank Edward Spagnuolo, Teng-Xiang Wang, L. Alejandro Giraldo, and Steven Manchester for helpful discussions on the paleobotanical aspects of this work. 
+
+This work was funded by an NSF FRES grant (EAR-1925481 to T.S. and EAR-1925755 to P.W.).  Computing support was provided by the Center for Computation and Visualization (CCV) (via NIH Office of the Director grant S10OD025181). We also acknowledge the Cloud TPU hardware resources that Google graciously makes available via the TensorFlow Research Cloud (TFRC) program. 
 
 \section*{Author Contributions}
 
