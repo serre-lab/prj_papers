@@ -1,0 +1,29 @@
+# LaTeX intermediate files
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.backup
+*.bak
+*.old
+
+# Temporary files
+*.swp
+*.tmp
+*~
+
+# Compiled PDFs (optional - uncomment if you want to ignore PDFs)
+# *.pdf
