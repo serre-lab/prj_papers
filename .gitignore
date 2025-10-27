@@ -26,4 +26,4 @@ Thumbs.db
 *~
 
 # Compiled PDFs (optional - uncomment if you want to ignore PDFs)
-# *.pdf
+*.pdf
