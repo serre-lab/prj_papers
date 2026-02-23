@@ -1,0 +1,15 @@
+diff --git a/main.tex b/main.tex
+--- a/main.tex
++++ b/main.tex
+@@
+-HMAX extends the Hubel--Wiesel pooling motif by assuming an additional organization across scale (often conceptualized as size or spatial-frequency channels), so that pooling can be local in both space and scale and progressively build size tolerance.
++HMAX extends the Hubel--Wiesel pooling motif by assuming an additional organization across scale (often conceptualized as size or spatial-frequency channels), closely related to classical scale-space theory \\citep{Witkin1983,Koenderink1984,Lindeberg1994,Lindeberg1998}, so that pooling can be local in both space and scale and progressively build size tolerance.
+@@
+-explicitly rescaled to different sizes. Motivated by Gaussian scale-space theory, we sample scales
++explicitly rescaled to different sizes. Motivated by Gaussian scale-space theory \\citep{Witkin1983,Koenderink1984,Lindeberg1994,Lindeberg1998}, we sample scales
+@@
+-This contrast is informative because standard CNNs do not include an explicit scale axis with local pooling; any size tolerance must be discovered through optimization and the training distribution.
++This contrast is informative because standard CNNs do not include an explicit scale axis with local pooling; any size tolerance must be discovered through optimization and the examples provided during training.
+@@
+-Modern convolutional networks typically achieve scale tolerance through extensive data augmentation, yielding high in-distribution accuracy but brittle extrapolation beyond the training range \\citep{Azulay2019why,Han2020}.
++Modern convolutional networks can recognize trained categories across a range of sizes, often aided by scale augmentation, but this tolerance is not enforced by a local pooling circuit across a scale axis and can transfer poorly to novel categories \\citep{Azulay2019why,Han2020}.

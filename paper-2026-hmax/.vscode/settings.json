@@ -1,0 +1,77 @@
+{
+  // LaTeX Workshop configuration for SyncTeX forward/inverse search
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "tectonic",
+      "tools": [
+        "tectonic"
+      ]
+    }
+  ],
+  "latex-workshop.latex.tools": [
+    {
+      "name": "tectonic",
+      "command": "tectonic",
+      "args": [
+        "--synctex",
+        "%DOC%.tex"
+      ],
+      "env": {}
+    }
+  ],
+  
+  // Enable SyncTeX
+  "latex-workshop.synctex.afterBuild.enabled": true,
+  "latex-workshop.synctex.path": "synctex",
+  
+  // PDF viewer: Use internal viewer (required for inverse search)
+  // IMPORTANT: Set to "tab" to use VS Code's internal PDF viewer
+  "latex-workshop.view.pdf.viewer": "tab",
+  
+  // Enable SyncTeX in internal viewer
+  "latex-workshop.view.pdf.internal.synctex": true,
+  "latex-workshop.view.pdf.internal.scrollMode": 0,
+  
+  // Forward search (source → PDF): Cmd+Option+J (Mac)
+  // Note: LaTeX Workshop uses "ctrl-alt-j" format for both Mac and Windows
+  // On Mac, this translates to Cmd+Option+J automatically
+  "latex-workshop.view.pdf.internal.synctex.fromeditor.keybinding": "ctrl-alt-j",
+  
+  // Inverse search (PDF → source): Cmd+Click (Mac) or Ctrl+Click (Windows/Linux)
+  // Click anywhere in the PDF viewer to jump to corresponding source line
+  // This works automatically when using the internal viewer ("tab" mode)
+  
+  // Disable external viewer to ensure PDF opens in VS Code
+  "latex-workshop.view.pdf.external.viewer.command": "",
+  "latex-workshop.view.pdf.external.viewer.args": [],
+  
+  // Auto-build on save
+  "latex-workshop.latex.autoBuild.run": "onSave",
+  
+  // Clean up auxiliary files
+  "latex-workshop.latex.autoClean.run": "onBuilt",
+  "latex-workshop.latex.clean.fileTypes": [
+    "*.aux",
+    "*.bbl",
+    "*.blg",
+    "*.idx",
+    "*.ind",
+    "*.lof",
+    "*.lot",
+    "*.out",
+    "*.toc",
+    "*.acn",
+    "*.acr",
+    "*.alg",
+    "*.glg",
+    "*.glo",
+    "*.gls",
+    "*.fls",
+    "*.log",
+    "*.fdb_latexmk",
+    "*.snm",
+    "*.nav",
+    "*.synctex.gz"
+  ]
+}
+

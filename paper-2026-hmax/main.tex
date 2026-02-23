@@ -1,0 +1,655 @@
+%%=============================================================%%
+%% Nature Neuroscience submission (FINAL CANONICAL VERSION)
+%%=============================================================%%
+\documentclass[pdflatex,sn-nature]{sn-jnl}
+
+\usepackage{graphicx}%
+\usepackage{multirow}%
+\usepackage{amsmath,amssymb,amsfonts}%
+\usepackage{amsthm}%
+\usepackage{mathrsfs}%
+\usepackage[title]{appendix}%
+\usepackage{xcolor}%
+% ===================
+% Drafting helpers (remove or disable before final submission)
+% ===================
+\newcommand{\FILL}[1]{\textcolor{red}{\textbf{[FILL: #1]}}}
+\newcommand{\CHECK}[1]{\textcolor{red}{\textbf{[CHECK: #1]}}}
+\newcommand{\CITEHERE}{\textcolor{red}{\textbf{[CITE]}}}
+\newcommand{\VERIFY}[1]{\textcolor{red}{\textbf{[VERIFY: #1]}}}
+
+\usepackage{textcomp}%
+\usepackage{manyfoot}%
+\usepackage{booktabs}%
+\usepackage{algorithm}%
+\usepackage{algorithmicx}%
+\usepackage{algpseudocode}%
+\usepackage{listings}%
+\usepackage{float}%
+
+\raggedbottom
+\unnumbered
+
+%%---------------- Compile-safe figures ----------------%%
+\newcommand{\safeincludegraphics}[2][]{%
+  \IfFileExists{#2}{\includegraphics[#1]{#2}}{%
+    \fbox{\parbox{0.9\linewidth}{\textbf{Missing figure file:} \texttt{#2}}}%
+  }%
+}
+
+%%=============================================================%%
+%% Title
+%%=============================================================%%
+\title[Beyond neural predictivity]{Beyond neural predictivity: Scale tolerance as a mechanistic test of ventral-stream models}
+
+%%=============================================================%%
+%% Authors
+%%=============================================================%%
+\author[1]{\fnm{Iv\'an Felipe} \sur{Rodr\'iguez}}
+\equalcont{These authors contributed equally to this work.}
+
+\author[1]{\fnm{Xizheng} \sur{Yu}}
+\equalcont{These authors contributed equally to this work.}
+
+\author[1]{\fnm{Nishka} \sur{Pant}}
+\author[1]{\fnm{Jacob} \sur{Mulliken}}
+\author*[1]{\fnm{Thomas} \sur{Serre}}\email{thomas\_serre@brown.edu}
+
+\affil[1]{\orgdiv{Department of Cognitive \& Psychological Sciences},
+\orgname{Brown University},
+\orgaddress{\street{190 Thayer Street}, \city{Providence},
+\postcode{02912}, \state{RI}, \country{USA}}}
+
+
+%%=============================================================%%
+%% Abstract
+%%=============================================================%%
+\abstract{
+How the primate ventral stream builds invariant object representations remains a central problem. Task-optimized deep networks can achieve strong recognition and high neural predictivity on standard benchmarks, yet predictive scores alone do not specify mechanism. We probe retinal-size tolerance as a mechanistic test. After large-scale categorization training, an HMAX-family model that assumes a scale-space organization enabling local Hubel--Wiesel pooling builds size tolerance gradually and transfers it to novel categories. On neuroscience probes, it matches human cross-size generalization for novel objects, preserves macaque IT predictivity under scale-split mapping, and captures V4-like scale-normalized curvature coding. Performance-matched CNNs, which must learn tolerance from data without an explicit scale-pooling circuit, fail these tests despite similar benchmark accuracy and standard predictivity. These results show that purely data-driven predictive benchmarks can mask mechanistic mismatches, motivating targeted perturbation tests when using models as explanations of cortical computation.
+}
+
+%%=============================================================%%
+\begin{document}
+% Exclude main manuscript sections from table of contents
+\addtocontents{toc}{\protect\setcounter{tocdepth}{-1}}
+\maketitle
+%%=============================================================%%
+
+%%=============================================================%%
+%% Introduction
+%%=============================================================%%
+\section{Introduction}
+A central goal of systems neuroscience is to explain how the primate ventral visual stream transforms retinal inputs into representations that support rapid, transformation-tolerant object recognition. Modern task-optimized deep networks can achieve strong benchmark accuracy and high neural predictivity on standard datasets, but predictive scores alone do not determine mechanism: distinct computations can yield similar stimulus--response alignment. This motivates diagnostic tests that target specific computations thought to underlie cortical processing.
+
+Here we use 
+\emph{retinal scale tolerance}---the ability to preserve object identity across changes in retinal size---as a mechanistic probe of ventral-stream models. Humans can generalize across large size changes after minimal exposure \citep{Han2020}, and ventral-stream neurons exhibit tolerant codes that remain stable across changes in size \citep{Logothetis1995,DiCarlo2012}, including curvature tuning in area V4 \citep{ElShamayleh2016Curvature}. These signatures provide constraints that go beyond single operating-point accuracy or predictivity.
+
+Classic work by Hubel and Wiesel established a foundational computational motif for early vision: receptive fields increase in complexity and tolerance through alternating stages of selectivity and pooling \citep{HubelWiesel1962}. In this view, tolerance can be constructed from \emph{local} pooling operations when the relevant stimulus dimension is organized topographically. Retinotopy provides such an organization for position (and phase) and motivates repeated local circuits in V1 \citep{HubelWiesel1977}. Multiple studies also report systematic organization of spatial-frequency preference in primate V1 and extrastriate cortex \citep{Tootell1988SF,Nauhaus2012,LuRoe2007,Lu2018V1V4,Zhang2023SFV2V4}. HMAX extends the Hubel--Wiesel pooling motif by positing an additional organization across scale---often conceptualized as a size or spatial-frequency axis---closely related to classical scale-space theory \citep{Witkin1983,Koenderink1984,Lindeberg1994,Lindeberg1998}. A complementary normative perspective derives families of early receptive fields from scale-space axioms and covariance requirements, providing theoretical support for representing images over an explicit scale parameter \citep{Lindeberg2013}.
+
+A strong empirical motivation for quantitative models of tolerance-building came from the paperclip experiments of Logothetis and colleagues \citep{Logothetis1995}. Monkeys trained to recognize novel three-dimensional objects exhibited IT neurons that were selective for object identity and view, yet tolerant to changes in retinal position and scale. Substantial scale tolerance was observed despite fixed viewing distance during training, suggesting that tolerance to common two-dimensional transformations is not learned anew for each object but instead relies on largely generic computations \citep{LogothetisSheinberg1996}. Riesenhuber and Poggio's HMAX model was explicitly designed to account for these properties \citep{RiesenhuberPoggio1999}. It instantiates a feedforward hierarchy of alternating simple (S) and complex (C) stages, where selectivity increases through template matching while tolerance emerges through pooling over afferent units with similar tuning. In this framework, generic invariance is built gradually through cascaded local pooling in space and (under an explicit scale-space organization) in scale \citep{SerreRiesenhuber2004}. A key prediction---that complex cells implement a max-like pooling operation---was later supported by intracellular recordings showing that complex-cell responses are well described by max-like nonlinearities over simple-cell inputs \citep{Lampl2004}.
+
+In parallel, deep learning for vision has advanced rapidly through large-scale supervised training and engineering-driven refinements---deeper hierarchies stabilized by skip connections and normalization, improved optimization and regularization, and feature aggregation across spatial scales---optimized end-to-end for benchmark recognition tasks (reviewed in \citep{Serre2019GoodBadUgly}). This progress helped establish a goal-driven modeling strategy: optimize a model to solve an ethologically relevant recognition task and then test its internal representations against neural measurements. Seminal work showed that task-optimized networks can predict responses in macaque IT and V4, often outperforming earlier biologically inspired models \citep{Yamins2014,Cadieu2014}, and this relationship was later formalized in standardized benchmarks such as Brain-Score \citep{Schrimpf2020-az}.
+
+Critically, however, most modern convolutional networks are developed with few explicit neurophysiological constraints beyond convolution and local spatial pooling; invariances such as scale tolerance are therefore induced by task optimization on the available training examples. Empirically, convolution and pooling alone do not guarantee broad translation or scale tolerance: invariance can increase with depth but remains incomplete and strongly dependent on architecture, training objectives, and augmentation \citep{Goodfellow2009,Azulay2019why,BiscioneBowers2021,Graziani2021,Cui2020}. Thus, a model can be accurate and neurally predictive at a reference operating point while still implementing a transformation code that differs from the ventral stream.
+
+Here we test whether scale tolerance can serve as a targeted diagnostic for ventral-stream models at contemporary performance levels. We systematically modernize the HMAX framework while preserving its tolerance-building organization and compare it to standard convolutional networks matched for large-scale recognition performance. We then evaluate whether scale tolerance generalizes to novel categories, whether it matches human cross-size generalization under one-shot conditions, whether neural predictivity is preserved under a \emph{scale-split} perturbation of the mapping regime, and whether intermediate representations reproduce a physiological signature of V4 scale-normalized curvature coding.
+
+
+%%=============================================================%%
+%% Results
+%%=============================================================%%
+\section{Results}
+
+We asked whether models that achieve comparable task performance and conventional neural predictivity nevertheless differ in how they construct invariant visual representations. We used large-scale object recognition both to train these models and to match their overall performance, then probed whether the resulting representations generalize scale tolerance to unfamiliar objects. We compared modernized HMAX-family models and standard convolutional networks across four analyses: (i) large-scale recognition performance, (ii) generalization across retinal size when test objects differ from those used to train the model, (iii) human cross-size discrimination after minimal exposure, and (iv) neural alignment and physiological signatures along the primate ventral stream.
+
+\subsection{Modernizing a ventral-stream architecture preserves object recognition performance}
+
+A common concern regarding biologically grounded models is that architectural commitments may limit performance on large-scale recognition tasks. To test this directly, we progressively modernized the HMAX architecture to operate in a contemporary performance regime while preserving its core tolerance-building organization. These updates included replacing fixed feature extractors with learnable convolutional filters, increasing depth via residual connections, and enabling end-to-end optimization.
+
+Across this progression, each modernization step yielded systematic gains in ImageNet top-1 accuracy (Figure~\ref{fig:hmax_progression}). The final model achieved performance comparable to widely used convolutional architectures in this regime. Importantly, these gains were obtained without abandoning explicit multi-scale processing or hierarchical tolerance-building, establishing that ventral-stream–inspired model families are not intrinsically confined to low-performance regimes. This provides a controlled basis for comparing invariance at similar levels of task accuracy.
+
+\begin{figure}
+\centering
+\safeincludegraphics[width=\linewidth]{figures/scale_invariance_imagenet_changes.jpg}
+\caption{Architectural progression of HMAX variants and ImageNet performance.}
+\label{fig:hmax_progression}
+\end{figure}
+
+\subsection{Models differ in how they generalize across retinal scale}
+
+We next examined whether performance-matched models differ in their ability to generalize across changes in retinal object size. To isolate intrinsic scale tolerance from effects of augmentation, models were trained at a single reference scale and evaluated across a range of test scales spanning approximately one octave.
+
+Under this off-reference evaluation, standard convolutional networks showed pronounced degradation as test scale deviated from the training scale (Figure~\ref{fig:imagenet_scale_curve}). In contrast, modernized HMAX-family models maintained stable performance across the same range. This difference persisted despite comparable accuracy at the reference scale, indicating that it is not explained by overall task difficulty or underfitting.
+
+Consistent with prior work, these results do not imply that convolutional networks lack scale tolerance altogether, but rather that such tolerance is typically restricted to the range of transformations represented in the training data and does not generalize reliably beyond that range \citep{BiscioneBowers2021,Graziani2021}.
+
+\begin{figure}
+\centering
+\safeincludegraphics[width=\linewidth]{figures_new/sup_scale_invariance_line_plot.png}
+\caption{ImageNet scale generalization across seven test scales.}
+\label{fig:imagenet_scale_curve}
+\end{figure}
+
+\subsection{Human-like one-shot generalization distinguishes model families}
+
+To assess whether the differences observed above extend to regimes relevant for perception, we evaluated models on a one-shot discrimination task using unfamiliar Hangul characters. This paradigm probes generalization of identity across large size changes after minimal exposure, a hallmark of human visual recognition.
+
+Modernized HMAX-family models matched human performance under out-of-distribution scale conditions, whereas standard convolutional networks showed marked declines despite strong in-distribution performance (Figure~\ref{fig:hangul}). This dissociation mirrors the ImageNet scale generalization results and demonstrates that differences in scale tolerance manifest not only in large-scale classification benchmarks but also in controlled behavioral paradigms that approximate human perceptual demands.
+
+\begin{figure}
+\centering
+\safeincludegraphics[width=\linewidth]{figures_new/fig3_accuracy_plot.png}
+\caption{One-shot Hangul discrimination across scale.}
+\label{fig:hangul}
+\end{figure}
+
+\subsection{Neural predictivity diverges under scale perturbation}
+
+We next asked whether differences in scale tolerance are reflected in alignment with neural responses in inferotemporal cortex. Using the Brain-Score framework, we first confirmed that modernized HMAX models and standard convolutional networks can achieve comparable neural predictivity under conventional evaluation protocols.
+
+We then applied a \emph{scale-split} analysis as a diagnostic probe of generalization beyond the regime used to fit neural mappings (rather than as a new benchmark): mappings were fit at a reference scale and evaluated on stimuli at unseen scales. Under this procedure, a clear divergence emerged (Figure~\ref{fig:brainscore_scalesplit}). Neural predictivity of standard convolutional networks declined substantially under scale shifts, whereas modernized HMAX models preserved alignment across scale. Notably, this divergence was not apparent under standard evaluation, indicating that single-operating-point predictivity can obscure differences in how models represent identity-preserving transformations.
+
+\begin{figure}
+\centering
+\safeincludegraphics[width=\linewidth]{figures/Brainscore_scale_results.jpg}
+\caption{Brain-Score performance under scale variation.}
+\label{fig:brainscore_scalesplit}
+\end{figure}
+
+\subsection{Intermediate representations capture a physiological signature of V4 invariance}
+
+Finally, we tested whether architectural differences in scale tolerance are reflected at intermediate stages of processing. We replicated a classic electrophysiological paradigm demonstrating that neurons in macaque area V4 encode contour curvature in a scale-normalized manner, maintaining tuning stability across changes in retinal size \citep{ElShamayleh2016Curvature}.
+
+Intermediate layers of the modernized HMAX hierarchy reproduced normalized curvature tuning consistent with macaque V4, whereas no layer in standard convolutional networks exhibited comparable stability, even when selecting the best-matching layer post hoc (Table~\ref{tab:pasupathy_scores}). This result links differences observed at the behavioral and benchmark levels to differences in how intermediate representations encode shape information across scale.
+
+\begin{table}
+\centering
+\begin{tabular}{llccc}
+\toprule
+Model & Layer & Invariance Score & MC $\chi^2$ & $p$ \\
+\midrule
+HMAX 3.0 & C2 & 0.080 & 8.58 & 0.21 \\
+AlexNet & Best & 0.609 & 26.76 & 0.0004 \\
+ResNet-18 & Best & 0.754 & 31.82 & $<0.001$ \\
+\bottomrule
+\end{tabular}
+\caption{Replication of scale-normalized curvature tuning in macaque V4.}
+\label{tab:pasupathy_scores}
+\end{table}
+
+%%=============================================================%%
+%% Methods
+%%=============================================================%%
+\section{Methods}
+
+
+\paragraph{Reproducibility and implementation details.}
+For complete reproducibility, we provide the full set of architectural specifications, training hyperparameters, augmentation policies, and evaluation protocols in Supplementary Section~\ref{sec:sup_repro}.
+\FILL{Fill Supplementary Section~\ref{sec:sup_repro} with the exact settings used for all results reported in this manuscript.}
+
+Our goal was to test how different modeling approaches construct invariant visual representations when models are scaled to contemporary performance regimes. To this end, we compared modernized HMAX-family architectures to standard convolutional neural networks under matched evaluation protocols that probe object recognition performance, out-of-distribution generalization across scale, and alignment with neural and physiological data from the primate ventral stream.
+
+\subsection{Model architectures}
+
+We evaluated a family of progressively modernized HMAX architectures alongside standard convolutional baselines (e.g., AlexNet- and ResNet-style models). The HMAX-family models preserve the core organizational principles of the original framework: explicit multi-scale processing, alternating stages of feature selectivity and pooling, and progressive construction of tolerance across a hierarchical feedforward pathway. 
+
+To operate in a modern performance regime, HMAX architectures were updated with learnable convolutional filters, residual connections, and end-to-end optimization. Fixed Gabor filters were replaced with trainable convolutional kernels, and deeper hierarchies were enabled via residual connections while preserving the simple/complex (S/C) structure. Explicit scale channels were implemented using dense sampling of image scale, and scale information was integrated hierarchically through differentiable pooling operations rather than hard max selection. These design choices allow the model to remain trainable at scale while retaining a ventral-stream--like organization.
+
+Standard convolutional networks served as performance-matched baselines. All models were trained and evaluated using identical datasets and task definitions unless otherwise noted.
+
+\subsection{Training procedures}
+
+Models were trained using supervised learning for object categorization, with cross-entropy loss optimized via stochastic gradient descent--based methods. To isolate architectural contributions to scale tolerance, HMAX-family models were trained without extensive scale jitter, whereas baseline convolutional networks were trained using conventional augmentation practices unless explicitly stated. This contrast is informative because standard CNNs do not include an explicit scale axis with local pooling; any size tolerance must be discovered through optimization and the examples provided during training.
+
+For HMAX architectures, an additional hierarchical scale-alignment objective was applied during training to encourage consistency of representations across adjacent scales throughout the hierarchy. This regularization promotes gradual tolerance building in a manner consistent with ventral-stream processing. Full architectural specifications, optimization parameters, and training schedules are reported in the Supplementary Materials.
+
+\subsection{Scale generalization protocols}
+
+To assess intrinsic scale tolerance, we adopted an off-reference evaluation paradigm. Models were trained at a single reference scale and tested across a range of retinal scales spanning approximately one octave. Performance was quantified both at the reference scale and on held-out scales to distinguish in-distribution accuracy from true extrapolative generalization.
+
+This protocol was applied consistently across datasets, including ImageNet-scale natural images and controlled benchmark stimuli. By decoupling training and test scales, this evaluation isolates mechanisms of scale tolerance from effects driven by data augmentation.
+
+\subsection{Behavioral evaluation: one-shot generalization}
+
+To probe human-like generalization, we evaluated models on a one-shot discrimination task using unfamiliar Hangul characters, following established psychophysical procedures. Models were exposed to a single example of a target character and required to discriminate it from visually similar distractors under varying scale conditions.
+
+Model decisions were based on similarity in feature representations extracted from the penultimate layer. Performance was assessed separately for in-distribution and out-of-distribution scale conditions and compared to behavioral data from human observers. Sensitivity was quantified using signal detection metrics where appropriate.
+
+\subsection{Neural evaluation: Brain-Score and scale-split analysis}
+
+Neural alignment was assessed using the Brain-Score framework, which quantifies the correspondence between model representations and neural responses recorded from macaque inferotemporal cortex. For each model, linear mappings from model activations to neural responses were learned using standard cross-validated procedures, and predictivity was measured as noise-ceiling--normalized correlation.
+
+To probe generalization beyond the fitting regime, we implemented a scale-split evaluation. Linear mappings were fit using stimuli presented at a reference scale and evaluated on neural responses to stimuli at unseen scales. This procedure tests whether neural predictivity reflects robust, scale-tolerant representations or scale-specific correlations. 
+
+\subsection{Physiological validation in area V4}
+
+To test whether intermediate model representations reproduce known physiological signatures of ventral-stream processing, we replicated a classic paradigm examining scale-normalized curvature tuning in macaque area V4 \citep{ElShamayleh2016Curvature}. Model units were probed with the same class of parametric shape stimuli across multiple retinal sizes. 
+
+For each responsive unit, tuning curves were computed as a function of curvature at each scale, and invariance was quantified by measuring the stability of tuning preferences across scale. Model-derived distributions were compared directly to published V4 data using identical metrics and statistical tests, enabling a mechanistic comparison between artificial and biological representations.
+
+%%=============================================================%%
+%% Discussion
+%%=============================================================%%
+\section{Discussion}
+
+The present study revisits a biologically grounded model of the ventral visual stream to test which computational principles remain explanatory when models are scaled to contemporary performance regimes. By systematically modernizing the HMAX framework while preserving its core organizational commitments, we show that different modeling approaches can achieve similar levels of task performance and neural predictivity while diverging in how invariant visual representations are constructed. Together, these results clarify how invariant representations depend on the form of computation rather than task optimization alone.
+
+\subsection{Architectural differences and the form of invariance}
+
+A central finding of this work is that performance-matched models can differ markedly in the \emph{form} of invariance they implement. Modern convolutional networks can recognize trained categories across a range of sizes, often aided by scale augmentation, but this tolerance is not enforced by a local pooling circuit across a scale axis and can transfer poorly to novel categories \citep{Azulay2019why,Han2020}. In contrast, modernized HMAX-family models exhibit robust generalization across scale without reliance on large numbers of scale-augmented examples. This distinction is evident across natural-image benchmarks, one-shot behavioral tasks, and neural evaluations, indicating that differences in tolerance-building mechanisms lead to qualitative differences in representation that are not captured by aggregate performance metrics.
+
+Importantly, this conclusion does not contradict evidence that CNNs can support substantial invariance under appropriate training conditions. Psychophysical comparisons show that both humans and CNNs can exhibit robust online translation tolerance following extreme displacements, provided that the networks are trained with suitable data and architectural choices \citep{Blything2021}. However, such invariance is typically acquired through exposure to specific transformations and does not appear to generalize broadly across untrained regimes, nor does it necessarily align with the invariance profiles observed in human perception \citep{Cui2020}. The present results extend this literature by showing that models with similar task accuracy and neural predictivity can nevertheless differ in how invariance is constructed and generalized.
+
+More broadly, these dissociations motivate incorporating \emph{topographic} constraints as mechanistic priors in models of visual cortex. The ventral stream is not only a hierarchy of response properties, but also a hierarchy of spatial organization: retinotopy and early feature maps in V1 are complemented by reliable large-scale structure in higher cortex, including clustered category-selective regions and semantic gradients in IT/VTC. Recent work shows that augmenting task-optimized networks with spatial objectives that approximate wiring-length minimization or enforce response smoothness across a cortical sheet can reproduce key aspects of this organization and, in some cases, improves behavioral alignment \citep{Margalit2024TDANN,Lu2025AllTNN}. Complementary approaches derive domain topography from explicit connectivity constraints (e.g., distance-dependent wiring and sign constraints) while learning high-level visual representations \citep{Blauch2022ITN}. Together, these results suggest that predictive benchmarks based solely on stimulus–response alignment are underconstrained: adding topographic constraints can shrink the space of admissible solutions and yield models that are more mechanistically interpretable, complementing the scale-space pooling commitments studied here.
+
+These results support the view that invariance in the ventral stream is not merely a statistical consequence of exposure to transformed exemplars, but reflects computational structure that builds tolerance progressively across hierarchical stages \citep{Logothetis1995,DiCarlo2012}. Explicit multi-scale processing and hierarchical pooling provide one plausible mechanism for constructing such representations, consistent with longstanding theories of ventral-stream organization.
+
+\subsection{Implications for neural predictivity benchmarks}
+
+Our findings refine the interpretation of neural predictivity benchmarks such as Brain-Score \citep{Schrimpf2020-az}. While modern deep networks often achieve strong correspondence with neural responses under standard evaluation protocols \citep{Yamins2014,Cadieu2014}, this alignment does not uniquely constrain underlying computation. By introducing a scale-split evaluation, we show that models with similar Brain-Score values can diverge substantially when tested outside the regime used to fit neural mappings. In this setting, models that preserve scale tolerance maintain neural predictivity, whereas standard convolutional networks do not.
+
+These results do not undermine the utility of neural predictivity benchmarks; rather, they highlight the importance of probing generalization beyond the fitting regime. Neural predictivity provides an important constraint, but it is insufficient on its own to adjudicate between competing mechanistic accounts of visual representation. Incorporating targeted perturbations that probe specific invariances may therefore be critical for evaluating candidate models as theories of cortical computation.
+
+\subsection{Prediction, explanation, and levels of analysis}
+
+The dissociations observed here bear on a long-standing distinction between predictive adequacy and mechanistic explanation. Models optimized for task performance can achieve strong neural alignment while implementing qualitatively different computational strategies. This separation echoes classical distinctions between levels of analysis in cognitive science, in which multiple algorithmic or mechanistic realizations can satisfy the same computational goal.
+
+Recent advances in deep learning raise the possibility that increasingly flexible and scalable models may eventually discover representations resembling those shaped by biological evolution. However, the present results show that models with comparable predictive accuracy and neural predictivity can diverge systematically in how invariance is constructed, and that these differences become apparent only under targeted tests that probe generalization beyond the training distribution. Thus, even if data-driven optimization can recover brain-like behavior in some regimes, mechanistic convergence cannot be assumed.
+
+From this perspective, biologically grounded models should not be viewed as architectural prescriptions, but as experimental instruments that enable controlled tests of competing mechanistic hypotheses. Scale tolerance provides one such test case. More broadly, these findings underscore the need to complement predictive benchmarks with hypothesis-driven probes if computational models are to move from prediction toward explanation \citep{SerrePavlickNeuron2025}.
+
+\subsection{Behavioral and physiological convergence}
+
+The convergence of behavioral and physiological results strengthens the interpretation of scale tolerance as a biologically meaningful diagnostic. Modernized HMAX models reproduce human-like generalization in one-shot discrimination tasks that require extrapolation across scale \citep{Han2020}, a regime in which standard convolutional networks fail despite comparable in-distribution accuracy. At the physiological level, intermediate model representations reproduce normalized curvature tuning in macaque area V4 \citep{ElShamayleh2016Curvature}, a hallmark signature of scale-invariant shape encoding. The absence of this signature in contemporary convolutional architectures underscores the value of mechanistic tests that go beyond correlational alignment.
+
+Taken together, these findings suggest that scale tolerance provides a particularly informative window into ventral-stream computation. More broadly, they illustrate how targeted probes of invariant coding can reveal differences in representational structure that remain hidden under standard task and neural benchmarks.
+
+\subsection{Limitations and future directions}
+
+Several limitations of the present work point to important directions for future research. First, the models studied here are purely feedforward, whereas biological vision involves extensive recurrent and feedback interactions that contribute to attention, contextual modulation, and temporal integration \citep{DiCarlo2012}. Incorporating such dynamics may further refine invariant representations and improve alignment with neural responses. Second, while scale tolerance provides a clear and tractable test case, other forms of invariance—such as tolerance to viewpoint, illumination, and occlusion—remain to be examined within the same framework. Finally, the present study focuses on visual object recognition; extending these approaches to multimodal and task-dependent settings will be necessary to assess the generality of the proposed principles.
+
+\subsection{Conclusions}
+
+By revisiting a biologically grounded ventral-stream model under modern performance constraints, this work demonstrates that predictive success and neural alignment do not uniquely specify underlying computation. The results show that invariant visual representations depend on how tolerance is constructed within a model, not solely on task optimization. More generally, they underscore the importance of targeted mechanistic tests in evaluating computational models as explanations of cortical processing.
+
+%%=============================================================%%
+%% References
+%%=============================================================%%
+\bibliography{neurips_2025}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% SUPPLEMENTARY INFORMATION
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\clearpage
+
+% ------------------ SI title block ------------------
+\begin{center}
+{\LARGE \textbf{Supplementary Information}}\\[0.75ex]
+{\large \textbf{Beyond neural predictivity: \\ Scale tolerance as a mechanistic test of ventral-stream models}}\\[2em]
+Iv\'an Rodr\'iguez$^{\dagger}$, Xizheng Yu$^{\dagger}$, Nishka Pant, Jacob Mulliken, Thomas Serre$^{*}$
+\end{center}
+
+\vspace{1em}
+
+% Make SI sections numbered (main manuscript may use \unnumbered)
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+
+% Affiliations
+{\small
+\begin{tabular}{l}
+$^{1}$Department of Cognitive \& Psychological Sciences, Brown University, Providence, RI, USA\\
+$^{\dagger}$These authors contributed equally to this work.\\
+$^{*}$Correspondence: thomas\_serre@brown.edu\\
+\end{tabular}
+}
+
+\vspace{1cm}
+
+% Optional: Table of Contents for SI
+\tableofcontents
+\clearpage
+
+% ------------------ SI counters & numbering ------------------
+% Include supplementary sections in table of contents
+\addtocontents{toc}{\protect\setcounter{tocdepth}{2}}
+\setcounter{section}{0}
+\renewcommand{\thesection}{S\arabic{section}}
+\setcounter{subsection}{0}
+\renewcommand{\thesubsection}{S\arabic{section}.\arabic{subsection}}
+
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\setcounter{table}{0}
+\renewcommand{\thetable}{S\arabic{table}}
+\setcounter{equation}{0}
+\renewcommand{\theequation}{S\arabic{equation}}
+
+% =============================================================
+\section{Supplementary Methods}
+
+
+\subsection{Reproducibility checklist (to be completed)}
+\label{sec:sup_repro}
+
+This section is intentionally written as a fillable checklist. Please replace each \FILL{...} and \VERIFY{...} item with the exact settings used in the experiments, or delete the item if it does not apply.
+
+\subsubsection*{Code, environment, and hardware}
+\begin{itemize}
+    \item Code repository URL (private is fine for now): \FILL{repo URL}
+    \item Exact commit hash for experiments reported in this paper: \FILL{git commit}
+    \item Framework + version (e.g., PyTorch 2.3.1 / CUDA 12.1): \FILL{framework + versions}
+    \item GPU(s) used (model, count), CPU, RAM: \FILL{hardware}
+    \item Total training time per model (approx.): \FILL{time/model}
+    \item Random seeds: \FILL{seed(s)} \quad \VERIFY{state whether results are from 1 run or mean across multiple seeds}
+\end{itemize}
+
+\subsubsection*{Datasets and preprocessing}
+\begin{itemize}
+    \item ImageNet version (ILSVRC2012?) and exact splits: \FILL{dataset + split}
+    \item Brain-Score benchmark(s) used (exact benchmark names/IDs): \FILL{benchmark names}
+    \item Hangul stimuli source files / generation script: \FILL{location or citation}
+    \item Pasupathy/El-Shamayleh stimuli generation or download details: \FILL{location or citation}
+\end{itemize}
+
+\paragraph{Input pipeline details (ImageNet).}
+\begin{itemize}
+    \item Training preprocessing (resize/crop/normalization): \FILL{exact pipeline}
+    \item Test preprocessing at the \emph{reference scale}: \FILL{exact pipeline}
+    \item Scale evaluation preprocessing (how the seven scales are applied relative to crop/resize): \FILL{exact pipeline}
+    \item \VERIFY{clarify how ``training on a single reference scale (227$\times$227)'' relates to the base input size used elsewhere (e.g., 322$\times$322)}
+\end{itemize}
+
+\subsubsection*{Model architectures (exact specification)}
+\paragraph{HMAX 3.0.}
+\begin{itemize}
+    \item Full list of image pyramid scales used at train and test time (e.g., $\Sigma=\{\sigma_1,\ldots,\sigma_M\}$): \FILL{scale list}
+    \item Channel widths per block/layer (S1/S2/S2b/S3 etc.): \FILL{channels}
+    \item Kernel sizes, strides, padding, activation, normalization: \FILL{layer specs}
+    \item Definition of the scale scorer $k_\varphi$ (architecture, sharing across layers): \FILL{scorer}
+    \item Definition of the ``feature adapter'' used before adjacent-scale pooling: \FILL{adapter}
+    \item Where (which layers) pairwise scale pooling is applied, and when global pooling is applied: \FILL{pooling placement}
+\end{itemize}
+
+\paragraph{Baselines (AlexNet / VGG-16 / ResNet-18).}
+\begin{itemize}
+    \item Source implementation (torchvision? custom?) and any modifications: \FILL{source + mods}
+    \item Parameter counts reported in Table~\ref{tab:sup_model_parameters}: \VERIFY{confirm these values and how they were computed}
+\end{itemize}
+
+\subsubsection*{Training hyperparameters (must be explicit)}
+\paragraph{Objective and regularization.}
+\begin{itemize}
+    \item Classification loss (cross-entropy etc.): \FILL{loss}
+    \item Alignment loss weights $\lambda_l$ for $l\in\{C1,C2,\text{Out}\}$: \FILL{$\lambda_{C1},\lambda_{C2},\lambda_{Out}$}
+    \item Any additional regularizers (weight decay, dropout, label smoothing, mixup/cutmix, EMA): \FILL{regularizers}
+\end{itemize}
+
+\paragraph{Optimizer and schedule.}
+\begin{itemize}
+    \item Optimizer (SGD/AdamW/etc) + settings (momentum/betas): \FILL{optimizer}
+    \item Batch size, epochs, gradient clipping (if any): \FILL{batch/epochs/clipping}
+    \item Learning rate, warmup, schedule (cosine/step), minimum LR: \FILL{LR schedule}
+    \item Weight decay: \FILL{wd}
+\end{itemize}
+
+\paragraph{Augmentation policy (critical for scale-invariance claims).}
+\begin{itemize}
+    \item Scale jitter range used for \emph{each} model (HMAX and baselines): \FILL{scale-jitter per model}
+    \item Other augmentations (color jitter, flips, RandAugment, etc.): \FILL{augmentations}
+    \item \VERIFY{explicitly state whether HMAX 3.0 is trained without multi-scale jitter, and if not, quantify the exact augmentation window}
+\end{itemize}
+
+\subsubsection*{Evaluation protocols (exact implementation)}
+\paragraph{ImageNet scale protocol.}
+\begin{itemize}
+    \item Exact seven evaluation scales used and their interpretation: \FILL{scales + meaning}
+    \item Off-reference score definition (confirm Equation used): \FILL{equation ref or text}
+    \item Number of evaluation images and whether results are single-crop or multi-crop: \FILL{eval details}
+\end{itemize}
+
+\paragraph{Hangul one-shot protocol.}
+\begin{itemize}
+    \item Pixel-to-visual-angle mapping (e.g., 26 px $=1^\circ$): \VERIFY{confirm mapping}
+    \item Feature layer used (penultimate?), feature normalization (if any): \FILL{layer + processing}
+    \item Pearson-correlation threshold selection (fixed? tuned on validation? per model?): \FILL{threshold procedure}
+    \item d$'$ computation details (hit/false-alarm definitions) + citations: \FILL{details} \quad \CITEHERE
+\end{itemize}
+
+\paragraph{Brain-Score protocol.}
+\begin{itemize}
+    \item Exact benchmark(s) and stimulus sets used (e.g., ``MajajHong2015'' variants): \FILL{benchmark IDs}
+    \item PLS parameters: number of components, regularization, cross-validation folds: \FILL{PLS details}
+    \item Which model layers were evaluated and how the ``best layer'' was selected: \FILL{layer set + selection}
+    \item Scale-split protocol: bin definitions, reference bin, train/test split: \FILL{scale-split details}
+\end{itemize}
+
+\paragraph{Pasupathy / V4 normalized-curvature replication.}
+\begin{itemize}
+    \item RF size computation method and exact layer-wise RF sizes used: \FILL{RF sizes}
+    \item Z-score neuron selection threshold (e.g., $Z>2$): \VERIFY{confirm threshold}
+    \item Binning used for $\chi^2$ test and Monte Carlo procedure details: \FILL{bins + MC details}
+\end{itemize}
+
+\subsubsection*{Reporting and statistics}
+\begin{itemize}
+    \item Number of independent runs per model and variability reporting (mean$\pm$SD or CI): \FILL{runs + variability}
+    \item Statistical tests used (where), multiple-comparison correction (if any): \FILL{stats}
+    \item What constitutes ``state-of-the-art'' in each benchmark (with citations): \FILL{SOTA comparisons} \quad \CITEHERE
+\end{itemize}
+
+% ---- End reproducibility checklist ----
+
+\subsection{HMAX 3.0 architectural details (ported from student draft)}
+
+HMAX 3.0 is a backpropagation-enabled, scale-invariant architecture that builds on the principles
+of the classical HMAX model by integrating modern deep learning mechanisms. The key components are
+summarized below.
+
+\paragraph{Architectural modernization via learnable kernels.}
+To enhance feature expressivity, we adopt the channel expansion strategy of AlexNet and widen early
+layers (e.g., S1 and S2). Following VGG, large receptive field filters are decomposed into stacks of
+smaller kernels (e.g., sequences of $3\times 3$ convolutions). To ensure trainability at depth, we
+incorporate residual skip connections within major feature extraction blocks (S1, S2, S2b, and S3).
+
+\paragraph{Image pyramid and dense scale sampling.}
+Rather than applying filters at multiple scales, we use an image pyramid in which input images are
+explicitly rescaled to different sizes. Motivated by Gaussian scale-space theory \citep{Witkin1983,Koenderink1984,Lindeberg1994,Lindeberg1998}, we sample scales densely at quarter-octave increments (scale factor $2^{1/4}$), enabling smooth transitions across scale space.
+
+\paragraph{Adaptive pooling and a high-resolution bypass stream.}
+To maintain spatial coherence across different input scales, we use adaptive stride pooling in early
+C layers. To balance invariance with localization, we include a bypass stream (S2b) branching from C1
+that preserves higher-resolution features; outputs of the deep semantic stream and bypass stream are
+concatenated prior to classification.
+
+\subsection{Hierarchical learnable scale selection (ported from student draft)}
+
+A hard max over scales is the simplest way to merge a pyramid:
+\begin{equation}
+\tau(x)=\max_{\sigma\in\Sigma} F_{\sigma}(x),
+\label{eq:maxpool-scale}
+\end{equation}
+where $\Sigma=\{\sigma_{1},\dots,\sigma_{M}\}$ are sampled scales, $T_{\sigma}$ is the rescaling
+operator, and $F_{\sigma}(x)=f_{\theta}\!\bigl(T_{\sigma}x\bigr)$ is the feature representation at
+resolution $\sigma$.
+
+HMAX 3.0 replaces hard max pooling with a differentiable, data-driven operator. A lightweight scorer
+$k_{\varphi}$ produces per-scale scores $s_{\sigma}(x)=k_{\varphi}\!\bigl(F_{\sigma}(x)\bigr)$, which
+are converted to weights via a softmax. The pooled descriptor is computed as a weighted sum:
+\begin{equation}
+\phi(x)=\sum_{\sigma\in\Sigma}\alpha_{\sigma}(x)\,F_{\sigma}(x).
+\label{eq:learnable-scale-pool}
+\end{equation}
+
+This mechanism is applied progressively to preserve semantic coherence:
+(i) \emph{pairwise intermediate pooling} merges only adjacent scales in intermediate layers, after a
+learnable feature adapter aligns them into a common subspace; and (ii) \emph{global final pooling}
+aggregates across remaining scales at the final integration stage.
+
+\subsection{Scale-invariant regularization via adjacent-pair alignment (ported from student draft)}
+
+During training, the same image is processed at two adjacent scales $(\sigma_i, \sigma_{i+1})$.
+Scale consistency is enforced hierarchically throughout the network by computing an $L_1$ distance
+between corresponding feature maps:
+\begin{equation}
+ \mathcal{L}_{\text{align}} = \sum_{l \in \{C1, C2, \text{Out}\}} \lambda_l
+ \left\| \phi_l(T_{\sigma_i}x) - \phi_l(T_{\sigma_{i+1}}x) \right\|_1.
+\label{eq:hierarchical-align}
+\end{equation}
+The complete objective combines classification and alignment:
+\begin{equation}
+\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{classification}} + \mathcal{L}_{\text{align}}.
+\label{eq:total-loss}
+\end{equation}
+
+% =============================================================
+\section{Supplementary Experimental Protocols}
+
+\subsection{ImageNet scale generalization and off-reference scoring (ported from student draft)}
+
+Input image sizes were systematically varied using seven scales (quarter-octave steps relative to a
+base size of $322 \times 322$ pixels): $\{160, 192, 227, 270, 322, 382, 454\}$. To isolate intrinsic
+scale tolerance, models can be trained at a single reference scale (e.g., $227\times227$) and
+evaluated across all scales. The off-reference score excludes the reference scale:
+\begin{equation}
+\text{Off-Reference Score} =
+\frac{1}{|\mathcal{S}_{\text{off}}|}\sum_{s \in \mathcal{S}_{\text{off}}}\text{Accuracy}(s).
+\label{eq:offref}
+\end{equation}
+
+\subsection{Behavioral evaluation: one-shot generalization on Hangul (ported from student draft)}
+
+We used the Hangul one-shot discrimination paradigm of Han et al.\ \cite{Han2020}. The dataset
+contains 27 target/distractor pairs of visually similar characters. Five scale conditions are
+defined by target/test visual angles (in degrees): $30^\circ/2^\circ$, $2^\circ/30^\circ$,
+$30^\circ/5^\circ$, $5^\circ/30^\circ$, and $30^\circ/30^\circ$ (in-distribution). Out-of-distribution
+performance averages the four cross-scale conditions.
+
+
+For mapping degrees to pixels in our model stimuli, we used a conversion of $26$ pixels $= 1^\circ$ of visual angle.
+Two characters were classified as the same identity when the Pearson correlation between their feature vectors exceeded a threshold
+(threshold selection procedure should be stated explicitly: e.g., fixed a priori vs. tuned on a held-out set).
+Out-of-distribution (OOD) performance averages across the four cross-scale conditions ($30^\circ/2^\circ$, $2^\circ/30^\circ$,
+$30^\circ/5^\circ$, and $5^\circ/30^\circ$), while the $30^\circ/30^\circ$ condition defines in-distribution performance.
+
+Model decisions are based on Pearson correlation between penultimate-layer feature vectors for the
+two characters in a pair, thresholded to classify “same” vs.\ “different”. Sensitivity is quantified
+using $d'$:
+\[
+d' = Z(\text{Hit Rate}) - Z(\text{False Alarm Rate}),
+\]
+where $Z$ is the inverse standard normal CDF. \textit{(TODO: replace placeholder citations for $d'$,
+e.g., Green \& Swets; Macmillan \& Creelman, and ensure entries exist in \texttt{neurips\_2025.bib}).}
+
+\subsection{Neural evaluation: Brain-Score and scale-split analysis (ported from student draft)}
+
+We evaluated neural predictivity on macaque IT recordings in the Brain-Score framework
+\cite{Schrimpf2020-az,Majaj2015-bb}. For each model layer $l$, a linear mapping from activations
+$\mathbf{X}^{(l)}$ to neural responses $\mathbf{Y}$ is learned using cross-validated partial least
+squares regression, and performance is reported as noise-ceiling--normalized Spearman correlation.
+
+Specifically, Brain-Score fits a linear mapping from model activations to recorded neural responses using cross-validation
+(e.g., partial least squares regression), then reports predictivity as noise-ceiling--normalized Spearman correlation.
+Following the student draft, the reported model score should be the \emph{maximum} across evaluated layers (i.e., the best-aligned layer),
+and the scale-split protocol trains the mapping on a reference scale bin and evaluates generalization on held-out images from all bins.
+
+
+To probe extrapolation across scale, we implemented a scale-split protocol in which the mapping is
+fit using images from a reference scale bin and evaluated on images from all scale bins; we also
+report an off-scale metric that excludes the reference bin:
+\begin{equation}
+\text{Brain-Score}_{\text{off-scale}} =
+\frac{1}{|\mathcal{B}_{\text{off}}|}\sum_{b \in \mathcal{B}_{\text{off}}}\text{Brain-Score}^{(b)}.
+\label{eq:offscale-brainscore}
+\end{equation}
+
+\subsection{Physiological validation: scale-normalized curvature tuning in area V4 (ported from student draft)}
+
+We replicated the El-Shamayleh \& Pasupathy paradigm \cite{ElShamayleh2016Curvature} using parametric
+
+Stimuli were generated at multiple curvature levels and presented at 8 rotations ($0^\circ$ to $315^\circ$ in $45^\circ$ steps).
+To test scale invariance, each stimulus was presented at four relative sizes: $0.4\times$, $0.6\times$, $0.8\times$, and $1.0\times$.
+For each layer, stimuli were cropped to the receptive field size of the central unit and resized to the target scale, then padded back
+to the full model input size to mimic foveal presentation (RF sizes computed analytically; see \cite{Araujo2019computing}).
+Units were included for analysis if their peak Z-scored response exceeded $Z>2.0$.
+curvature stimuli across rotations and sizes. Responsive units are selected by Z-score filtering:
+a unit is included if its peak response across the full stimulus set satisfies $Z>2.0$ relative to
+its own response distribution. Invariance is quantified by the stability of the tuning-curve centroid
+across scale; per-unit slopes are aggregated as the median absolute slope.
+
+% =============================================================
+\section{Supplementary Results}
+
+\subsection{Comprehensive performance table (ported from student draft)}
+
+\begin{table}[h]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\small
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Evaluation Domain} & \textbf{Metric} & \textbf{HMAX 3.0} & \textbf{Best Baseline} & \textbf{Improvement} \\
+\hline
+\textbf{ImageNet Classification} & Top-1 Accuracy & 72.3\% & 69.8\% (ResNet18) & +2.5\% \\
+\hline
+\textbf{Scale Invariance (MNIST)} & Off-reference accuracy & 85.2\% & 62.1\% (VGG-16) & +23.1\% \\
+\hline
+\textbf{One-shot Learning (Hangul)} & Cross-scale accuracy & 78.4\% & 65.2\% (ResNet18) & +13.2\% \\
+\hline
+\textbf{Hangul d-prime Analysis} & Mean d-prime & 0.90 & 0.21 (AlexNet) & +329\% \\
+\hline
+\textbf{Brain-Score (Red Central IT)} & Neural prediction & 0.613 & 0.487 (AlexNet) & +25.8\% \\
+\hline
+\textbf{Brain-Score (George Post. IT)} & Neural prediction & 0.549 & 0.423 (VGG-16) & +29.8\% \\
+\hline
+\textbf{Brain-Score (George Central IT)} & Neural prediction & 0.536 & 0.298 (ResNet18) & +79.9\% \\
+\hline
+\end{tabular}
+\caption{Comprehensive performance comparison across evaluation domains (ported from student draft).}
+\label{tab:sup_comprehensive_results}
+\end{table}
+
+\begin{table}[h]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\small
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Model} & \textbf{Parameters (M)} \\
+\hline
+HMAX 3.0 & 128.9 \\
+AlexNet & 61.1 \\
+ResNet-18 & 11.69 \\
+\hline
+\end{tabular}
+\caption{Comparison of model parameters (ported from student draft).}
+\label{tab:sup_model_parameters}
+\end{table}
+
+\subsection{Supplementary figures (ported from student draft)}
+
+\begin{figure}[ht!]
+\centering
+\safeincludegraphics[width=\linewidth]{figures/brainscore_dataset.png}
+\caption{Example stimuli from the Brain-Score benchmark dataset (ported from student draft).}
+\label{fig:sup_brainscore_dataset}
+\end{figure}
+
+\begin{figure}[ht!] 
+\centering
+\safeincludegraphics[width=\linewidth]{figures_new/sup_korean_dprime_plot.png}
+\caption{Hangul one-shot learning sensitivity analysis (ported from student draft).}
+\label{fig:sup_korean_dprime}
+\end{figure}
+
+\begin{figure}[ht!] 
+\centering
+\safeincludegraphics[width=\linewidth]{figures_new/sup_scale_invariance_line_plot.png}
+\caption{ImageNet scale invariance evaluation across seven input scales (ported from student draft).}
+\label{fig:sup_imagenet_scales}
+\end{figure}
+
+% ------------------ END SUPPLEMENTARY INFORMATION ------------------
+
+\end{document}
