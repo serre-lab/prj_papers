@@ -1,0 +1,19 @@
+{
+  // LaTeX Workshop: use Tectonic for compilation
+  // Note: On macOS with Cursor, if you get "spawn tectonic ENOENT", add the full path
+  // in your user settings: "command": "/opt/homebrew/bin/tectonic"
+  "latex-workshop.latex.recipes": [
+    { "name": "tectonic", "tools": ["tectonic"] }
+  ],
+  "latex-workshop.latex.tools": [
+    {
+      "name": "tectonic",
+      "command": "tectonic",
+      "args": ["-o", "build", "%DOC%.tex"]
+    }
+  ],
+  "latex-workshop.latex.autoBuild.run": "onSave",
+  "latex-workshop.latex.autoClean.run": "onBuilt",
+  "latex-workshop.view.pdf.viewer": "tab",
+  "latex-workshop.view.pdf.internal.synctex.keybinding": "double-click"
+}
