@@ -1,0 +1,95 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{arxiv}
+
+\RequirePackage{times}
+\RequirePackage[T1]{fontenc}
+\RequirePackage[scaled,var0]{inconsolata}
+\RequirePackage{textcomp}
+\RequirePackage{microtype}
+\RequirePackage{geometry}
+\geometry{letterpaper, margin=1in} % Standard margins
+
+\RequirePackage{mathtools} % Loads amsmath
+\RequirePackage{amssymb,amsfonts,amsthm}
+\RequirePackage{mathrsfs}
+\RequirePackage{bm}
+\RequirePackage{stmaryrd}
+\RequirePackage{wasysym}
+\RequirePackage{cases}
+\RequirePackage{bbm}
+\RequirePackage{nicefrac}
+
+\RequirePackage[nodisplayskipstretch]{setspace}
+\RequirePackage{titletoc}
+\RequirePackage{afterpage}
+\RequirePackage{multicol}
+\RequirePackage[title]{appendix}
+\RequirePackage{float}
+\RequirePackage{wrapfig}
+\RequirePackage{subcaption}
+\RequirePackage{caption}
+\RequirePackage{enumitem}
+\RequirePackage{algorithm}
+\RequirePackage{algpseudocode}
+\RequirePackage{listings}
+\raggedbottom
+
+\RequirePackage{booktabs}
+\RequirePackage{multirow}
+\RequirePackage{array}
+\RequirePackage{colortbl}
+\RequirePackage{adjustbox}
+\RequirePackage{graphicx}
+
+\RequirePackage{xcolor}
+\definecolor{primary}{RGB}{22, 163, 74}
+\definecolor{secondary}{RGB}{21, 128, 61}
+
+\RequirePackage{url}
+\RequirePackage[colorlinks=true,allcolors=primary]{hyperref}
+\RequirePackage[capitalize,nameinlink]{cleveref}
+
+\RequirePackage[round]{natbib}
+\bibliographystyle{unsrtnat}
+
+
+\IfFileExists{macros.sty}{\RequirePackage{macros}}{}
+\RequirePackage[compact]{titlesec}
+\titleformat{\section}{\Large\bfseries\sffamily}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries\sffamily}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\itshape\sffamily}{\thesubsubsection}{1em}{}
+\titlespacing*{\section}{0pt}{12pt plus 4pt minus 2pt}{6pt plus 2pt minus 2pt}
+
+\renewenvironment{abstract}
+  {\vskip 0.075in%
+   \centerline{\large\bfseries\sffamily Abstract}%
+   \vspace{0.5ex}%
+   \begin{quote}}
+  {\par\end{quote}\vskip 1ex}
+
+\makeatletter
+\renewcommand{\maketitle}{\onecolumn
+  \begin{center}
+    \vspace*{-1.8cm}
+    \hrule height 2pt
+    \vspace{0.6cm}
+    {\LARGE \bfseries \@title \par}
+    \vspace{0.6cm}
+    \hrule height 1pt
+    \vspace{0.6cm}
+    {\large \@author \par}
+    \vspace{0.8cm}
+  \end{center}
+}
+\makeatother
+
+
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{example}{Example}
+\newtheorem{remark}{Remark}
+\theoremstyle{remark}
+\newtheorem{definition}{Definition}
