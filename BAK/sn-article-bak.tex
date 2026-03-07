@@ -1,0 +1,417 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                 %%
+%% Please do not use \input{...} to include other tex files.       %%
+%% Submit your LaTeX manuscript as one .tex document.              %%
+%%                                                                 %%
+%% All additional figures and files should be attached             %%
+%% separately and not embedded in the \TeX\ document itself.       %%
+%%                                                                 %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%\documentclass[referee,sn-basic]{sn-jnl}% referee option is meant for double line spacing
+
+%%=======================================================%%
+%% to print line numbers in the margin use lineno option %%
+%%=======================================================%%
+
+%%\documentclass[lineno,sn-basic]{sn-jnl}% Basic Springer Nature Reference Style/Chemistry Reference Style
+
+%%======================================================%%
+%% to compile with pdflatex/xelatex use pdflatex option %%
+%%======================================================%%
+
+%%\documentclass[pdflatex,sn-basic]{sn-jnl}% Basic Springer Nature Reference Style/Chemistry Reference Style
+
+%%\documentclass[sn-basic]{sn-jnl}% Basic Springer Nature Reference Style/Chemistry Reference Style
+\documentclass[pdflatex,sn-mathphys,iicol]{sn-jnl}% Math and Physical Sciences Reference Style
+%%\documentclass[sn-aps]{sn-jnl}% American Physical Society (APS) Reference Style
+%%\documentclass[sn-vancouver]{sn-jnl}% Vancouver Reference Style
+%%\documentclass[sn-apa]{sn-jnl}% APA Reference Style
+%%\documentclass[sn-chicago]{sn-jnl}% Chicago-based Humanities Reference Style
+%%\documentclass[sn-standardnature]{sn-jnl}% Standard Nature Portfolio Reference Style
+%%\documentclass[default]{sn-jnl}% Default
+%%\documentclass[default,iicol]{sn-jnl}% Default with double column layout
+
+%%%% Standard Packages
+%%<additional latex packages if required can be included here>
+%%%%
+
+%%%%%=============================================================================%%%%
+%%%%  Remarks: This template is provided to aid authors with the preparation
+%%%%  of original research articles intended for submission to journals published 
+%%%%  by Springer Nature. The guidance has been prepared in partnership with 
+%%%%  production teams to conform to Springer Nature technical requirements. 
+%%%%  Editorial and presentation requirements differ among journal portfolios and 
+%%%%  research disciplines. You may find sections in this template are irrelevant 
+%%%%  to your work and are empowered to omit any such section if allowed by the 
+%%%%  journal you intend to submit to. The submission guidelines and policies 
+%%%%  of the journal take precedence. A detailed User Manual is available in the 
+%%%%  template package for technical guidance.
+%%%%%=============================================================================%%%%
+\usepackage{graphicx}
+\jyear{2024}%
+
+%% as per the requirement new theorem styles can be included as shown below
+\theoremstyle{thmstyleone}%
+\newtheorem{theorem}{Theorem}%  meant for continuous numbers
+%%\newtheorem{theorem}{Theorem}[section]% meant for sectionwise numbers
+%% optional argument [theorem] produces theorem numbering sequence instead of independent numbers for Proposition
+\newtheorem{proposition}[theorem]{Proposition}% 
+
+%%\newtheorem{proposition}{Proposition}% to get separate numbers for theorem and proposition etc.
+
+\theoremstyle{thmstyletwo}%
+\newtheorem{example}{Example}%
+\newtheorem{remark}{Remark}%
+
+\theoremstyle{thmstylethree}%
+\newtheorem{definition}{Definition}%
+
+\newcommand{\ivan}[1]{{\color{orange}[ivan]: #1}}
+\newcommand{\fel}[1]{{\color{purple}[fel]: #1}}
+
+\raggedbottom
+%%\unnumbered% uncomment this for unnumbered level heads
+
+\iffalse
+
+and ai for paleo identification of paleobotany --> peter
+3rd para --> challenge for fossil leaves, do not have enough samples for families and no sample for most (annotated) --> figure 1 (s) 
+closest to fossils are clear leaves --> doesnt work, training on leaves and testing on fossils
+novel use of triplet loss --> bridging two domains and evaluate 
+levarage gans to generate synthetic fossils 
+
+bunch of synthtic fossils --> figure 1
+triplet --> supplementary information 
+figure : tsne embeddings --> triplet loss random samples and --> all classes, 19 families, both fossils and clear leaves 
+
+train and test --> acc --> one leave on out + final systems trained on everything and evaluate on 19. 
+
+demonstration to show that --> assist the classification of unknown fossils 
+
+figure 3: feature visualization and attributions 
+
+*** using ibm nodes --> high res and high memory
+
+cleaning up dataset --> steps followed
+
+\fi
+
+\begin{document}
+
+\title[Article Title]{Article Title}
+
+%%=============================================================%%
+%% Prefix	-> \pfx{Dr}
+%% GivenName	-> \fnm{Joergen W.}
+%% Particle	-> \spfx{van der} -> surname prefix
+%% FamilyName	-> \sur{Ploeg}
+%% Suffix	-> \sfx{IV}
+%% NatureName	-> \tanm{Poet Laureate} -> Title after name
+%% Degrees	-> \dgr{MSc, PhD}
+%% \author*[1,2]{\pfx{Dr} \fnm{Joergen W.} \spfx{van der} \sur{Ploeg} \sfx{IV} \tanm{Poet Laureate} 
+%%                 \dgr{MSc, PhD}}\email{iauthor@gmail.com}
+%%=============================================================%%
+
+\author*[1]{\fnm{Iva\'n Felipe} \sur{Rodr\'iguez }}\email{ivan.rodriguez5@brown.edu}
+\equalcont{These authors contributed equally to this work.}
+\author*[1,2]{\fnm{Thomas} \sur{Fel}} \email{thomas\_fel@brown.edu}
+\equalcont{These authors contributed equally to this work.}
+\author[1,2]{\fnm{Mohit} \sur{Vaishnav}} \email{mohit.vaishnav@univ-toulouse.fr}
+\equalcont{These authors contributed equally to this work.}
+
+
+\affil*[1]{\orgdiv{Carney Institute for Brain Science, Dpt. of Cognitive \& Psychological Sciences}, \orgname{Brown University}, \orgaddress{\city{Providence}, \postcode{02912}, \state{RI}, \country{USA}}}
+
+\affil[2]{\orgdiv{Artificial and Natural Intelligence Toulouse Institute}, \orgname{Université de Toulouse}, \orgaddress{\city{Toulouse}, \postcode{31400}, \country{France}}}
+
+
+%%==================================%%
+%% sample for unstructured abstract %%
+%%==================================%%
+
+\abstract{
+
+Isolated leaves dominate the angiosperm fossil record, but correctly identifying them remains one of the most challenging problems in paleobotany. The same issues impede both human and artificial intelligence, especially extreme visual variation and incompleteness resulting from taphonomy and the lack of vetted leaf fossils for most plant families. Here, we take a strategic approach by testing a single, well-studied fossil site to minimize taphonomic variation, namely the Florissant Fossil Beds National Monument, late Eocene of Colorado.  To address the issue of fossil-sample scarcity, we used generative AI to augment the existing datasets of extant leaves with synthetic, highly photorealistic fossil counterparts, enhancing the familial diversity of images analyzable as fossils. We segmented the images to reduce biases from features such as annotations and rulers. For training, we used the 16 vetted families (>5+ specimens per family) from \cite{wilf2021dataset}, along with a selection of specimens from the cleared leaves dataset, 142 families (>25+ specimens per family). We used a  transformer based architecture (BEIT) with a custom training objective function to enforce consistency across domains for single family identification. For evaluation, we perform a lower bound and upper-bound evaluation. Lower bound using a leave-one- out approach, where for each of the 16 Florissant families we provided only synthetic fossils for the out family and 90\% for the rest of the families, then we tested on all the real samples for the out  family, achieving 74.5\% top-5 accuracy on family identification. The upper bound, we performed 10-fold cross validation with a 90-10 split on real fossils, achieving 87\% top-5 accuracy.
+
+% Isolated leaves dominate the angiosperm fossil record, but correctly identifying them remains one of the most challenging problems in paleobotany. The same issues impede both human and artificial intelligence, especially extreme visual variation and incompleteness resulting from taphonomy and the lack of vetted leaf fossils for most plant families. Here, we take a strategic approach by testing a single, well-studied fossil site to minimize taphonomic variation, namely the Florissant Fossil Beds National Monument, late Eocene of Colorado.  To address the issue of fossil-sample scarcity, we used generative AI to augment the existing datasets of extant leaves with synthetic, highly photorealistic fossil counterparts, enhancing the familial diversity of images analyzable as fossils. We segmented the images to reduce biases from features such as annotations and rulers. For training, we used the 16 vetted families (>5+ specimens per family) from \cite{wilf2021dataset}, along with a selection of specimens from the cleared leaves dataset, 142 families (>25+ specimens per family). We used a  transformer based architecture (BEIT) with a custom training objective function to enforce consistency across domains for single family identification. For evaluation, we perform a lower bound and upper-bound evaluation. Lower bound using a leave-one- out approach, where for each of the 16 Florissant families we provided only synthetic fossils for the out family and 90\% for the rest of the families, then we tested on all the real samples for the out  family, achieving 74.5\% top-5 accuracy on family identification. The upper bound, we performed 10-fold cross validation with a 90-10 split on real fossils, achieving 87\% top-5 accuracy.
+
+%we used a leave-one- out approach, where for each of the 19 Florissant families we provided only synthetic fossils for the out family and tested on all the real samples for that family, achieving 75\% top-5 accuracy on family identification. This demonstrated that the synthetic fossils have potential to bridge the gap for real fossil images.  In a less conservative scenario, we performed 10-fold cross validation with a 90-10 split on real fossils, achieving 87\% top-5 accuracy. Using all training resources, including 140 families of cleared leaves, their derived synthetic fossils, and all real fossils, the overall top-5, leave-one-out accuracy for identifying Florissant leaves from 19 families was 75\% (vs. 3\% for chance).  We will demo a tool for uploading fossil leaf images and receiving probability-ranked family classifications and visual feedback in the form of heatmaps and family-level visual concepts.  We will also provide machine identifications and heatmaps for thousands of additional Florissant leaves that are not confidently placed in a botanical family, providing novel input for paleobotanists.
+
+}
+
+
+
+
+\keywords{Paleobotany, Generative AI , Metric Learning , Fossil Identification}
+
+
+
+\maketitle
+
+%%% 
+%%% Nature Guideline
+%%%
+
+
+
+\section{Introduction}\label{sec1}
+
+\fel{(1) Artificial Intelligence for PaleoBotany (we need Peter here).}
+
+
+\ivan{(1) Started from the abstract we submitted will need another pass }
+
+Fossil leaf identification represents a compelling use case for machine vision. The leaves’ potential scientific value is tremendous because while isolated leaf fossils are very abundant in the field and museum collections, their identification is often problematic. We have developed a deep-learning-based computer-vision system for identifying extant-leaf images to botanical family, using a new image database of cleared, x-rayed, and fossil leaves consisting mostly of angiosperms (see related abstracts at this meeting). Here, we describe novel methods to extend the system for the identification of fossil leaves at the family level. 
+
+The challenge for the development of computer vision systems, which normally rely on tens of thousands to millions of training images, is that comparatively few vetted fossil leaf samples are available to train the system; the majority of angiosperm families have no reliable leaf fossils. Here, we describe the development of computer-vision methods to successfully transfer machine knowledge from cleared to fossil leaves. Our approach leverages style transfer or image to image translation,  to generate synthetic fossils by learning mappings between one image distribution (cleared leaves) and another (fossil leaves). We use these methods to augment our real-image database with a high quantity and phylogenetic diversity of synthetic samples not available from real fossils alone. We train a deep neural network architecture using both real and synthetic images to learn a joint representation for known families of cleared leaves and fossils.
+
+We evaluate the network’s accuracy in multiple scenarios. First, we demonstrate high classification accuracy for cleared leaves. We further find a high (albeit lower) accuracy for real fossil leaves. This is presumably due to the comparatively much smaller number of fossil vs. cleared-leaf samples, combined with taphonomic signal loss. We further evaluate the ability of the proposed methods to generalize to real fossils of families for which no real fossil was presented during training. We use a leave-one-family-out cross-validation approach whereby real leaf fossils are used for training for all families but one (i.e., only synthetic samples are available for the test family). We report significantly above-chance classification accuracy in this scenario. 
+
+A study using explainability methods is carried out in order to identify some of the strategies used for the classification. Our results strongly suggest that AI methods will provide significant assistance to paleobotanists with the identification of leaf fossils.
+
+.
+
+\section{Methods}
+
+Our system combines different state of the art computer vision models to segment, generate and classify images. 
+
+Semantic segmentation via Segment Anything (SAM) \cite{kirillov2023segment}  is used to clean images of the cleared leaves collection that have annotations, rulers and other class independent information that may provide shortcuts for the system. 
+
+Given the extreme lack of vetted fossil samples in our dataset, we adopt a generative approach where we aim to generate photo-realistic fossil-looking leaves using as base the vetted cleared leafs dataset counterpart. We use a cycle-Controlnet based on stable diffusion  \cite{zhang2023adding},  a generative  method that achieves incredibly realistic image and Cycle-consistent generative approaches that have been used for domain adaption  and style transfer\cite{CycleGAN2017}. 
+
+Finally,  we use a state of the art classification model BEIT \cite{bao2022beit}. Taking inspiration from \citep{taha2020triplet} we  further equip the model  with a triplet-loss regularizer that forces samples of the same family to be close to each other in the feature space. 
+
+
+
+\subsection{ Dataset}
+
+For the rest of the paper we will consider two domains: the \textbf{Leaves domain} and  the \textbf{Fossil domain}.  We will also refer to  leaves that have been transformed to the Fossil domain via the generative process as \textbf{Synthetic Leaves}.
+
+The Leaves domain refers to the set of 30252 images of vetted cleared (and x-rayed) leaves published on \cite{wilf2021dataset}, including 4076 newly added samples from the National Museum of Nature and Science (Ibaraki, Japan). The Fossils domain is a set from the Florissant collection, amassed by \citep{florissant},probably the largest of its kind. \citep{wilf2021dataset} made available a subset used here of 3,200 Florissant images vetted to 23  families, from which we will use 16 (all the families where there are at least 5 specimens).  There are around 1,000 specimens with unknown labels. 
+
+
+
+\subsection{Shortcut Removal Via SAM}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{figure_segmentation.jpg}
+    \caption{Result of applying SAM to images from the x-ray cleared leaf collection}
+    \label{fig:segmentation}
+\end{figure}
+%\figure with cleared leaveS? 
+
+Our goal is to leverage the high amount of samples available from the Leaves Domain, however there are multiple artifacts that can bias our model. For instance, hand-written labels, rulers and  other stains product of the handling of the samples. For this reason we leverage the usage of SAM.  We start by fine-tunning the model with a small subset of 500 cleared leaves with manual annotations. Our model reaches 95\% IOU, on a 80-20 split. This is then applied to the rest of the cleared leaves dataset as a pre-processing step. Refer to Figure~\ref{fig:segmentation} for examples. 
+
+\subsection{Style Transfer/ Domain Adaptation}%\label{sec2.2}
+
+Let us consider   the fossil domain  (X) and the  leaves domain (Y), with distinctive image properties but with some specific features that can be identified by automatic pipelines \cite{wilf2016leaves}. Now the amount of samples of X is considerably much lower than Y, in fact for every family in Y there is no guarantee, that there will be a a counter part in X.  
+
+We take inspiration from \cite{CycleGAN2017} and adopt a generative approach. We have two mappings  $G: X \rightarrow Y$ and $F: Y \rightarrow X$. Where  $G$ and $F$ are controlnet \cite{zhang2023adding} modules with fixed random seed  that can be guided through text. In our case we will use  the prompts: `` A cleared leaf of the family: <Family Name>' and ``A fossilized leaf of the family : <Family Name>''  to guide the generation. 
+
+Since our end goal is not only to generate fossilized looking samples but to encode family traits that can be used for classification, we use a triplet regularizer (T) to enforce proximity between elements of the same family and larger distance from samples of different families. The triplet regularizer is train at every cycle of our generator, ensuring that at the source (T(X)), the target (T(Y)), and the transformations (T(G(X)),T(F(Y))) the latent structure is keeping relevant information for  classification. As well, in order to ensure that there is preservation of shape during the generative process of the diffusion model , we use our SAM  module to ensure that  the outputs maintain similar  shape from the inputs. 
+
+% The final objective function then can be written as: 
+
+% \begin{align}
+%     \mathcal{L}(G,F) &= \mathcal{L}_{GAN}(G,D_Y,X,Y)  
+%     \\&+ \mathcal{L}_{GAN}(G,D_X,Y,X) 
+%     \\&+ \lambda_1 \mathcal{L}(G,F) 
+%     \\&+ \lambda_2 \mathcal{L}(T,G,F,X,Y)
+% \end{align}
+
+
+
+\subsection{Triplet Loss and Forcing structure}\label{sec2.2}
+
+Following \cite{taha2020triplet} we adapt our BEiT model with two heads, a classification head and an embedding head. The classification layer is trained using cross-entropy loss and the embedding head using the triplet loss. The triplet loss would  perform  sampling using the information of the domains (fossil or extant), taking one class from both domains for anchors, positive and negative sampling, thus  ensuring that in the embedding there is a local and global structure. 
+
+To summarize, we formulate our classification loss in the following way. 
+
+\begin{align}
+    \mathcal{L}_{trip}= \frac{1}{b}\sum_{i=1}^{b}[(D(a_{i,x},p_{i,x})-D(a_{i,x}x,n_{i,x}) + m)]
+\end{align}
+
+Where b is the number of samplings and D is a distance function that acts over an anchor (a) a positive sample (p) and a negative sample (n) with a fixed margin (m); with $x \in \{X,Y\}$ the two domains that we are considering. 
+
+Then the total loss function on which this network is trained can be written as: 
+\begin{equation}
+    \mathcal{L} = \mathcal{L}_{softmax} + \lambda \mathcal{L}_{trip}
+\end{equation}
+
+Finally, we added the synthetic images created in the first step to account for those classes where little or no  data is available. 
+
+\subsection{Explainability}
+
+\ivan{Need help from T. Fel and Gaurav}
+
+
+
+\subsection{Metrics}
+
+To evaluate our method, we used two scenarios providing and upper-bound and lower bound of accuracy. In the first one we  use a 90-10 split cross validation, where  real fossils are used training and testing. The second one resembles the closest real-life paleobotany, where we take a “one left out” approach. In this case,  no real fossils are used to train the test family. For the rest of the families 90\% of real fossils are provided but we only evaluate on the test family,then we repeat for all the families and provide a score. 
+
+\section{Results}
+
+\ivan{Working on a visual for Fossils }
+
+First,  we created around 30000 synthetic images corresponding to all the available cleared leaves in the 16 classes considered. See in  \ivan{pending fossils figure }. Then we  classify using the  scenarios described before. 
+
+Our results on the lower and upper bound scenarios suggest that using our triplet loss to enforce structure helps in classification across domain. As well, the generation of photo realistic synthetic fossils provide crucial help in the classification of fossils that  have not been seen during training, as we can appreciate in Table ~\ref{tab:beit}. 
+
+
+ 
+ 
+
+\begin{table}[ht!]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{|c|c|c|c|}
+\hline
+Condition &
+  \begin{tabular}[c]{@{}c@{}}Top 5\\ Lower Bound\end{tabular} &
+  \begin{tabular}[c]{@{}c@{}}Top 5 \\ Upper Bound\end{tabular} &
+  \#Classes \\ \hline
+Unsegmented                                                   & 4.21 \% & 64.3 \% & 142 \\ \hline
+Segmented                                                     & 6.21 \% & 65.1 \% & 142 \\ \hline
+\begin{tabular}[c]{@{}c@{}}Triplet +\\ Segmented\end{tabular} & 21.4 \% & 72 \%   & 142 \\ \hline
+\begin{tabular}[c]{@{}c@{}}Triplet + \\ Segmented +\\ Synthetic Fossils\end{tabular} &
+  \textbf{75.1 \%} &
+  \textbf{86.4 \%} &
+  142 \\ \hline
+\end{tabular}%
+}
+\caption{BeIT Classification results under the different conditions studied. }
+\label{tab:beit}
+\end{table}
+
+\fel{(3)(b) Look at our beautiful embedding (with / without triplet).}
+... .
+
+\ivan{(4) look to our amazing explanations, @Gaurav is helping with the figure.}
+ 
+
+
+\Ivan {(5) We demonstrate how the model helps the expert to identify unknown fossils. Once we get approval from the last model, we can calculate the predictions and send them to Peter et al. and we can report those results }
+In order to understand the interactions and characteristics that lead the model to make a decision, we studied the explainability maps after training (see Fig3).
+
+
+\section{Conclusion}
+
+\ivan{starting from the conclusions of the presentation}
+\begin{itemize}
+    \item First virtual AI assistant for macrofossil paleobotany
+    \item Uses state-of-the-art deep generative methods to generate synthetic leaf fossils from extant leaves, vastly increasing “fossil” training sample size and accuracy of fossil identifications.
+    \item  Identifies fossils correctly to families for which no fossil specimens were available during training.
+    \item Immediate use case to help identify thousands of Florissant unknowns.
+    \item Development with Florissant is a significant step towards more general applications for other floras. 
+
+\end{itemize}
+.
+
+
+
+
+
+
+\newpage
+
+ 
+
+
+
+
+
+
+\backmatter
+
+\bmhead{Supplementary information}
+
+\ivan{We will need  a collection of : 
+* fossils
+* explanations 
+* perhaps other architectures like ResNet?
+* Dendrogram }
+
+
+\bmhead{Acknowledgments}
+
+
+
+% \section*{Declarations}
+
+% Some journals require declarations to be submitted in a standardised format. Please check the Instructions for Authors of the journal to which you are submitting to see if you need to complete this section. If yes, your manuscript must contain the following sections under the heading `Declarations':
+
+% \begin{itemize}
+% \item Funding
+% \item Conflict of interest/Competing interests (check journal-specific guidelines for which heading to use)
+% \item Ethics approval 
+% \item Consent to participate
+% \item Consent for publication
+% \item Availability of data and materials
+% \item Code availability 
+% \item Authors' contributions
+% \end{itemize}
+
+% \noindent
+% If any of the sections are not relevant to your manuscript, please include the heading and write `Not applicable' for that section. 
+
+% %%===================================================%%
+% %% For presentation purpose, we have included        %%
+% %% \bigskip command. please ignore this.             %%
+% %%===================================================%%
+% \bigskip
+% \begin{flushleft}%
+% Editorial Policies for:
+
+% \bigskip\noindent
+% Springer journals and proceedings: \url{https://www.springer.com/gp/editorial-policies}
+
+% \bigskip\noindent
+% Nature Portfolio journals: \url{https://www.nature.com/nature-research/editorial-policies}
+
+% \bigskip\noindent
+% \textit{Scientific Reports}: \url{https://www.nature.com/srep/journal-policies/editorial-policies}
+
+% \bigskip\noindent
+% BMC journals: \url{https://www.biomedcentral.com/getpublished/editorial-policies}
+% \end{flushleft}
+\newpage
+\begin{appendices}
+
+\section{Section title of first appendix}\label{secA1}
+
+An appendix contains supplementary information that is not an essential part of the text itself but which may be helpful in providing a more comprehensive understanding of the research problem or it is information that is too cumbersome to be included in the body of the paper.
+
+%%=============================================%%
+%% For submissions to Nature Portfolio Journals %%
+%% please use the heading ``Extended Data''.   %%
+%%=============================================%%
+
+%%=============================================================%%
+%% Sample for another appendix section			       %%
+%%=============================================================%%
+
+%% \section{Example of another appendix section}\label{secA2}%
+%% Appendices may be used for helpful, supporting or essential material that would otherwise 
+%% clutter, break up or be distracting to the text. Appendices can consist of sections, figures, 
+%% tables and equations etc.
+
+\end{appendices}
+
+%%===========================================================================================%%
+%% If you are submitting to one of the Nature Portfolio journals, using the eJP submission   %%
+%% system, please include the references within the manuscript file itself. You may do this  %%
+%% by copying the reference list from your .bbl file, paste it into the main manuscript .tex %%
+%% file, and delete the associated \verb+\bibliography+ commands.                            %%
+%%===========================================================================================%%
+
+\bibliography{sn-bibliography}% common bib file
+%% if required, the content of .bbl file can be included here once bbl is generated
+%%\input sn-article.bbl
+
+%% Default %%
+%%\input sn-sample-bib.tex%
+
+\end{document}
