@@ -76,18 +76,18 @@ Rules:
 
 The template itself (`paper-template`) will show a warning when running `make check`—this is expected and can be ignored.
 
-## Using Within prj_papers
+## Using Within research/papers
 
-If you use the [prj_papers](https://github.com/serre-lab/prj_papers) monorepo:
+If you use the [research/papers](https://github.com/serre-lab/prj_papers) monorepo:
 
-1. Copy this template folder to `prj_papers/paper-YYYY-shortslug` (e.g. `paper-2026-my-paper`)
+1. Copy this template folder to `research/papers/paper-YYYY-shortslug` (e.g. `paper-2026-my-paper`)
 2. Rename and customize the content
-3. From the `prj_papers` root, run: `git add paper-YYYY-shortslug/` and commit
-4. Push to the prj_papers remote—no separate repo needed
+3. From the `research/papers` root, run: `git add paper-YYYY-shortslug/` and commit
+4. Push to the research/papers remote—no separate repo needed
 
 ## Create the GitHub Repository
 
-*Use this section only when creating a standalone repo (not for prj_papers).*
+*Use this section only when creating a standalone repo (not for research/papers).*
 
 ### Path A: GitHub CLI (Recommended)
 
