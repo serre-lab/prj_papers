@@ -1,0 +1,13 @@
+# LaTeX Compilation Rules
+
+When working with LaTeX files (`**/*.tex`):
+
+- **Always use Tectonic for compilation**: Use `make pdf` which runs `tectonic -o build main.tex`
+- **Never suggest latexmk or pdflatex** unless the user explicitly asks for them
+- The compilation command is: `tectonic -o build main.tex`
+- Output PDF is written to `build/main.pdf`
+
+If compilation errors occur:
+- Read the error messages carefully
+- Fix the minimal issue needed to resolve the error
+- Recompile to verify the fix
