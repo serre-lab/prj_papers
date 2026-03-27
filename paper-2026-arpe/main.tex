@@ -1,0 +1,346 @@
+\documentclass{article} 
+\usepackage{iclr2026_conference,times}
+\usepackage{macros}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage[toc,page,header]{appendix}
+\usepackage{geometry}
+
+\geometry{margin=1in}
+
+\usepackage{minitoc}
+
+\renewcommand \thepart{}
+\renewcommand \partname{}
+
+\title{ARPE Title}
+
+\author{}
+
+\newcommand{\greg}[1]{{\color{indigo}[Gregoire]: #1}}
+\newcommand{\fel}[1]{{\color{gold}[Fel]: #1}}
+\newcommand{\agus}[1]{{\color{green}[Agus]: #1}}
+\newcommand{\boutin}[1]{{\color{pink}[Baltringueur]: #1}}
+\newcommand{\thomas}[1]{{\color{blue}[Thomas]: #1}}
+
+\widowpenalty=10000
+\clubpenalty=10000
+
+
+\begin{document}
+
+\doparttoc % Tell to minitoc to generate a toc for the parts
+\faketableofcontents % Run a fake tableofcontents command for the partocs
+
+\maketitle
+
+\begin{abstract}
+...
+\end{abstract}
+
+% ====================================================================================================
+\part{Neural Circuits as a Design Principle} % serves as introduction, laying the groundwork and motivation for the rest of the report.
+% ====================================================================================================
+
+% TODO : add to the example section sec:neural_circuits that the model could be further improved by including potential higher order derivatives or time delays.
+
+\greg{This part serves as introduction, biblio, background etc. for the rest of the document.}
+
+\greg{Add note on magno and parvo pathways (in vision) as an example of parallel pathways with different dynamics and functions. Magno is fast and feedback connection typically target magno pathways to meet up with slower parvo feedforward and recurrent pathways at a target area, implementing predictive and modulatory processing. Also, FB is typically long ranged (spatially) while recurrent is local - spectral vs spatial parameterisation of orthogonal convolution. We can model magno as skip connections, in which case the overall pathway reduces to a simple recurrence, and SSM solve both recurrent and feedback connection for the price of none (!). If we want to clearly separate FB and REC, we can use two layers, one parameterised spectrally, one spatially. This would cost a bit more but would be more biologically plausible and more interpretable.}
+
+% ----------------------------------------------------------------------------------------------------
+\section{Introduction}
+% ----------------------------------------------------------------------------------------------------
+
+\paragraph{} Present the overall project, motivations, initial goals, how it fits into my program, etc. Present the structure of the report.
+
+% ----------------------------------------------------------------------------------------------------
+\section{Biological and Computational Motivation}
+% ----------------------------------------------------------------------------------------------------
+
+\paragraph{}Brief overview of computational neuroscience, biological neural circuits and modeling efforts, and links to machine learning history.
+
+% ----------------------------------------------------------------------------------------------------
+\section{Formalizing Neural Circuits}
+% ----------------------------------------------------------------------------------------------------
+\label{sec:neural_circuits}
+
+\input{sections/part_intro/neural_circuit.tex}
+
+% ----------------------------------------------------------------------------------------------------
+\section{Neural Circuits in Brain Sciences}
+% ----------------------------------------------------------------------------------------------------
+\label{sec:neural_circuits_brain_science}
+
+\input{sections/part_intro/neural_circuits_brain_science.tex}
+
+% ----------------------------------------------------------------------------------------------------
+\section{Neural Circuits in Machine Learning}
+% ----------------------------------------------------------------------------------------------------
+
+\paragraph{}Overview of existing machine learning architectures that can be interpreted as neural circuits, highlighting their structure and function. State how most are purely feedforward, with recurrent architectures still marginal despite the recent SSM developpements, and feedback connections being even more rare and constrained to specific use cases such as predictive coding. Transformers can have a sort of time "recurrence" through positional encoding, but this isn't fit for long range sequences due to computational complexity. Plus, recurrence is quite artificial as it is added through attention masks and positional encoding, there is no hidden state that evolves over time. Each token is independent from the others, and it works thanks to full memory preservation. Recurrent and feedback architectures are not only more biologically plausible, but they also offer potential advantages in terms of efficiency, adaptability, interpretability and dynamics depending on the task.
+
+% ----------------------------------------------------------------------------------------------------
+\section{Scope and Research Questions}
+% ----------------------------------------------------------------------------------------------------
+
+\paragraph{}We explore several aspects that naturally emerge from the above framework. First is architecture design grounded in neural circuits for a single modality (here, vision) (part II). Second, is the integration of unimodal circuits into a single multimodal one (part III and IV). Finally, in part V we explore the possibility of a universal neural circuit, akin to universal turing machines, that could simulate any other neural circuit, possibly under some constraints to make the problem tractable. This could serve as a foundation for a foundation model for brain science.
+
+% ====================================================================================================
+\part{Constructing Better Vision Circuits} % main technical contribution, proposing ConvSSM as a new architecture for vision tasks, inspired by neural circuits.
+% ====================================================================================================
+
+\section*{Part Outline}
+
+\paragraph{}In this part, we explore how the circuit formalism of part I can guide the design of new architectures. Specifically, our goal is to introduce horizontal recurrent connections, where current SSMs only have self-recurrence.
+
+% ----------------------------------------------------------------------------------------------------
+\section{Related Work}
+% ----------------------------------------------------------------------------------------------------
+
+\paragraph{}ConvNet, SSM, ConvS4, hGRU, etc. Also, dino is approximated by a recurrent architecture with just two layers (Fel et al).
+
+% ----------------------------------------------------------------------------------------------------
+\section{ConvSSM Definition}
+% ----------------------------------------------------------------------------------------------------
+\label{sec:ConvSSM_definition}
+
+\input{sections/part_convssm/definition.tex}
+
+% ----------------------------------------------------------------------------------------------------
+\section{ConvSSM Complexity}
+% ----------------------------------------------------------------------------------------------------
+\label{sec:ConvSSM_complexity}
+
+\input{sections/part_convssm/complexity.tex}
+
+% ----------------------------------------------------------------------------------------------------
+\section{Towards Feedback Connections}
+% ----------------------------------------------------------------------------------------------------
+\label{sec:ConvSSM_feedback_connections}
+
+\input{sections/part_convssm/feedback_connections.tex}
+
+% ----------------------------------------------------------------------------------------------------
+\section{Further Parameterizations}
+% ----------------------------------------------------------------------------------------------------
+
+\paragraph{}log domain (GOOM) / multiplicative behavior (might not need log domain if well parameterized, but log domain will help anyway) : circuit : F can include multiplicative or divisive interactions and modulations.
+
+% ----------------------------------------------------------------------------------------------------
+Ullman, S. (1984). Visual routines. Cognition, 18(1–3), 97–159. DOI: 10.1016/0010-0277(84)90023-4. 
+\section{Experiments}
+% ----------------------------------------------------------------------------------------------------
+
+\paragraph{Baselines and SOTA.}SOTA : (h)Gru, ConvS4, ViT, ConvNeXt, etc. baselines : CNN ?
+
+\paragraph{Classification.}imagenet and compagnie
+
+\paragraph{Visual Reasoning.}static : pathfinder, cABC, 3D-PC, planko. Dynamic : feature tracker, pathtracker. Interpretability : attribution vs time, representation alignment, dynamics (attractors, fixed points, etc.), accuracy vs time / accuracy vs convergence to fixed points if any. Graal : pathfinder : have a window of attention moving along the path through time.
+
+\paragraph{Self-Supervised Learning.}dino like ssl, video ssl, predictive coding... interpretability : optical flow, motion prediction, modulation of activation and attribution maps in static areas, representation alignment with other sota ssl models.
+
+% ----------------------------------------------------------------------------------------------------
+\section{Scaling Laws}
+% ----------------------------------------------------------------------------------------------------
+
+\paragraph{}how does performance scale with model size, data size, compute, etc. ?
+
+% ----------------------------------------------------------------------------------------------------
+\section{Foundational ConvSSM}
+% ----------------------------------------------------------------------------------------------------
+
+\paragraph{}toy : visual reasoning tasks, generalisation / fine tuning on a held out task.
+
+\paragraph{}large scale : ssl then evaluate on downstream tasks.
+
+% ----------------------------------------------------------------------------------------------------
+\section{Quantization}
+% ----------------------------------------------------------------------------------------------------
+
+\paragraph{}
+
+% ----------------------------------------------------------------------------------------------------
+\section{Discussion}
+% ----------------------------------------------------------------------------------------------------
+
+\paragraph{}...
+
+%\part{Interpreting Multimodal Models through the Lens of Neural Circuits} % applying neural circuit interpretability tools to multimodal models, drawing insights and comparisons. (XAI, mech interp, etc.)
+% ====================================================================================================
+\part{Analyzing Multimodal Models}
+% ====================================================================================================
+
+\section*{Part Outline}
+
+\paragraph{}This part is independent on the previous one. It focuses on integrating several unimodal circuits into a single multimodal one. Its goal is not to introduce new architectures, but to analyse existing multimodal models through the lens of neural circuits, using interpretability tools.
+
+% ----------------------------------------------------------------------------------------------------
+\section{Related Work}
+% ----------------------------------------------------------------------------------------------------
+
+\paragraph{}interpretability, multimodality, etc.
+
+% ----------------------------------------------------------------------------------------------------
+\section{The Phenomenology of Multimodal Integration in LMMs}
+% ----------------------------------------------------------------------------------------------------
+
+\subsection{Framework Formulation}
+
+\paragraph{}cf je sais plus quel overleaf.
+
+\subsection{Cycle Consistent IsoEnergy SAEs}
+
+\paragraph{}Rewrite $P_{\mathrm{tr}}$, $P_{\mathrm{cont}}$, $P_{\mathrm{dcy}}$, and $P_{\mathrm{cy}}$ from rufin et al., say that $P_{\mathrm{tr}}$ and $P_{\mathrm{cont}}$ rely on patching pairs for translation and alignment, which may not exist, but if the geometry aligns and arise from shared dictionaries, replacing them with IsoEnergy constraints should work. Define $P_{\mathrm{iso}}$ accordingly. Link to dhimoila et al. Show that the method works in a case where we have access to actual cycle consistent losses (e.g. CLIP).
+
+figures : ...
+
+tables : metrics ...
+
+\subsection{Dynamics of Multimodal Integration Across Layers}
+
+\paragraph{}figures : (i) similarity matrices T1(L) vs T2(L'), or similarly with images : T1 is the distribution of text tokens without context, T2 is the distribution of text tokens with image context. If there is significant shift from T1 to T2, it means that image context is integrated into text tokens. (ii) similarity matrices T1(L) vs T1(L') : if significant shift, it means that the model is changing the geometry of the representation space across layers. This should be obvious in T as input tokens are raw and uncontextualised. The interesting case is for I as "input" tokens are already fully refined by the visual system. (iii) similarity matrices T1(L) vs I1(L') : this needs matching pairs or isoenergy constraints to work... enter CCIE SAEs. Expect image and text to get closer across layers maybe until the last few layers where text needs to collapse for token prediction. Under assumption 2 : wasserstein between distributions. Possibly include translation / scale invariance by normalising representations first. Under assumption 3 : SAE based metrics.
+
+\greg{TODO : normalise CMAP in the range of the metric. Currently, plots that range between 0 and 1e-11 will have as bright of a color as plots that have the full range 0-1 or 0-2.}
+\greg{have different color maps for different metrics of distribution alignment.}
+
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}{0.2\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/text_embedding_trajectory_CKA.png}
+        \caption{Text distribution}
+        \label{fig:phenomenology_text_refinement}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.2\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/image_embedding_trajectory_CKA.png}
+        \caption{Image distribution}
+        \label{fig:phenomenology_image_refinement}
+    \end{subfigure}
+    \caption{Similarity matrices showing the evolution of text (\emph{left}) and image (\emph{right}) token distributions across layers in a multimodal model. The evolution of text token across layer is standard, and shows that contextualisation and refinment occurs across layers, starting from uncontextualised raw tokens. Visual token evolution is of particular interest here, as visual tokens are already fully refined by the vision backbone. Any significant change in their geometry across layers indicates further refinement or contextualisation performed by the language backbone. \greg{TODO : interpret the actual results.} The metric reported here is \textbf{TODO}. See \cref{sec:...} for other metrics.}
+    \label{fig:phenomenology_refinement}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}{0.2\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/txt_raw2cond_CKA.png}
+        \caption{Text integration}
+        \label{fig:phenomenology_text_integration}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.2\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/img_raw2cond_CKA.png}
+        \caption{Image integration}
+        \label{fig:phenomenology_image_integration}
+    \end{subfigure}
+    \caption{Multimodal integration dynamics across layers. Contrary to \cref{fig:phenomenology_refinement}, which focused on the evolution of the geometry of each modality independently, here we focus on the effect of multimodal integration on this geometry. Specifically, we compare the distribution of text tokens without image context to the distribution of text tokens with image context (\emph{left}), and similarly for image tokens (\emph{right}). The diagonal of this distance matrices is of particular interest, as the off diagonal elements are mainly driven by layer-wise drift of the geometry rather than multimodal integration effects. \greg{TODO : interpret the actual results.}}
+    \label{fig:phenomenology_integration}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.2\linewidth]{figures/img2txt_Wasserstein.png}
+    \caption{Geometric similarity between text and image token distributions across layers. This figure shows how the geometry of text and image token distributions align across layers in a multimodal model. \greg{TODO : interpret the actual results. Both distributions seem to converge to a shared latent geometry. If the previous figures shows that image geometry is roughly constant, we should see stripes of equal alignment}}
+    \label{fig:phenomenology_text_integration}
+\end{figure}
+
+% ----------------------------------------------------------------------------------------------------
+\section{Interpretability of Multimodal Integration in LMMs}
+% ----------------------------------------------------------------------------------------------------
+
+\subsection{Identifying Multimodal Neurons}
+
+\paragraph{}e.g. a "blue" neuron that responds to both the concept of "blue" in text and images. Use SAEs for automated identification, e.g. the whole Gamma subspace if that works, or probes for specific concepts. causal intervention : fiddle with these neurons and check for predictable effect on both vision and language token fiddling.
+
+\subsection{Visual Integration Circuits}
+
+\paragraph{}Are there dedicated circuits that move information from vision tokens to language tokens ? Or does the visual token just align with latent geometry and the information retrieval follows arbitrary pre existing language circuits ? Start with task specific then move on to general ones. causal interventions : 1st case : ablate these circuits, check that text only capabilities are preserved but vision integration is lost. 2nd case : since these are not dedicated multimodal integration pathways but recycled unimodal language circuits leveraged through representational alignment, ablating them should break both vision integration and text only capabilities. This gives two hypotheses that can be tested experimentally.
+
+\subsection{On the Binding Problem}
+
+\paragraph{}there might not be a binding problem at all... in LMM, it's either trivially solved when there is no more than one object of interest per token, or unsolved due to the vision backbone, not due to multimodal integration per se.
+
+% ----------------------------------------------------------------------------------------------------
+\section{Discussion}
+% ----------------------------------------------------------------------------------------------------
+
+\paragraph{}...
+
+% ====================================================================================================
+\part{Towards Multimodal Neural Circuits} % proposing new multimodal architectures inspired by neural circuits, integrating insights from previous parts. If time permits implementation and experiments, include interpretability analysis based on the previous part.
+% ====================================================================================================
+
+\section*{Part Outline}
+
+\paragraph{}Combining insights from parts II and III, we propose new multimodal architectures inspired by neural circuits in light of what we learned. (speculative part for now)
+
+% ----------------------------------------------------------------------------------------------------
+\section{Introduction}
+% ----------------------------------------------------------------------------------------------------
+
+\paragraph{}multimodal, embodied agents, neural circuits, patati patata...
+
+% ----------------------------------------------------------------------------------------------------
+\section{Related Work}
+% ----------------------------------------------------------------------------------------------------
+
+\paragraph{}...
+
+% ----------------------------------------------------------------------------------------------------
+\section{...}
+% ----------------------------------------------------------------------------------------------------
+
+\paragraph{}...
+
+% embodied agents & co, make an architecture with sensory and motor circuits that all interact, cooperate and condition each other.
+
+% ====================================================================================================
+\part{Universal Neural Circuits} % similar to universal turing machines, propose a universal machines that takes as input a history of h_{W \subseteq V}(t) over time and predicts the next states h(T+k)
+% ====================================================================================================
+% modivation sEEG dataset, build a foundation model for brain science.
+% Plan :
+% - theoretical framework, results and analysis. Find out under which hypotheses universal circuits can exist, find bounds for zero or first order approximation, etc...
+% - foundational UNC architecture
+% - finetune on brain data
+% - finetune on sEEG data
+
+\section*{Part Outline}
+
+\paragraph{}We propose the notion of universal neural circuits (UNC), akin to universal turing machines, that can simulate any other neural circuit under some constraints. This could serve as a foundation model for brain science.
+
+% ----------------------------------------------------------------------------------------------------
+\section{Introduction}
+% ----------------------------------------------------------------------------------------------------
+
+\paragraph{}EEG, MEG, sEEG, etc. Foundation models for brain science.
+
+% ----------------------------------------------------------------------------------------------------
+\section{Related Work}
+% ----------------------------------------------------------------------------------------------------
+
+\paragraph{}...
+
+% ----------------------------------------------------------------------------------------------------
+\section{...}
+% ----------------------------------------------------------------------------------------------------
+
+\paragraph{}...
+
+% ====================================================================================================
+\part{Appendix} % Start the appendix part
+\parttoc % Insert the appendix TOC
+
+\section{State Space Models.}
+\label{sec:SSM}
+
+\paragraph{} 
+Neural circuits rely heavilly on recurrent connections, key to model long range dependencies and working memory. However, training recurrent neural networks is notoriously difficult due to vanishing and exploding gradients on the optimisation side, and to sequentiality incompatible with modern hardware acceleration on the computational side. Recently, state space models (SSMs) have emerged as a powerful class of models to tackle these issues. The core idea of SSMs is to model the recurrent dynamics as a linear system, allowing to leverage linear algebra tools to parallelise training and inference, while maintaining the ability to model long range dependencies through carefully designed dynamics. See \cref{sec:ConvSSM_definition} for a formal definition and analysis of the stability of these systems. See \cref{sec:ConvSSM_complexity} for a detailed analysis of their computational complexity in light of modern hardware acceleration.
+%
+SSMs have been successfully applied to various domains, including natural language processing \citep{TODO}, computer vision \citep{TODO}, and time series analysis \citep{TODO}.
+
+\end{document}

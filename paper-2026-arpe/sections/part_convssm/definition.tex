@@ -1,0 +1,105 @@
+
+\paragraph{State Space Model.} The state space model (SSM) is a class of recurrent model with linear recurrent dynamics. Their most general formulation is that of continuous-time (\Cref{eq:ssm}), which can be discretised as in \Cref{eq:ssm:recurrence}, with transition matrices depending on the desired step size following \Cref{eq:zoh}. Parameterizing transition matrices of the continuous time formulation allows to handle arbitrary sampling rates for free. Additionally, Mamba \citep{TODO:Mamba} takes advantage of this continuous time formulation and discretization step to derive a data-adaptive gating mechanism to give more or less importance to the present input.
+
+\begin{minipage}[t]{.30\linewidth}
+  \begin{subequations}
+    \label{eq:ssm}
+    \begin{align}
+      h'(t) &= A h(t) + B x(t) \\
+      y(t) &= C h(t)
+    \end{align}
+  \end{subequations}
+\end{minipage}%
+\begin{minipage}[t]{.30\linewidth}
+  \begin{subequations}
+    \label{eq:ssm:recurrence}
+    \begin{align}
+    \label{eq:ssm:recurrence:1}
+      h_{t} &= \overline{A} h_{t-1} + \overline{B} x_t \\
+    \label{eq:ssm:recurrence:2}
+      y_t &= C h_t
+    \end{align}
+  \end{subequations}
+\end{minipage}%
+\begin{minipage}[t]{.39\linewidth}
+  \begin{subequations}%
+    \label{eq:ssm:convolution}
+    \begin{align}
+      \label{eq:ssm:convolution:1}
+      \bm{\overline{K}} &= (\bm{C}\bm{\overline{B}}, \bm{C}\bm{\overline{A}}\bm{\overline{B}}, \dots, \bm{C}\bm{\overline{A}}^{k}\bm{\overline{B}}, \dots) \\
+      \label{eq:ssm:convolution:2}
+      y &= x \ast \bm{\overline{K}}
+    \end{align}
+  \end{subequations}
+\end{minipage}
+
+\paragraph{Discretisation.} Various rules can be used for discretisation, such as the zero-order hold (ZOH) whose solution is given in \Cref{eq:zoh}.
+\begin{equation}
+\label{eq:zoh}
+\overline{A} = e^{\Delta \bm{A}}
+\qquad
+\overline{B} = (\Delta \bm{A})^{-1} (e^{\Delta \bm{A}} - \bm{I}) \cdot \Delta \bm{B}
+\end{equation}
+where $\Delta$ is the time step.
+
+\paragraph{Spatial Coupling.} Rewriting \Cref{eq:ssm} to include horizontal connections yields \Cref{eq:conv_ssm_continuous}, with the corresponding discrete time formulations in \Cref{eq:conv_ssm_discrete}.
+
+\begin{minipage}[t]{.45\linewidth}
+  \begin{subequations}
+    \label{eq:conv_ssm_continuous}
+    \begin{align}
+    \label{eq:conv_ssm_continuous:1}
+      \frac{\partial h}{\partial t}(r,t) &= K_h \ast h(r, t) + K_x \ast x(r, t) \\
+      y(r, t) &= K_y \ast h(r, t)
+    \end{align}
+  \end{subequations}
+\end{minipage}%
+\begin{minipage}[t]{.45\linewidth}
+  \begin{subequations}
+    \label{eq:conv_ssm_discrete}
+    \begin{align}
+    \label{eq:conv_ssm_discrete:1}
+      h_{t} &= \overline{K}_h \ast h_{t-1} + \overline{K}_x \ast x_t \\
+    \label{eq:conv_ssm_discrete:2}
+      y_t &= K_y \ast h_t
+    \end{align}
+  \end{subequations}
+\end{minipage}
+
+However, discretization of the convolution kernel isn't as straightforward due to spatial coupling. Indeed, in order to be in the linear recurrence case, we need to view a whole image as a single vector $x\in \R^{(h\cdot w) \times c}$ and expand the convolution kernel into a circulant matrix $A \in \R^{(h\cdot w)^2 \times c^2}$. Now, following \Cref{eq:zoh}, we can compute $\overline{A}$. However, $\overline{B}$ requires the inverse of $A$ which typically has full spatial support, making it intractable in spatial domain.
+
+By diagonalizing the circulant matrix in spectral domain, the set of spatially coupled partial differential equations (PDE) from \Cref{eq:conv_ssm_continuous:1} becomes a set of spectrally decoupled ordinary differential equations (ODE) (\Cref{eq:conv_ssm_continuous_spectral})~:
+
+\begin{minipage}[t]{.45\linewidth}
+  \begin{subequations}
+    \begin{align}
+    \label{eq:conv_ssm_continuous_spectral}
+      \frac{\partial \widehat{h}}{\partial t}(w,t) &= \widehat{K}_h(w) \widehat{h}(w, t) + \widehat{K}_x(w) \widehat{x}(w, t)
+    \end{align}
+  \end{subequations}
+\end{minipage}%
+
+making \Cref{eq:zoh} applicable to every spatial frequency separately~:
+\begin{equation}
+\label{eq:zoh_spectral}
+\overline{K}_h(w) = e^{\Delta \bm{\widehat{K}}_h(w)}
+\qquad
+\overline{K_x}(w) = (\Delta \bm{\widehat{K}}_h(w))^{-1} (e^{\Delta \bm{\widehat{K}}_h(w)} - \bm{I}) \cdot \Delta \bm{\widehat{K}}_x(w)
+\end{equation}
+
+\paragraph{Stability.} The continuous time ODEs imply exponential dynamics of the state over time. This dynamics are controlled by the eigenvalues $\lambda^A_i$ of the transition matrix $A$ ($\widehat{K}_h(w)$ in our case). The imaginary part controls the angular speed, while the real part controls the modulus' exponential growth. Thus, stability is achieved when
+
+\begin{align}
+    \label{eq:stability}
+    \mathrm{Re}(\lambda^A_i) \leq 0
+\end{align}
+
+The corresponding discrete time condition is thus given by
+\begin{align}
+    \label{eq:discrete_stability}
+    |\lambda^{\overline{A}}_i| \leq 1
+\end{align}
+
+State of the art SSM parameterisation enforces \Cref{eq:discrete_stability} on $A$. They remark that in general it does not seem to work (which is expected as it is not the correct condition), but in the special case of HiPPO matrices, it happens to work well. Through a happy accident, these matrices can be decomposed in a normal plus low rank (NPLR) form with a normal component that satisfies the correct condition of \Cref{eq:stability}.
+
+\paragraph{Link to Neural Circuits.} As mentioned in \cref{sec:background}, the state space model implements \emph{recurrent} connections through linear dynamics to make them parallelisable. State of the art approaches in vision make these \emph{self-recurrent} only \citep{TODO}. Our approach adds \emph{intra-recurrence} through \emph{horizontal} connections for visual systems in such a way that preserves computational stability and complexity, while adding expressivity and biological plausibility.

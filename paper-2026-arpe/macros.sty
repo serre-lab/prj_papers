@@ -1,0 +1,123 @@
+\usepackage[colorlinks=true,allcolors=indigo]{hyperref}
+\usepackage[scaled]{inconsolata}
+\usepackage{url}
+
+\usepackage{xspace}
+
+\usepackage{mathtools,amssymb,amsmath,amsfonts,amsthm,bm}
+\usepackage{stmaryrd,wasysym,cases,bbm}
+
+\usepackage{graphicx,wrapfig,subcaption,float}
+
+\usepackage{algpseudocode,algorithm}
+
+\usepackage{booktabs,multirow}
+
+\usepackage{enumitem,microtype}
+\usepackage[capitalize,nameinlink]{cleveref}
+\usepackage[compact]{titlesec}
+\usepackage[nodisplayskipstretch]{setspace}
+\usepackage{xcolor}
+\usepackage{wrapfig}
+
+% --- Colors ---
+\definecolor{lightindigo}{RGB}{242,244,255}
+\definecolor{lightanthracite}{RGB}{252,252,255}
+\definecolor{blueanthracite}{RGB}{61,71,94}
+\definecolor{indigo}{RGB}{63,81,181}
+\definecolor{red}{RGB}{210,40,95}
+\definecolor{pink}{RGB}{236,64,122}
+\definecolor{green}{RGB}{46,182,125}
+\definecolor{blue}{RGB}{3,81,154}
+\definecolor{yellow}{RGB}{236,178,46}
+\definecolor{anthracite}{RGB}{61,61,81}
+\definecolor{gold}{RGB}{182,131,76}
+\definecolor{lightgrey}{RGB}{128,128,128}
+\definecolor{purple}{RGB}{156,39,176}
+\definecolor{slate}{RGB}{69,85,108}
+\definecolor{googleblue}{RGB}{66,133,244}
+\definecolor{googlered}{RGB}{219,68,55}
+\definecolor{googlegreen}{RGB}{15,157,88}
+\definecolor{googleyellow}{RGB}{244,180,0}
+
+% --- Theorems ---
+\newtheorem{definition}{Definition}
+\newtheorem{assumption}{Assumption}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{remark}{Remark}
+
+
+% --- Commands: Sets & Spaces ---
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prob}{\mathbb{P}}
+
+\newcommand{\Cspace}{\mathcal{C}}
+\newcommand{\Domains}{\mathfrak{D}}
+\newcommand{\domain}{\textmd{d}}
+\newcommand{\Xspace}{\mathcal{X}}
+\newcommand{\Xd}{\mathcal{X}^{(\domain)}}
+\newcommand{\Xdp}{\mathcal{X}^{(\domain')}}
+\newcommand{\Dataset}{\mathcal{D}}
+
+% --- Commands: Variables ---
+\newcommand{\Z}{\bm{Z}}
+\newcommand{\D}{\bm{D}}
+\newcommand{\A}{\bm{A}}
+\newcommand{\K}{K}
+\newcommand{\Dd}{|\Xd|}
+\newcommand{\Nsamples}{N}
+
+\newcommand{\cvec}{\bm{c}}
+\newcommand{\Cvec}{\bm{C}}
+\newcommand{\xvec}{\bm{x}}
+\newcommand{\yvec}{\bm{y}}
+\newcommand{\qvec}{\bm{q}}
+\newcommand{\Xvec}{\bm{X}}
+
+% --- Commands: Functions ---
+\newcommand{\iid}{\stackrel{\text{iid}}{\sim}}
+\newcommand{\prior}{p}
+\newcommand{\marginal}{p_{k}}
+\newcommand{\generator}{\bm{g}^{(\domain)}}
+\newcommand{\encoder}{\bm{\psi}}
+\newcommand{\sae}{\bm{\psi}}
+
+
+\renewcommand{\c}{\gamma} % content
+\newcommand{\m}{\omega} % modality info
+\newcommand{\x}{\bm{x}}
+
+% --- Commands: Instances ---
+\newcommand{\concepti}{\cvec^{(i)}}
+\newcommand{\obsi}{\xvec^{(i,\domain)}}
+
+% --- Commands: Misc ---
+\newcommand{\unimodal}{\textit{unimodal}\xspace}
+\newcommand{\bimodal}{\textit{bimodal}\xspace}
+\newcommand{\modalityspecific}{\textit{modality-specific}\xspace}
+\newcommand{\crossmodal}{\textit{cross-modal}\xspace}
+
+\newcommand{\SAEA}[1]{\textcolor{googlegreen}{#1}}
+\newcommand{\SAE}[1]{\textcolor{googleblue}{#1}}
+\def\gray{\color[rgb]{0.5,0.5,0.5}}
+
+\newcommand{\img}{\mathrm{img}}
+\newcommand{\txt}{\mathrm{txt}}
+\newcommand{\norm}[1]{\left\|#1\right\|}
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\Isoenergy}{Iso-Energy}
+\newcommand{\intint}[2]{\llbracket #1, #2 \rrbracket}
+
+% --- Thomas's private annotations (tcolorbox, used by *-annotated files) ---
+\usepackage{tcolorbox}
+\newtcolorbox{thomas}{colback=blue!5!white,colframe=blue!60!black,title={\textbf{Thomas's annotation}},fonttitle=\small,left=4pt,right=4pt,top=2pt,bottom=2pt}
+
+% --- Algorithms: Custom Labels ---
+\newcommand{\algorithmicparameter}{\textbf{Parametrization:}}
+\newcommand{\PARAMETER}{\item[\algorithmicparameter]}

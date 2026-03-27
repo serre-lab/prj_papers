@@ -28,3 +28,15 @@ Thumbs.db
 # Compiled PDFs (optional - uncomment if you want to ignore PDFs)
 *.pdf
 .claude/
+
+# Source archives
+*.zip
+
+# Redundant directories (consolidated into main paper dirs)
+paper-2026-arpe-annotated/
+
+# minitoc intermediate files
+*.maf
+*.mtc
+*.mtc0
+*.ptc*
