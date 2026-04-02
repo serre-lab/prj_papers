@@ -1,0 +1,76 @@
+\documentclass[preprint]{ccn}
+
+\addbibresource{ccn_references.bib}
+
+
+\title{Formatting Instructions for CCN 2026 Extended Abstracts}
+
+\author{%
+  Author One\affmark{1} \And
+  Author Two\affmark{1} \And
+  Author Three\affmark{2} \And
+  Author Four\affmark{2,3} \AND
+  Author Five\affmark{3} \And
+  Author Six\affmark{4} \And
+  Author Seven\affmark{4} \And
+  Author Eight\affmark{1,4}%
+}
+\affiliation{1}{Department of Neuroscience, First University}
+\affiliation{2}{Institute for Brain Research, Second University}
+\affiliation{3}{Center for Neural Computation, Third University}
+\affiliation{4}{Department of Psychology, Fourth University}
+\emails{author1@first.edu, author3@second.edu, corresponding@fourth.edu}
+
+
+\begin{document}
+
+\maketitle
+\cleardoublepage
+\section{Abstract}{}
+\begin{quote}
+\small
+\textbf{Keywords:} Computer Vision; 
+\end{quote}
+
+\begin{figure*}[ht]
+\begin{center}
+\includegraphics[width=\linewidth]{figures/main.png}
+\end{center}
+\caption{\textbf{Predictive training achieves }}
+\label{fig:result-figure}
+\end{figure*}
+
+\section{Introduction}
+\textbf{Background}: Vision models trained on large-scale datasets surpass human performance on a variety of tasks. However, they have plateaued as models of biological vision. \\
+\textbf{Problem}: How do we create better human-aligned models of vision without direct supervision from human representations? \\
+Hypothesis: Vision models trained on naturalistic data and predictive objectives would emerge as a good model for human vision.\\
+\textbf{Approach}: To explore the space of data diet and training routines. Using self-supervised learning (SSL) on natural videos, we finetuned pretrained vision models with reconstruction or prediction objectives in pixel and latent space. \\
+\textbf{Result}: 
+Predictive learning aligns models with human attribution across model scales.
+
+\section{Approach and Method}
+
+\paragraph{Data generation.} 
+To generate ecological data, we used 3D Gaussian Splatting \citep{kerbl3Dgaussians} trained with Common Objects in 3D (Co3D) \citep{reizenstein21co3d}, which contains videos of real-world objects from 50 MS-COCO categories \citep{mscoco}. We trained 27,823 Gaussian Splatting models and rendered 50 images along a smooth trajectory as our training data.
+
+Clickme to collect human attribution maps for alignment evaluation.
+
+\paragraph{Model training.} 
+To explore the space of training routines, we fine-tuned six pretrained vision models from TIMM \citep{rw2019timm} with seven self-supervised objectives, along with supervised classification as control. The pretrained models include five different sizes of Vision Transformers (ViT) \citep{dosovitskiy2020vit} and two sizes of BEiT V2 \citep{beitv2}. All models are pretrained with ImageNet-21K \citep{ridnik2021imagenet21kpretrainingmasses}. The seven self-supervised objectives are grouped into three categories: spatial reconstruction, temporal reconstruction, and prediction. Spatial reconstruction asks models to reconstruct the full or randomly masked parts of images. This category includes Masked Autoencoder (MAE) \citep{mae}, VideoMAE \citep{videomae}, and autoencoder \citep{hinton_autoencoder}. Temporal reconstruction utilizes temporal information in training videos by asking models to reconstruct intermediate frames of a sequence. Finally, the prediction objective makes the models predict the next frame given previous frames as context. To maximize the utilization of video information, we implemented temporal reconstruction and prediction using teacher forcing \citep{teacherforcing}. Inspired by recent developments in self-supervised learning \citep{dinov1, ijepa}, we included versions of temporal reconstruction and prediction methods with supervision in the latent space, using the same design as in \cite{dinov1}. 
+
+\paragraph{Stability evaluation.} 
+Explain how human attribution maps and model saliency maps are used to compute attribution stability across rotations. 
+We evaluated human and model representation stability by projecting saliency maps from one angle of an object to other angles, and computing Spearman correlations between the projected maps and the maps from that angle. The projection is achieved using 3D reconstructions from 3D Gaussian Splatting and camera matrices estimated with COLMAP \citep{schoenberger2016sfm, schoenberger2016mvs}.
+
+\section{Results} 
+Overall, temporal predictive learning objectives result in the largest alignment improvement without losing classification accuracy. Pixel predictive objective produces high alignment improvements across model sizes. Latent-level prediction produces larger improvements in accuracy, but has smaller effect on alignment. \\
+Pixel autoregressive model has the highest stability across angles.\\
+\section{Conclusion}
+
+
+\newpage
+\section{Acknowledgments}
+
+\printbibliography
+
+\end{document}

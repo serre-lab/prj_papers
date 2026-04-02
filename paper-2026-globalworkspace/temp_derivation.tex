@@ -1,0 +1,574 @@
+\documentclass{article}
+
+\usepackage{csquotes}
+\usepackage[english]{babel}
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[
+  backend=biber,
+  style=authoryear
+]{biblatex}
+
+\addbibresource{sample.bib}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\newcommand{\hl}[1]{\par\textcolor{blue}{[Hanson here: #1]}}
+
+\title{Proof}
+\author{Yu-Ang Cheng}
+
+\begin{document}
+\maketitle
+
+\section{Setup}
+Let
+\[
+z_x = W_x x \in \mathbb{R}^k,
+\qquad
+z_y = W_y y \in \mathbb{R}^k,
+\]
+with
+\[
+W_x \in \mathbb{R}^{k\times d_x},
+\qquad
+W_y \in \mathbb{R}^{k\times d_y}.
+\]
+We introduce linear decoders
+\[
+\hat y = V_y z_x,
+\qquad
+\hat x = V_x z_y,
+\]
+with
+\[
+V_y \in \mathbb{R}^{d_y\times k},
+\qquad
+V_x \in \mathbb{R}^{d_x\times k}.
+\]
+
+We regularize the within-view covariances by
+\[
+S_{xx} := \Sigma_{xx} + \lambda_x I_{d_x},
+\qquad
+S_{yy} := \Sigma_{yy} + \lambda_y I_{d_y},
+\]
+where \(\lambda_x,\lambda_y \ge 0\).
+
+The cycle maps are
+\[
+x \mapsto z_x = W_x x
+\mapsto \hat y = V_y z_x
+\mapsto \hat z_y = W_y \hat y
+\mapsto x^{\mathrm{cy}} = V_x \hat z_y,
+\]
+and
+\[
+y \mapsto z_y = W_y y
+\mapsto \hat x = V_x z_y
+\mapsto \hat z_x = W_x \hat x
+\mapsto y^{\mathrm{cy}} = V_y \hat z_x.
+\]
+
+We evaluate cycle consistency in the Mahalanobis metrics induced by
+\(S_{xx}^{-1}\) and \(S_{yy}^{-1}\):
+\[
+\mathcal L_{\mathrm{cy},x}
+=
+\mathbb E\!\left[
+(x-x^{\mathrm{cy}})^\top S_{xx}^{-1}(x-x^{\mathrm{cy}})
+\right],
+\]
+\[
+\mathcal L_{\mathrm{cy},y}
+=
+\mathbb E\!\left[
+(y-y^{\mathrm{cy}})^\top S_{yy}^{-1}(y-y^{\mathrm{cy}})
+\right],
+\]
+and
+\[
+\mathcal L_{\mathrm{cy}}
+=
+\mathcal L_{\mathrm{cy},x}+\mathcal L_{\mathrm{cy},y}.
+\]
+
+Throughout, the encoders satisfy ridge-whitening:
+\[
+W_x S_{xx} W_x^\top = I_k,
+\qquad
+W_y S_{yy} W_y^\top = I_k.
+\]
+
+Define
+\[
+U := W_x S_{xx}^{1/2},
+\qquad
+V := W_y S_{yy}^{1/2},
+\qquad
+A_\lambda := S_{xx}^{-1/2}\Sigma_{xy}S_{yy}^{-1/2},
+\]
+so that
+\[
+UU^\top = I_k,
+\qquad
+VV^\top = I_k.
+\]
+Also define
+\[
+B_x := S_{xx}^{-1/2}\Sigma_{xx}S_{xx}^{-1/2},
+\qquad
+B_y := S_{yy}^{-1/2}\Sigma_{yy}S_{yy}^{-1/2}.
+\]
+Since \(S_{xx}=\Sigma_{xx}+\lambda_x I\) and \(S_{yy}=\Sigma_{yy}+\lambda_y I\),
+we have
+\[
+B_x = I_{d_x} - \lambda_x S_{xx}^{-1},
+\qquad
+B_y = I_{d_y} - \lambda_y S_{yy}^{-1}.
+\]
+
+
+\section{Self-reconstruction-optimal decoders}
+
+We first assume that \(V_x\) and \(V_y\) are chosen as the best linear
+decoders for within-view self reconstruction :
+\[
+V_x^{\mathrm{self}}
+\in
+\arg\min_{V_x}\;
+\mathbb E\bigl[\|x - V_x W_x x\|^2\bigr],
+\qquad
+V_y^{\mathrm{self}}
+\in
+\arg\min_{V_y}\;
+\mathbb E\bigl[\|y - V_y W_y y\|^2\bigr].
+\]
+
+By linear least squares,
+\[
+V_x^{\mathrm{self}}
+=
+\Sigma_{xx}W_x^\top\bigl(W_x\Sigma_{xx}W_x^\top\bigr)^{-1},
+\qquad
+V_y^{\mathrm{self}}
+=
+\Sigma_{yy}W_y^\top\bigl(W_y\Sigma_{yy}W_y^\top\bigr)^{-1}.
+\]
+
+Using \(W_x = U S_{xx}^{-1/2}\) and \(W_y = V S_{yy}^{-1/2}\), this becomes
+\[
+V_x^{\mathrm{self}}
+=
+S_{xx}^{1/2} B_x U^\top (U B_x U^\top)^{-1},
+\qquad
+V_y^{\mathrm{self}}
+=
+S_{yy}^{1/2} B_y V^\top (V B_y V^\top)^{-1}.
+\]
+
+As before, the full cycle collapses to one-step self reconstruction:
+\[
+x^{\mathrm{cy}} = V_x^{\mathrm{self}} W_x x,
+\qquad
+y^{\mathrm{cy}} = V_y^{\mathrm{self}} W_y y.
+\]
+
+Now introduce ridge-whitened variables
+\[
+\bar x := S_{xx}^{-1/2}x,
+\qquad
+\bar y := S_{yy}^{-1/2}y.
+\]
+Then
+\[
+\operatorname{Cov}(\bar x)=B_x,
+\qquad
+\operatorname{Cov}(\bar y)=B_y,
+\]
+and the self-reconstruction maps become
+\[
+S_{xx}^{-1/2}x^{\mathrm{cy}}
+=
+Q_U \bar x,
+\qquad
+Q_U := B_x U^\top (U B_x U^\top)^{-1} U,
+\]
+\[
+S_{yy}^{-1/2}y^{\mathrm{cy}}
+=
+Q_V \bar y,
+\qquad
+Q_V := B_y V^\top (V B_y V^\top)^{-1} V.
+\]
+
+Therefore
+\[
+\mathcal L_{\mathrm{cy},x}
+=
+\mathbb E\bigl[\|(I-Q_U)\bar x\|^2\bigr],
+\qquad
+\mathcal L_{\mathrm{cy},y}
+=
+\mathbb E\bigl[\|(I-Q_V)\bar y\|^2\bigr].
+\]
+
+For the \(x\)-term,
+\[
+Q_U B_x Q_U^\top = Q_U B_x,
+\]
+hence
+\[
+\mathcal L_{\mathrm{cy},x}
+=
+\operatorname{tr}(B_x)-\operatorname{tr}(Q_U B_x)
+=
+\operatorname{tr}(B_x)
+-
+\operatorname{tr}\!\bigl((U B_x U^\top)^{-1} U B_x^2 U^\top\bigr).
+\]
+Similarly,
+\[
+\mathcal L_{\mathrm{cy},y}
+=
+\operatorname{tr}(B_y)
+-
+\operatorname{tr}\!\bigl((V B_y V^\top)^{-1} V B_y^2 V^\top\bigr).
+\]
+
+Now define
+\[
+\widehat U := (U B_x U^\top)^{-1/2} U B_x^{1/2},
+\qquad
+\widehat V := (V B_y V^\top)^{-1/2} V B_y^{1/2}.
+\]
+Then
+\[
+\widehat U \widehat U^\top = I_k,
+\qquad
+\widehat V \widehat V^\top = I_k,
+\]
+and
+\[
+\operatorname{tr}\!\bigl((U B_x U^\top)^{-1} U B_x^2 U^\top\bigr)
+=
+\operatorname{tr}(\widehat U B_x \widehat U^\top),
+\]
+\[
+\operatorname{tr}\!\bigl((V B_y V^\top)^{-1} V B_y^2 V^\top\bigr)
+=
+\operatorname{tr}(\widehat V B_y \widehat V^\top).
+\]
+
+Therefore minimizing \(\mathcal L_{\mathrm{cy}}\) is equivalent to
+\[
+\max_{\widehat U,\widehat V}
+\quad
+\operatorname{tr}(\widehat U B_x \widehat U^\top)
++
+\operatorname{tr}(\widehat V B_y \widehat V^\top),
+\qquad
+\widehat U\widehat U^\top = I_k,\quad
+\widehat V\widehat V^\top = I_k.
+\]
+By the Ky Fan maximum principle, the optimum is achieved by taking
+\(\widehat U\) and \(\widehat V\) to span the top \(k\) eigenspaces of
+\(B_x\) and \(B_y\), respectively.
+
+Finally, since
+\[
+B_x = S_{xx}^{-1/2}\Sigma_{xx}S_{xx}^{-1/2}
+\]
+is a spectral function of \(\Sigma_{xx}\), it has the same eigenvectors as
+\(\Sigma_{xx}\); similarly, \(B_y\) has the same eigenvectors as
+\(\Sigma_{yy}\). Hence the optimal subspaces are the top \(k\) eigenspaces
+of \(\Sigma_{xx}\) and \(\Sigma_{yy}\).
+
+Thus, under Euclidean self-reconstruction-optimal decoders, the
+ridge-whitened Mahalanobis cycle objective reduces to two decoupled
+PCA-type objectives.
+
+\section{Cross-reconstruction-optimal decoders}
+
+For fixed \(W_x\), the one-step optimal decoder \(V_y\) is the least-squares predictor of \(y\) from \(z_x = W_x x\):
+\[
+V_y^\star
+=
+\Sigma_{yx} W_x^\top (W_x \Sigma_{xx} W_x^\top)^{-1}.
+\]
+Under whitening,
+\[
+W_x \Sigma_{xx} W_x^\top = I_k,
+\]
+so
+\[
+V_y^\star = \Sigma_{yx} W_x^\top.
+\]
+Similarly,
+\[
+V_x^\star = \Sigma_{xy} W_y^\top.
+\]
+
+Substituting these back gives
+\[
+V_x^\star W_y V_y^\star W_x
+=
+\Sigma_{xy} W_y^\top W_y \Sigma_{yx} W_x^\top W_x.
+\]
+Therefore
+\[
+\mathcal{L}_{\mathrm{cy},x}(W_x,W_y)
+=
+\mathbb{E}\Bigl[
+\bigl\|
+x - \Sigma_{xy} W_y^\top W_y \Sigma_{yx} W_x^\top W_x x
+\bigr\|^2
+\Bigr].
+\]
+Likewise,
+\[
+\mathcal{L}_{\mathrm{cy},y}(W_x,W_y)
+=
+\mathbb{E}\Bigl[
+\bigl\|
+y - \Sigma_{yx} W_x^\top W_x \Sigma_{xy} W_y^\top W_y y
+\bigr\|^2
+\Bigr].
+\]
+
+Hence the decoders are eliminated and the cycle objective becomes a function of the encoders only.
+
+Define whitened variables
+\[
+\tilde x = \Sigma_{xx}^{-1/2} x,
+\qquad
+\tilde y = \Sigma_{yy}^{-1/2} y,
+\]
+and recall
+\[
+A = \Sigma_{xx}^{-1/2} \Sigma_{xy} \Sigma_{yy}^{-1/2},
+\qquad
+U = W_x \Sigma_{xx}^{1/2},
+\qquad
+V = W_y \Sigma_{yy}^{1/2}.
+\]
+Then
+\[
+U U^\top = I_k,
+\qquad
+V V^\top = I_k.
+\]
+
+Define the projection matrices
+\[
+P_U = U^\top U,
+\qquad
+P_V = V^\top V.
+\]
+These are rank-\(k\) orthogonal projections.
+
+With these definitions, the cycle map on \(\tilde x\) is
+\[
+\tilde x \mapsto A P_V A^\top P_U \tilde x,
+\]
+and the cycle map on \(\tilde y\) is
+\[
+\tilde y \mapsto A^\top P_U A P_V \tilde y.
+\]
+
+Therefore
+\[
+\mathcal{L}_{\mathrm{cy},x}
+=
+\mathbb{E}\bigl[
+\|\tilde x - A P_V A^\top P_U \tilde x\|^2
+\bigr],
+\]
+\[
+\mathcal{L}_{\mathrm{cy},y}
+=
+\mathbb{E}\bigl[
+\|\tilde y - A^\top P_U A P_V \tilde y\|^2
+\bigr].
+\]
+
+Since \(\operatorname{Cov}(\tilde x)=I\) and \(\operatorname{Cov}(\tilde y)=I\), for any matrix \(M\),
+\[
+\mathbb E\| \tilde x - M \tilde x\|^2
+=
+\operatorname{tr}\bigl((I-M)^\top(I-M)\bigr)
+=
+d_x - 2\operatorname{tr}(M) + \operatorname{tr}(M^\top M).
+\]
+Hence, with
+\[
+M_x := A P_V A^\top P_U,
+\qquad
+M_y := A^\top P_U A P_V,
+\]
+we obtain
+\[
+\mathcal{L}_{\mathrm{cy},x}
+=
+d_x
+-2 \operatorname{tr}(M_x)
++
+\operatorname{tr}(M_x^\top M_x),
+\]
+\[
+\mathcal{L}_{\mathrm{cy},y}
+=
+d_y
+-2 \operatorname{tr}(M_y)
++
+\operatorname{tr}(M_y^\top M_y).
+\]
+
+Moreover,
+\[
+\operatorname{tr}(M_x)=\operatorname{tr}(M_y)=\operatorname{tr}(A P_V A^\top P_U).
+\]
+
+Let
+\[
+C := U A V^\top \in \mathbb{R}^{k\times k}.
+\]
+
+
+From the previous section,
+\[
+\mathcal{L}_{\mathrm{cy},x}
+=
+d_x - 2\operatorname{tr}(M_x) + \operatorname{tr}(M_x^\top M_x),
+\]
+\[
+\mathcal{L}_{\mathrm{cy},y}
+=
+d_y - 2\operatorname{tr}(M_y) + \operatorname{tr}(M_y^\top M_y).
+\]
+
+First,
+\[
+\operatorname{tr}(M_x)=\operatorname{tr}(M_y)
+=\operatorname{tr}(A P_V A^\top P_U)
+=\operatorname{tr}(U A V^\top V A^\top U^\top)
+=\operatorname{tr}(C C^\top)
+=\|C\|_F^2.
+\]
+
+Next define
+\[
+G_U := U A A^\top U^\top,
+\qquad
+G_V := V A^\top A V^\top.
+\]
+Then
+\[
+\operatorname{tr}(M_x^\top M_x)
+=
+\operatorname{tr}(C^\top C\, G_V),
+\qquad
+\operatorname{tr}(M_y^\top M_y)
+=
+\operatorname{tr}(C C^\top\, G_U).
+\]
+
+Since \(P_U \preceq I\) and \(P_V \preceq I\),
+\[
+C^\top C
+=
+V A^\top P_U A V^\top
+\preceq
+V A^\top A V^\top
+=
+G_V,
+\]
+and
+\[
+C C^\top
+=
+U A P_V A^\top U^\top
+\preceq
+U A A^\top U^\top
+=
+G_U.
+\]
+Therefore,
+\[
+\operatorname{tr}(M_x^\top M_x)
+=
+\operatorname{tr}(C^\top C\, G_V)
+\ge
+\operatorname{tr}\bigl((C^\top C)^2\bigr),
+\]
+\[
+\operatorname{tr}(M_y^\top M_y)
+=
+\operatorname{tr}(C C^\top\, G_U)
+\ge
+\operatorname{tr}\bigl((C C^\top)^2\bigr).
+\]
+
+Let \(s_1(C)\ge \cdots \ge s_k(C)\ge 0\) be the singular values of \(C\). Since
+\[
+\operatorname{tr}(C C^\top)=\sum_{i=1}^k s_i(C)^2,
+\qquad
+\operatorname{tr}\bigl((C^\top C)^2\bigr)
+=
+\operatorname{tr}\bigl((C C^\top)^2\bigr)
+=
+\sum_{i=1}^k s_i(C)^4,
+\]
+we obtain
+\[
+\mathcal{L}_{\mathrm{cy}}
+\ge
+d_x+d_y
+-4\sum_{i=1}^k s_i(C)^2
++2\sum_{i=1}^k s_i(C)^4.
+\]
+
+Now \(C=UAV^\top\) is a rank-\(k\) compression of \(A\), so its singular values satisfy
+\[
+s_i(C)\le \sigma_i(A),
+\qquad i=1,\dots,k.
+\]
+Since for \(0\le s\le 1\),
+\[
+\phi(s):=2s^2-s^4
+\]
+is monotone increasing, it follows that
+\[
+\sum_{i=1}^k \phi\bigl(s_i(C)\bigr)
+\le
+\sum_{i=1}^k \phi(\sigma_i(A)).
+\]
+Hence
+\[
+\mathcal{L}_{\mathrm{cy}}
+\ge
+d_x+d_y
+-4\sum_{i=1}^k \sigma_i^2
++2\sum_{i=1}^k \sigma_i^4.
+\]
+
+Finally, let
+\[
+A=P\Lambda Q^\top
+\]
+be the singular value decomposition of \(A\), and choose
+\[
+U=P_k^\top,
+\qquad
+V=Q_k^\top.
+\]
+Then
+\[
+C = U A V^\top = \Lambda_k,
+\]
+so its singular values are exactly \(\sigma_1,\dots,\sigma_k\), and all of the above inequalities are attained with equality. Therefore the cycle objective is minimized by the top \(k\) left and right singular subspaces of \(A\).
+
+Thus the optimal subspace for cycle consistency coincides with the canonical subspace selected by linear CCA.
+
+\end{document}

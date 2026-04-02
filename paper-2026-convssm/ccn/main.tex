@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass{article} 
 % \usepackage{iclr2026_conference,times}
 \usepackage{macros}
 \usepackage{hyperref}
@@ -6,81 +6,47 @@
 \usepackage[toc,page,header]{appendix}
 \usepackage{geometry}
 \geometry{margin=1in}
+
 \usepackage{minitoc}
+
 \renewcommand \thepart{}
 \renewcommand \partname{}
+
 \title{Spectral State Space Models for Horizontal Connections and Video Modeling}
+
 \author{}
+
 \newcommand{\greg}[1]{\par\noindent{\color{indigo}[Gregoire]: #1}\par}
 \newcommand{\TS}[1]{\par\noindent{\color{red}[TS]: #1}\par}
+
 \begin{document}
+
 \doparttoc % Tell to minitoc to generate a toc for the parts
 \faketableofcontents % Run a fake tableofcontents command for the partocs
+
 \maketitle
+
 \begin{abstract}
 ...
 \end{abstract}
+
 \section{Introduction}
-\TS{Gregoire -- intro needs to be SHORT. 8 pages total and no experiments section yet. Aim for 3 tight paragraphs, half a column max. Here is the story and the refs -- you write the prose and I will tighten. Also I was kind enough to add all the references and fix your keys. You are welcome :-)}
-\TS{%
-\textbf{Para 1 -- Horizontal connections + hGRU + scalability wall.}
-Horizontal connections in visual cortex~\citep{gilbert1989,bosking1997,stettler2002} -- contour integration, perceptual grouping, association fields~\citep{field1993,gilbertli2013}. hGRU~\citep{linsley2018} showed these are a powerful computational primitive (solves Pathfinder, orders of magnitude fewer params~\citep{linsley2018,kim2019}). But recurrent models don't scale~\citep{linsley2020}. LRA~\citep{tay2021} scaled Pathfinder to Path-X -- transformers~\citep{vaswani2017} fail (dense attention = wrong inductive bias + $O(n^2)$). This motivated SSMs~\citep{gu2022,gu2022s4d,smith2023s5,gu2023,dao2024}.}
-\TS{%
-\textbf{Para 2 -- ConvSSMs dropped horizontal connections.}
-Extending SSMs to spatiotemporal data: S4ND~\citep{nguyen2022}, ConvS5~\citep{smith2023convs5} (parallel scan + conv recurrence, cf.\ ConvLSTM~\citep{shi2015}). Problem: parallel scan with full spatial conv $\to$ kernel explosion, $O(T^2)$. ConvS5 workaround = $1\times 1$ conv only = no horizontal coupling. Exactly the mechanism that made hGRU effective is gone.}
-\TS{%
-\textbf{Para 3 -- This paper (2--3 sentences max).}
-We fix this. Block-circulant matrices diagonalized by Fourier $\to$ lift scan to spectral domain $\to$ conv composition becomes pointwise mult $\to$ $O(T \log T)$. Full spatial coupling restored.
-%
-Our contributions are:
-\begin{enumerate}[leftmargin=*,topsep=2pt,itemsep=1pt]
-\item We formalize \textbf{convolutional SSMs} as a principled translation of horizontal recurrent circuits (e.g., hGRU) into the SSM framework, unifying spatial coupling and temporal dynamics in a single model.
-\item We identify the \emph{kernel explosion} problem: applying the parallel scan to convolutional SSMs with full spatial coupling incurs $O(T^2)$ complexity, explaining why prior work~\citep{smith2023convs5} resorted to $1\times 1$ convolutions.
-\item We introduce the \textbf{Spectral ConvSSM}, which lifts the parallel scan into the Fourier domain where convolution composition reduces to pointwise multiplication, recovering $O(T\log T)$ complexity with full spatial coupling.
-\item We derive [scaling laws / complexity-vs-accuracy tradeoffs -- \textbf{fill after experiments}].
-\item We demonstrate [state-of-the-art on X benchmarks, improving over ConvS5/Mamba baselines by Y\% -- \textbf{fill after experiments}].
-\end{enumerate}}
-\paragraph{} High-dimensional visual signals, such as images and videos, exhibit strong spatio-temporal structure, where meaningful patterns arise from local interactions that propagate across space and time. Capturing these dependencies requires models that combine locality with the ability to integrate information over long ranges.
-%
-This principle is reflected in both biological and computational systems. In the visual cortex, neurons are organized topographically and interact through local horizontal connections, enabling information to propagate across space while preserving structure \citep{gilbert1989,bosking1997,stettler2002}. Horizontal connections are thought to underlie key visual phenomena such as contour integration and perceptual grouping, as formalized by the concept of association fields~\citep{field1993,gilbertli2013}.
-%
-In computational vision, models such as the horizontal gated recurrent unit (hGRU)~\citep{linsley2018} leverage repeated local interactions to capture global dependencies with high parameter efficiency, solving Pathfinder with orders of magnitude less parameters than other architectures~\citep{linsley2018,kim2019}.
-%
-However, these approaches rely on nonlinear recurrent dynamics, which fundamentally limit scalability due to their sequential nature. Modern alternatives such as transformers~\citep{vaswani2017} address long-range dependencies through attention mechanisms, but incur quadratic complexity and lack the appropriate inductive bias for structured spatio-temporal interactions. As a result, transformers famously fail to solve~\citet{tay2021}'s Path-X, a scaled version of Pathfinder.
-%
-This tension between expressive spatio-temporal coupling and scalable computation motivates the search for new modeling paradigms.
-\paragraph{} State space models (SSMs) have recently emerged as an efficient alternative for long-range sequence modeling, leveraging linear recurrent dynamics and parallel algorithms to achieve massive scaling~\citep{gu2022,gu2022s4d,smith2023s5,gu2023,dao2024}. Extensions of SSMs to high-dimensional data, such as S4ND~\citep{nguyen2022} and ConvS5~\citep{smith2023convs5}, attempt to incorporate spatial structure. However, these approaches fail to capture true spatio-temporal interactions.
-%
-S4ND constructs multidimensional models by separating the dynamics along each axis, effectively removing interactions between space and time dimensions. ConvS5 introduces convolutional structure in the input and output, but restricts the temporal operator to $1\times 1$ convolutions, eliminating spatial coupling in the temporal evolution.
-%
-These limitations are not incidental: applying parallel scan to convolutional recurrences with spatial kernels leads to a kernel explosion, resulting in quadratic complexity in the sequence length \Cref{prop:Spatial_ConvSSM_complexity}. \textbf{Convolutional SSMs without spectral structure are fundamentally unscalable.} As a consequence, existing scalable SSM-based models discard the very horizontal connections that motivate their use and remain fundamentally limited to separate space and time.
-\paragraph{} In this work, we introduce the Spectral Convolutional State Space Model (ConvSSM), which \textbf{restores full spatio-temporal coupling without sacrificing computational efficiency.} Our approach leverages the block-circulant structure of convolutional operators, which are diagonalized by the Fourier transform. Thus, lifting the SSM to spectral domain, spatio-temporal entanglement is decomposed into independent frequency channels. Convolution composition reduces to pointwise multiplication, bypassing kernel growth and recovering linear work and logarithmic depth complexity (\Cref{prop:Spectral_ConvSSM_complexity}). This enables efficient modeling of spatio-temporal dynamics, matching the scalability of standard SSMs while preserving the inductive bias of horizontal connectivity. Our contributions are:
-\begin{itemize}
-    \item TODO : fill contributions at the end.
-\end{itemize}
-\TS{\textbf{STRUCTURE -- please read before editing.} Right now ``Spectral State Space Models'' is its own section sitting between Background and Convolutional SSMs. A reader will think the spectral framework is prior work. But it is OUR contribution -- the key trick that resolves the ConvSSM challenges. Proposed restructuring:
-%
-\begin{itemize}
-\item \textbf{Background} (half a page) -- keep only standard material: SSM definition, discretization, parallelization (brief), diagonal SSMs. STOP after ``Diagonal SSMs.'' Everything currently in the ``Spectral SSMs'' section moves out.
-\item \textbf{Convolutional State Space Models} (the contribution, $\sim$2.5 pages) with three subsections:
-  \begin{itemize}
-  \item \emph{Convolutional SSMs.} Drop the neuroscience motivation paragraphs (already in the intro -- no redundancy). Jump straight to the technical setup: we want spatial coupling in the recurrence, convolutions are the natural structure, here are the equations, here are Challenge A + B.
-  \item \emph{The spectral formulation.} Move the ``Spectral SSMs'' and ``Diagonal SSSMs'' material HERE -- introduce it as the solution to Challenge A + B, not as standalone background. BCCB $\to$ Fourier diag $\to$ boxed equations. Then immediately the three complexity propositions (scan works $\to$ kernel explosion $\to$ spectral fix). End with ConvS5 positioning.
-  \item \emph{Model specification.} Parameterization, stability, circuit wrapping. Give this a real name (not ``Final Model'').
-  \end{itemize}
-\end{itemize}
-%
-The ``Spectral State Space Models'' section disappears as a standalone section. Its content merges into the ConvSSM section where it belongs.}
-\section{Background}
-\subsection{Notations}
-\paragraph{Linear Algebra.} Let $\K$ be a field. We identify $\mathcal{M}_{m,n}(\K)$ to $\K^{m \times n}$, the set of $m \!\times\! n$ matrices with coefficients in $\K$. We denote vectors with bold lowercase letters $\xvec \in \K^n$ and linear operators with bold uppercase letters $\Amat \in \K^{m \times n}$. Scalars are denoted with non bold letters. We write $e^{\Amat} = \sum_{k=0}^{\infty} \frac{\Amat^k}{k!}$ the matrix exponential, and $\sigma(\Amat)$ the spectrum of $\Amat$.
-\paragraph{Special Matrices.} $\Imat_n$ is the identity matrix of size $n$. $\mathrm{Circ}(\Kmat) \in \R^{n \times n}$ denotes the circulant matrix generated by the vector $\Kmat \in \R^n$, possibly zero padded. $\mathrm{diag}(\Lmat)$ is a diagonal matrix with diagonal $\Lmat \in \R^n$. For ease of notation, we often identify $\Lmat$ and $\mathrm{diag}(\Lmat)$. $\Lmat_c$ is a block-diagonal matrix with blocks of size $c \!\times\! c$. Any matrix $\cdot_c$ notation is block diagonal with blocks of size $c \!\times\! c$. $\Fmat_n$ is the Fourier matrix of size $n$.
-\paragraph{State Space Models.} For the SSMs, we write $\xvec, \yvec \in \R^{d}$ the input and output, $\hvec \in \R^{N}$ the hidden state, $\Amat \in \R^{{N}\times {N}}$ the transition matrix, $\Bmat \in \R^{N \times d}$ and $\Cmat \in \R^{d \times N}$ the input and output matrices, respectively. The $\widetilde{\cdot}$ and $\widehat{\cdot}$ notations are used for equivalent formulations of the SSM, while the $\overline{\cdot}$ notation is used for discretised versions of continuous-time SSMs. Two SSMs are equivalent if they produce the same output and their hidden states are linearly related. For instance: $\Amat$, $\widetilde{\Amat}$ and $\widehat{\Amat}$ denote equivalent formulations of a continuous-time SSM while $\overline{\Amat}$ denotes the discretised version of $\Amat$. $T$ denotes the sequence length in the dicrete-time setting, and $\Delta$ the time step for the discretisation.
-% \TS{$\widetilde{A}$ / $\widehat{A}$ introduced here but only defined later? add quick one-line definition here (and maybe $\widetilde{B},\widetilde{C},\widehat{B},\widehat{C}$ too)?} \greg{Done.}
-\paragraph{Operators.} As for operators, we use $\otimes$ the Kronecker product, $\circledast$ the block convolution operator, which takes two convolution kernels and produces a new kernel corresponding to the composition of the two convolutions. The size of the resulting kernel is the sum of the sizes of the input kernels minus one. $\ast$ is the convolution operator, which takes a convolution kernel and an input and produces the convolution of the input with the kernel.
-\paragraph{Algorithms and Complexity.} $O(\cdot)$ is the big O notation, which hides constant factors and lower order terms. $W$ and $T_\infty$ are the work and time complexity under unlimited parallelism of an algorithm, respectively. Our algorithms require the definition of $(\mathcal{M}, \oplus, e)$ a monoid, with $\mathcal{M}$ a set, $\oplus$ a binary operation and $e$ the identity element.
-\subsection{The State Space Model}
-The state space model (SSM) is a class of recurrent model with linear recurrent dynamics. Their most general formulation is that of continuous-time (\Cref{eq:ssm}), which can be discretised as in \Cref{eq:ssm:recurrence}, with transition matrices depending on the desired step size following \Cref{eq:zoh}. This continuous time formulation allows the handling of arbitrary sampling rates for free.
+
+
+\paragraph{}Visual perception relies on the integration of information across space and time. In the visual cortex, neurons are organized topographically and interact through local horizontal connections, allowing activity to propagate across the visual field while preserving structure. These circuits are thought to underlie key perceptual phenomena such as contour integration and perceptual grouping, where global structure emerges from repeated local interactions.
+
+\paragraph{}Computational models have long sought to capture this principle. Architectures based on horizontal recurrent interactions implement local connectivity together with iterative processing, enabling the emergence of long-range dependencies from short-range computations. However, these models are typically formulated as nonlinear recurrent neural networks (RNN), which are inherently sequential and therefore difficult to scale to large inputs or long time horizons. As a result, there is a gap between biologically grounded models of horizontal processing and modern scalable architectures.
+
+\paragraph{}State space models (SSMs) have recently emerged as a powerful alternative for sequence modeling, combining linear recurrent dynamics with efficient parallel algorithms. Their favorable scaling properties make them an appealing backbone for modeling long-range dependencies. This raises a natural question: can SSMs serve as a scalable foundation for models of horizontal interactions? Existing extensions of SSMs to high-dimensional data suggest a negative answer. Current approaches either decouple spatial and temporal dynamics or restrict spatial interactions in a way that eliminates true spatio-temporal coupling. More fundamentally, directly incorporating convolutional spatial interactions into SSMs leads to a kernel growth phenomenon that breaks the parallel algorithms underlying their efficiency.
+
+\paragraph{}In this work, we resolve this limitation by introducing a spectral formulation of convolutional state space models. By exploiting the fact that convolutional operators are diagonalized in the Fourier domain, we transform \emph{spatio-temporal entanglement} into \emph{decoupled frequency channels}. This representation preserves both spatio-temporal interactions and efficient parallel computation.
+
+We introduce the Spectral Convolutional State Space Model (ConvSSM), a scalable framework that combines the inductive bias of horizontal connectivity with the computational advantages of state space models. This formulation provides a principled backbone for computational models of visual processing, enabling the study of horizontal interactions in regimes that were previously inaccessible to recurrent approaches.
+
+\section{The Spectral ConvSSM}
+
+\paragraph{The SSM.} is a class of recurrent model with linear recurrent dynamics. Their most general formulation is that of continuous-time (\Cref{eq:ssm}), which can be discretised as in \Cref{eq:ssm:recurrence}, with transition matrices depending on the desired step size following \Cref{eq:zoh}. This continuous time formulation allows the handling of arbitrary sampling rates for free.
+
 \begin{minipage}[t]{.45\linewidth}
   \begin{subequations}
     \label{eq:ssm}
@@ -101,34 +67,15 @@ The state space model (SSM) is a class of recurrent model with linear recurrent 
     \end{align}
   \end{subequations}
 \end{minipage}%
-In the remainder of this work, we will omit the residual connection given by $\Dmat$ for simplicity.
-\paragraph{Discretization.} Various rules can be used for discretization, such as the zero-order hold (ZOH), whose solution is given in \Cref{eq:zoh}. $\Delta$ is the time step.
-\begin{equation}
-\label{eq:zoh}
-\overline{\Amat} = e^{\Delta \Amat}
-\qquad
-\overline{\Bmat} = (\Delta \Amat)^{-1} (e^{\Delta \bm{\Amat}} - \Imat) \cdot \Delta \Bmat
-\end{equation}
-\TS{$(\Delta \Amat)^{-1}$ assumes $\Amat$ invertible?}\greg{yes}
-\paragraph{Parallelization.} The crucial property of linear recurrences is that they allow for efficient parallel algorithms. Indeed, the sequential computation required by non-linear recurrences is a prohibitive bottleneck for long sequences. In contrast, linear recurrences can be computed using parallel algorithms such as
-%
-(\emph{i}) the convolutional representation \citep{gu2022}, which can be computed in $O(T \log T)$ time,
-%
-(\emph{ii}) the parallel scan (\cref{app:parallel_scan}), which also has a logarithmic depth with respect to the sequence length, and
-%
-(\emph{iii}) the SSD algorithm \citep{dao2024}, which relies on structured matrix multiplications.
-%
-These parallel algorithms allow SSMs to handle long-range dependencies efficiently, making them particularly suitable for tasks such as language modeling and video processing. We focus our analysis on the parallel scan algorithm. We compare in \cref{TODO} the parallel scan to the matrix-multiplication based algorithm of SSD \citep{dao2024} across a wide range of temporal and spatial regimes.
+
 \begin{proposition}[SSM Complexity]
 \label{prop:SSM_complexity}
-    Let $(\mathcal{M}, \oplus, e)$ be the monoid corresponding to the SSM, defined by \Cref{eq:M_SSM,eq:+_SSM,eq:0_SSM}. Let $(a_i)_{i\in \intint{0}{T-1}}\in \mathcal{M}^{\intint{0}{T-1}}$. Then, the parallel scan over $(a_i)$ has work and time complexity of:
+    The parallel scan over the SSM has work and time complexity of:
 \[
     W(\mathrm{Scan}) = O(T), \qquad T_\infty(\mathrm{Scan}) = O(\log T)
 \]
 \end{proposition}
-\begin{proof}
-See \cref{app:SSM_complexity}. Key observation: the scan is $O(1)$ per $\oplus$ operation.
-\end{proof}
+
 \paragraph{Diagonal SSMs.} In the case of scalar inputs and the convolutional representation, \citet{gu2022s4d} show that if the transition matrix $\Amat$ is well conditioned, computing the convolution kernel only requires knowing its spectrum $\sigma(\Amat)$. For any vector-valued input SSM, with $\Amat = \Pmat \Lmat \Pmat^{-1}$ diagonalizable, we can rewrite the SSM as follows:
 %
 \begin{align}
@@ -136,22 +83,29 @@ See \cref{app:SSM_complexity}. Key observation: the scan is $O(1)$ per $\oplus$ 
 \widetilde{\Amat} = \Lmat \qquad \widetilde{\Bmat} = \Pmat^{-1} \Bmat \qquad \widetilde{\Cmat} = \Cmat \Pmat
 \end{align}
 These two formulations are equivalent in the sense that they produce the same output $\widetilde{\yvec}(t)=\yvec(t)$, with hidden states linearly related by $\widetilde{\hvec}(t) = \Pmat^{-1} \hvec(t)$. The diagonal formulation allows to reduce the constant factors in \Cref{prop:SSM_complexity} from $O(N^3)$ to $O(N)$, as shown in \cref{app:constant_factors}.
+
 % \TS{$O(N)$ always true here, or only under extra assumptions?}
+
 \section{Convolutional State Space Models}
+
 \subsection{The ConvSSM}
 \label{sec:horizontal_connections}
 % \TS{\textbf{CUT}: the neuroscience motivation here (retinotopy, horizontal connections) is already in the intro. Don't repeat it. Start directly with the technical point: we want spatial coupling in the SSM, convolutions give us structured $A$, but this creates Challenge A + B. One short paragraph, no biology.}
+
 % \paragraph{Computational Motivation.} Many high-dimensional signals, such as images or videos, exhibit strong local spatiotemporal structures. In the context of biological vision, neurons exploit this structure through (\emph{i}) spatial organization, with neurons arranged in a topographic manner that preserves spatial relationships—a property known as retinotopy \citep{TODO}—coupled with (\emph{ii}) local interactions, with neurons primarily connecting to their immediate neighbors in the visual cortex. These local interactions, often referred to as \emph{horizontal connections}, enable information to propagate across space and time while preserving natural structures such as locality.
-% \paragraph{Algorithmic Motivation.}
+
+% \paragraph{Algorithmic Motivation.} 
 % Incorporating spatial dependencies into state space models allows the hidden state to evolve spatio-temporally, enabling the modeling of long-range spatial dependencies through repeated local interactions. This is key for biological plausibility, strong inductive biases, and algorithmic efficiency.
 % %
 % Indeed, introducing spatial interactions in high-dimensional settings comes with significant computational challenges. For inputs of size $h \!\times\! w \!\times\! c$, the state dimension scales as $N \sim 10^6$. Naively parameterizing dense interaction matrices $\Amat \in \R^{N \times N}$ is therefore intractable, both in terms of work and memory.
 % %
 % This necessitates the use of structured operators that reduce complexity while preserving expressivity. In particular, structured matrices admitting fast matrix-vector products are essential to leverage parallel algorithms such as the scan, and to ensure scalability to realistic data regimes.
-\paragraph{}
+
+\paragraph{} 
 Our goal is to extend state space models to high-dimensional spatio-temporal data such as images and videos. This requires combining \emph{local interactions in space} with \emph{efficient long-range integrations in time}. Convolutions provide a natural inductive bias for spatial locality, while SSMs offer scalable temporal dynamics through linear recurrences. We therefore introduce convolutional state space models (ConvSSMs) as a principled translation of horizontal recurrent circuits into the SSM framework, unifying spatial coupling and temporal dynamics in a single, scalable model.
 %
 Rewriting the SSM equations (\Cref{eq:ssm}) for kernel convolutions, we get the following spatial ConvSSM:
+
 \begin{minipage}[t]{.45\linewidth}
 \vspace{-5mm}
   \begin{subequations}
@@ -177,11 +131,13 @@ Rewriting the SSM equations (\Cref{eq:ssm}) for kernel convolutions, we get the 
   \end{subequations}
 \vspace{-5mm}
 \end{minipage}
+
 Where $r$ is the spatial position, $\Kmat$ are convolution kernels and $\ast$ is the convolution operator. However, the spatial ConvSSM faces two closely linked challenges as a direct consequence of spatio-temporal coupling.
 %
 (\emph{Challenge A:}) Left in this format, it is not clear how to compute discrete-time kernels $\overline{\Kmat}_h$ and $\overline{\Kmat}_x$ from their continuous-time counterparts $\Kmat_h$ and $\Kmat_x$, or what such kernels would even look like. Specifically, \Cref{eq:zoh} requires matrices and cannot be applied to get the discrete-time kernels $\overline{\Kmat}_h$ and $\overline{\Kmat}_x$.
 %
 (\emph{Challenge B:}) parallel algorithms break down when adapted to the spatial ConvSSM (\Cref{prop:Spatial_ConvSSM_complexity}).
+
 \begin{proposition}[Spatial ConvSSM Complexity]
 \label{prop:Spatial_ConvSSM_complexity}
     Let $(\mathcal{M}, \oplus, e)$ be the monoid corresponding to the spatial convolutional SSM, defined by \Cref{eq:M_SSM,eq:+_SSM,eq:0_SSM}. Let $(a_i)_{i\in \intint{0}{T-1}}\in \mathcal{M}^{\intint{0}{T-1}}$. Then, the parallel scan over $(a_i)$ has work and time complexity of:
@@ -189,12 +145,15 @@ Where $r$ is the spatial position, $\Kmat$ are convolution kernels and $\ast$ is
     W(\mathrm{Scan}) = T_\infty(\mathrm{Scan}) = O(T^2)
 \]
 \end{proposition}
+
 \begin{proof}
 See \cref{app:Spatial_ConvSSM_complexity}. Key observation: $\oplus$ uses the block convolution operator $\circledast$, which produces kernels of size \textbf{exponential in depth}. Therefore, the scan is no longer $O(1)$ per $\oplus$ operation.
 \end{proof}
+
 % \TS{\textbf{KEY TRANSITION}: after restructuring, this is where the spectral SSM material (currently in its own section) lands. The ``introduced in the previous section'' reference goes away -- instead you INTRODUCE the Fourier diagonalization here as the solution to the challenges stated above. Bring in the BCCB $\to$ Fourier material, then apply it to the ConvSSM. One fluid derivation instead of two disconnected ones.}
+
 \subsection{Spectral ConvSSMs}
-\greg{small roadmap paragraph to guide through all the transforms : (1) convolution $\to$ BCCB $\to$ Fourier block-diagonal with channel mixing $\to$ actual diagonal, channel mixing absorbed in B and C.}
+
 \paragraph{} These are not implementation issues but structural. To circumvent both challenges, we move from a spatial to a spectral representation of the ConvSSM. Spectral representations offer the natural basis we need by decomposing spatio-temporal entanglement into independent frequency channels. We start by stacking all spatial positions and channels into a single vector, and rewrite the convolutions as matrix-vector products.
 %
 Indeed, discrete-space convolutions correspond to linear operators with a block-circulant with circulant blocks (BCCB) structure (\Cref{eq:convssm:spatial}), leading to an SSM with $d = h w c_\mathrm{in}$-dimensional inputs and outputs, and $N = h w c$-dimensional hidden states:
@@ -205,21 +164,23 @@ Indeed, discrete-space convolutions correspond to linear operators with a block-
 \end{align}
 %
 These matrices are diagonalized by the Fourier transform. We can thus introduce the \emph{Spectral State Space Model}.
+
 \paragraph{Spectral State Space Models.} Consider the case where $\Amat$ is block-circulant with blocks of size $c \!\times\! c$. This can be rewritten as a 1D convolution over $\frac{N}{c}$ positions and $c$ channels. Let $\Fmat_{\frac{N}{c}} \in \R^{\frac{N}{c} \times \frac{N}{c}}$ be the Fourier matrix. Then, $\Amat$ is diagonalized by $\Pmat = \Fmat \otimes \Imat_c$, where $\otimes$ is the Kronecker product. It can be written as $\Amat = (\Fmat \otimes \Imat_c) \Lmat_c (\Fmat^{-1} \otimes \Imat_c)$, where $\Lmat_c$ is a block-diagonal matrix with blocks of size $c \!\times\! c$. The resulting SSM is what we call a Spectral State Space Model (SSSM).
-\TS{Fourier $\Fmat$ complex in general. ok with complex params? or real-FFT/conjugate sym?}
-\greg{We can mention conjugate sym but that would be a remark for \cref{sec:final_model}.}
+
 The core idea of SSSMs is to constrain $\Amat$ not only such that it is structured after some change of basis $\Pmat$, but such that $\Pmat$ itself is structured, allowing for efficient matrix-matrix and matrix-vector products. This isn't restricted to 1D fourier transforms. For example, this still works when $\Fmat_{\frac{N}{c}}$ is replaced by $\Fmat_h \otimes \Fmat_w$ for 2D convolutions.
 %
 \begin{align}
 \label{eq:ssm:spectral}
 \widetilde{\Amat} = \Lmat_c \qquad \widetilde{\Bmat} = \Pmat^{-1} \Bmat \qquad \widetilde{\Cmat} = \Cmat \Pmat
 \end{align}
+
 \paragraph{Diagonal SSSMs.} At this point, we have \Cref{eq:ssm:spectral} where the change of basis is structured. This means that powering $\widetilde{\Amat}$ costs $O(\frac{N}{c} c^3) = O(N c^2)$. We go back to the diagonal case where powering $\Amat$ only costs $O(N)$, as this is the bottleneck in parallel algorithms (\cref{app:constant_factors}). We can write $\widetilde{\Amat} = \Qmat_c \Lmat \Qmat_c^{-1}$, where $\Lmat$ is diagonal and $\Qmat_c$ is a block-diagonal matrix with blocks of size $c \!\times\! c$. Essentially, $\Qmat_c$ captures channel mixing withing each frequency block in $\Lmat_c$, and leaves a pure diagonal $\Lmat$. We get the following diagonal SSM:
 %
 \begin{align}
 \label{eq:ssm:diagonal_spectral}
 \widehat{\Amat} = \Lmat \qquad \widehat{\Bmat} = \Qmat_c^{-1} \Pmat^{-1} \Bmat \qquad \widehat{\Cmat} = \Cmat \Pmat \Qmat_c
 \end{align}
+
 \paragraph{The Spectral ConvSSM.} In order to combine \Cref{eq:convssm:spatial,eq:ssm:diagonal_spectral} we proceed to the following reformulation. \textbf{(A)}~First, we move from convolution operators to their BCCB matrix counterpart. \textbf{(B)}~Then, we diagonalize these BCCB matrices through the Fourier transform. We are left with block-diagonals instead of pure diagonals due to channel mixing. \textbf{(C)}~The final step is therefore to absorb the channel mixing of the recurrent dynamics into the input and output transforms $\Bmat$ and $\Cmat$. We begin by can rewrite the convolutional SSM as:
 %
 \begin{align}
@@ -234,15 +195,18 @@ The core idea of SSSMs is to constrain $\Amat$ not only such that it is structur
 with $\Pmat = (\Fmat_h \otimes \Fmat_w) \otimes \Imat_c$, $\Pmat_{\mathrm{in}} = (\Fmat_h \otimes \Fmat_w) \otimes \Imat_{c_\mathrm{in}}$. $\mathrm{Circ}(\Kmat)$ is the convolution operator with kernel $\Kmat$, and the $\Lmat^{\cdot}_c$ are block-diagonal matrices with blocks of size $c \!\times\! c$, $c \!\times\! c_\mathrm{in}$ and $c_\mathrm{in} \!\times\! c$, respectively, corresponding to the Fourier transform of the convolution kernels.
 %
 This decomposition can therefore be written as a diagonal SSSM, where all the computational load is absorbed by $\Bmat$ and $\Cmat$:
+
 \begin{align}
 \label{eq:convssm}
 &\boxed{\widehat{\Amat} = \Lmat} \\
 &\widehat{\Bmat} = \Qmat_c^{-1} \Pmat^{-1} \Pmat \Lmat^B_c \Pmat_{\mathrm{in}}^{-1} = \left(\Qmat_c^{-1} \Lmat^B_c\right) \Pmat_{\mathrm{in}}^{-1} \boxed{= \Lmat^{B'}_c \Pmat_{\mathrm{in}}^{-1}} \\
 &\widehat{\Cmat} = \Pmat_{\mathrm{in}} \Lmat^C_c \Pmat^{-1} \Pmat \Qmat_c = \Pmat_{\mathrm{in}} \left(\Lmat^C_c \Qmat_c\right) \boxed{= \Pmat_{\mathrm{in}} \Lmat^{C'}_c}
 \end{align}
+
 This formulation makes it apparent that the tension in \emph{Challenge A} is that the discretized kernels have full spatial support, rendering the spatial convolution representation inapplicable. The Spectral ConvSSM trivializes the discretization process through diagonalization, and bypasses prohibitive convolutions through efficient matrix multiplications.
 %
 Similarly, \emph{Challenge B} also boils down to kernel size explosion, and is bypassed by the spectral formulation for the same reason. We derive the full complexity analysis in \cref{app:complexity_proofs} and point exactly where the kernel explosion happens for the spatial ConvSSM, and how the spectral formulation avoids~it.
+
 \begin{proposition}[Spectral ConvSSM Complexity]
 \label{prop:Spectral_ConvSSM_complexity}
     Let $(\mathcal{M}, \oplus, e)$ be the monoid corresponding to the spectral convolutional SSM, defined by \Cref{eq:M_SSM,eq:+_SSM,eq:0_SSM}. Let $(a_i)_{i\in \intint{0}{T-1}}\in \mathcal{M}^{\intint{0}{T-1}}$. Then, the parallel scan over $(a_i)$ has work and time complexity of:
@@ -250,62 +214,73 @@ Similarly, \emph{Challenge B} also boils down to kernel size explosion, and is b
     W(\mathrm{Scan}) = O(T), \qquad T_\infty(\mathrm{Scan}) = O(\log T)
 \]
 \end{proposition}
+
 \begin{proof}
 See \cref{app:Spectral_ConvSSM_complexity}. Key observation: the scan is $O(1)$ per $\oplus$ operation.
 \end{proof}
+
 \subsection{Link with previous work}
+
 Previous approaches such as ConvS5 \citep{smith2023convs5} faced these challenges by forfeiting horizontal connections. They restrict the transition operator to act independently at each spatial location, typically using $1 \!\times\! 1$ convolutions in \Cref{eq:conv_ssm_continuous}. Equivalently, in the stacked vector representation (\Cref{eq:convssm:spatial}), this corresponds to replacing the circulant structure of $\Amat$ with a block diagonal with constant blocks $\Amat = \Imat_{hw} \otimes \Kmat$~-~where $\Kmat \in \R^{c \times c}$.
+
 This constraint removes spatio-temporal coupling from the temporal ODE, i.e., the "Conv" in "ConvS5". In contrast, our approach explicitly models spatio-temporal coupling, disentangling it through the spectral domain while retaining the computational benefits of structured state space models.
-\greg{figure with kernels (k*k and 1*1), block-convolutions of kernels, and $e^{\Delta A}$.}
+
 \subsection{Final Model}
 \label{sec:final_model}
+
 \greg{Find a better section title...}
+
 \paragraph{The Core.} \greg{Spectral ConvSSM}
+
 \paragraph{Parameterization.} \greg{Rework this paragraph} We parameterize $\Amat$ as a complex-valued vector $\Lmat \in \C^N$. As for $\Bmat$ and $\Cmat$, we can either parameterize them as kernels in the spatial domain, or as block-diagonal matrices in the spectral domain.
 %
 The spatial parameterization leads to input and output transforms of $O(c c_\mathrm{in} k^2)$ parameters and either $\underbrace{O(hwk^2cc_\mathrm{in})}_{\text{spatial convolution}} + \underbrace{O(hw \log(hw) c)}_{\text{FFT}}$ or $\underbrace{O(hwcc_\mathrm{in})}_{\text{spectral product}} + \underbrace{O(hw \log(hw) c c_\mathrm{in})}_{\text{FFT}}$ complexities depending on the order of operations.
 %
 The spectral parameterization leads to $O(hwcc_\mathrm{in})$ parameters with complexity of $O(hwcc_\mathrm{in})$.
+
 \paragraph{Stability.} \greg{eigenvalues of $A$}
+
 \paragraph{Circuits.} \greg{All circuit derivation on the SSM applies to our core. We take Gated Delta Net as state of the art circuit and plug it on top of our core.}
+
 \section{Scaling Laws}
+
 \section{Benchmarks}
+
 \section{Fine Tuning for Video Modeling}
+
 \section{Interpretability}
+
 \section{Related Work}
-\TS{Gregoire -- related work. Neuro context is already in the intro so don't repeat. Keep this to two blocks: (1) SSMs and (2) SSMs for vision/video, with clear positioning against ConvS5. Half a page max -- may even fold into intro if space is tight.}
-\TS{%
-\textbf{State space models.}
-\begin{itemize}
-\item Origin: HiPPO~\citep{gu2020} $\to$ S4~\citep{gu2022} (DPLR param, global conv, solves Path-X).
-\item Simplifications: diagonal~\citep{gu2022s4d,gupta2022}, MIMO parallel scan~\citep{smith2023s5}, LRU~\citep{orvieto2023}, gating~\citep{mehta2023}.
-\item Mamba~\citep{gu2023}: input-dependent (selective) transitions + HW-aware algo. Mamba-2~\citep{dao2024}: SSM--attention duality via semiseparable matrices.
-\item All 1D -- no native spatial structure.
-\end{itemize}}
-\TS{%
-\textbf{SSMs for vision and video.}
-\begin{itemize}
-\item S4ND~\citep{nguyen2022}: multidimensional continuous SSMs, resolution-invariant. Vim~\citep{zhu2024}: bidirectional Mamba for images, matches ViT cheaper. VideoMamba~\citep{li2024videomamba}, Mamba-ND~\citep{li2024mamband}.
-\item ConvS5~\citep{smith2023convs5} is closest to us: S5 scan + conv recurrence, beats ConvLSTM/Transformers on long-horizon video. BUT: $1\times 1$ convolutions only $\to$ no horizontal connections. We show why (kernel explosion) and how to fix it.
-\item Also mention Hyena~\citep{poli2023} (implicit long convolutions) and video transformers: TimeSformer~\citep{bertasius2021}, ViViT~\citep{arnab2021}, Video Swin~\citep{liu2022swin} -- strong but $O(n^2)$ in tokens.
-\end{itemize}}
+
 \paragraph{}State space models (SSMs) have recently emerged as a powerful alternative to attention-based architectures for long-range sequence modeling, combining linear recurrent dynamics with efficient parallel algorithms. Early work on structured state space models builds on the HiPPO framework~\citep{gu2020}, which introduced principled continuous-time representations of long-range dependencies, and culminates in S4~\citep{gu2022}, where carefully parameterized transition matrices together with a convolutional representation and parallel algorithms enable efficient modeling of long sequences. Subsequent work has further simplified and structured SSMs along multiple axes to improve efficiency and scalability. Diagonal parameterizations~\citep{gu2022s4d, gupta2022} reduce computational cost while retaining performance, while extensions from single-input single-output to multi-input multi-output~\citep{smith2023s5} formulations were enabled by efficient parallelization through scan algorithms.
+
 Additional refinements such as linear recurrent units (LRUs)~\citep{orvieto2023} and gating mechanisms~\citep{mehta2023} further enhance expressivity and stability. Further circuit derivations and refinements around the core of SSMs include input-dependent selection of transition matrices in Mamba~\citep{gu2023}, and the SSM--attention duality in Mamba-2~\citep{dao2024} through the lens of semiseparable matrices. However, these advances remain fundamentally limited to one-dimensional sequence modeling and do not natively capture spatial structure.
+
 \paragraph{}Extending SSMs to high-dimensional visual data such as images and videos requires incorporating dynamics over multiple axes. S4ND~\citep{nguyen2022} introduces precisely this extension, formalising SSMs evolving over multiple dimensions through separable dynamics. Though successful as a drop-in replacement for state-of-the-art visual processing layers, S4ND's fundamental separation between space and time limits its ability to capture spatio-temporal coupling. Other SSM-based approaches to vision and video modeling have emerged~\citep{zhu2024,li2024videomamba,li2024mamband}.
+
 True spatio-temporal coupling was formulated in~\citet{smith2023convs5}. Their ConvS5 beats ConvLSTMs and Transformers on long-horizon video modeling. However, ConvS5's convolutional recurrence is limited to $1 \!\times\! 1$ kernels, thereby forfeiting spatio-temporal coupling of the ConvSSM. This is not a mere design choice, but a fundamental consequence of parallelising over coupled spatio-temporal dynamics. In contrast, our Spectral ConvSSM formulation explicitly models spatio-temporal coupling through the spectral domain while retaining the computational benefits of structured state space models.
+
 \section{Conclusion}
+
 \bibliography{references}
 \bibliographystyle{plainnat}
+
 \newpage
 \appendix
+
 \section{Complexity Proofs}
 \label{app:complexity_proofs}
+
 We analyse the complexity of the parallel scan algorithm to show why convolutions in spatial domain make the complexity explode, and how doing convolutions in spectral domain preserves $O(\log T)$ complexity. We consider both the work complexity $W$, measuring the total amount of atomic operations to perform, and the time complexity under unlimited parallelization $T_\infty$, measuring the longest sequence of atomic operations remaining after optimal parallelization.
+
 We begin by addressing the main issue of the complexity explosion of convolutional SSMs in \cref{app:parallel_scan,app:SSM_complexity,app:Spatial_ConvSSM_complexity,app:Spectral_ConvSSM_complexity}. Our main result is \Cref{prop:Spectral_ConvSSM_complexity}. We show in \cref{app:Spectral_ConvSSM_complexity} that we can achieve the same work and time complexity as a regular linear SSM. We then tackle the question of reducing the constant to make it tractable, using standard tricks, adapted to our framework, in \cref{app:constant_factors}.
+
 \subsection{The Parallel Scan}
 \label{app:parallel_scan}
+
 We first describe the parallel scan operation in the most general way. This operation is the core of the SSM parallelization. Let $(a_i)_{i\in I}\in \mathcal{M}^I$ be elements of a monoid $(\mathcal{M},\oplus,e)$, with $I=\intint{0}{T\!-\!1}$. The parallel scan is an algorithm that computes $(s_i=\sum_{j=0}^ia_j)_i\in I$. This algorithm is parallelisable and requires associativity of the $\oplus$ operator and a neutral element $e$, hence the minimal requirement of a monoid structure. It proceeds in two sweeps mirroring each other. The first sweep proceeds in a tree like structure, with level $l$ of the tree computing $a^{l+1}_{k}\coloneqq a^l_{2k} \oplus a^l_{2k+1}$, and initialised with $a^0_k\coloneqq a_k$. Once this upward sweep is over, the downward sweep computes mirror operations, with $b^0_1\coloneqq e$ and $(b^{l+1}_{2k}, b^{l+1}_{2k+1}) = (b^{l}_{k}, b^{l}_{k} \oplus a^{\log_2(T)-(l+1)}_{2k})$. The order is crucial here as $\oplus$ is not required to be commutative. It is only required to be associative. In our application for SSM, it is not be commutative. We denote the parallel scan procedure as $\mathrm{Scan}((a_i)_{i\in I})$ or $\mathrm{Scan}$ for short.
 \Cref{fig:parallel_scan_general} provides a visualisation of the entire procedure.
+
 \begin{figure}[ht]
     \centering
     \includegraphics[height=0.3\textheight]{figures/scan_monoid.pdf}
@@ -314,17 +289,22 @@ We first describe the parallel scan operation in the most general way. This oper
     \caption{\textbf{Left:} parallel scan with a generic monoid. \textbf{Right:} illustration on the special case of natural integers.}
     \label{fig:parallel_scan_general}
 \end{figure}
+
 The procedure described above yields $(\sum_{j=0}^{i-1}a_j)_{i\in I}$, with the cumulative sum being $a^{\log_2(T)}_{0}$ the intermediate result of the upward sweep. We analyse the work complexity $W$ and the time complexity $T_\infty$ of $\mathrm{Scan}$ in terms of floating point operations, where $W$ counts the total number of operations needed and $T_\infty$ counts the time complexity under unlimited parallelism.
+
 \begin{proposition}[Parallel Scan Complexity for Integers]
 \label{prop:scan_integer_complexity}
     Let $(\mathcal{M}, \oplus, e) \coloneqq (\N, +, 0)$ be the monoid of natural integers equipped with addition. Let $(a_i)_{i\in I}\in \N^I$ be a sequence of integers.
+
 \begin{align}
     W(\mathrm{Scan})&= 2(T-1)\\
     T_\infty(\mathrm{Scan})&= 2\log_2 T
 \end{align}
 \end{proposition}
+
 \begin{proof}
 At level $l$ of the upward scan, $U_l = T/(2^{l+1})$ $\oplus$ operations are performed, each of them having a complexity of $1$. There are $\log_2 T$ levels in total. The same goes on for the downward scan, with $D_l = T/(2^{\log_2(T) - l})=2^{l}$ operations at level $l$. Therefore, the work complexity of level $l$ is $U_l$ (resp. $D_l$) while its time complexity is $1$ with unlimited parallelism. It follows that
+
 \begin{align}
 \label{eq:W_integer}
 W &= 2\sum_{l=0}^{\log_2 T-1}2^l=2(T-1)\\
@@ -332,9 +312,12 @@ W &= 2\sum_{l=0}^{\log_2 T-1}2^l=2(T-1)\\
 T_\infty&= 2\sum_{l=0}^{\log_2 T-1}1=2\log_2T
 \end{align}
 \end{proof}
+
 The key point of this analysis is that the $\oplus$ operation has constant time complexity.
+
 \subsection{SSM Complexity}
 \label{app:SSM_complexity}
+
 The case of SSMs is a little more complicated than that of real numbers. In SSMs, the recurrence is defined by \Cref{eq:ssm:recurrence}. We take $B = I$ and $d = N$ for simplicity. Thus, the goal is to compute in parallel the hidden states $(h_i = \sum_{j=0}^i\overline{A}^{i-j}x_j)_i\in I$, where $x_i$ are vectors of dimension $d$ and $\overline{A}$ is a square matrix. This is almost but not quite what we need for the parallel scan. We define the following monoid:
 \begin{align}
 \label{eq:M_SSM}
@@ -344,19 +327,25 @@ The case of SSMs is a little more complicated than that of real numbers. In SSMs
 \label{eq:0_SSM}
     &e^{\mathrm{SSM}}\coloneqq(I_d, 0)
 \end{align}
+
 With this monoid structure, and the sequence $(a_t)_{t\in I} \coloneqq ((\overline{A}_t, x_t))_{t\in I} \in \mathcal{M}^I$, the result of the parallel scan is $((A^t, \sum_{j=0}^tA^{t-j}x_j))_{t\in I}$. The complexity of the scan is less straightforward, but the complexity of each $\oplus^{\mathrm{SSM}}$ operation depends only on $d$. It is a constant of $T$. Therefore, the overall time complexity of the scan is $T_\infty= O(\log T)$ and $W=O(T)$.
+
 \begin{proposition}[SSM Complexity]
     Let $(\mathcal{M}, \oplus) \coloneqq (\mathcal{M}^{\mathrm{SSM}}, \oplus^{\mathrm{SSM}})$ be the monoid defined by \Cref{eq:M_SSM,eq:+_SSM,eq:0_SSM}. Let $(a_i)_{i\in I}\in (\mathcal{M}^{\mathrm{SSM}})^I$.
+
 \begin{align}
     W(\mathrm{Scan})&= 2(T-1)(d^3+d^2+d)\\
     T_\infty(\mathrm{Scan})&= 2\log_2 (T) (d^3+d^2+d)
 \end{align}
 \end{proposition}
+
 \begin{proof}
 The proof of \Cref{prop:scan_integer_complexity} applies with the only difference that now, each $\oplus^{\mathrm{SSM}}$ operation has complexity $d^3$ for the matrix multiplication on the left, $d^2$ for the matrix-vector multiplication and $d$ for the vector addition on the right.
 \end{proof}
+
 \subsection{Spatial ConvSSM Complexity}
 \label{app:Spatial_ConvSSM_complexity}
+
 Rewriting the SSM (\Cref{eq:ssm:recurrence}) to the ConvSSM formulation of \Cref{eq:conv_ssm_discrete}, we can similarly adapt the monoid structure as :
 \begin{align}
     &\mathcal{M}^{\mathrm{Conv}_1}\coloneqq \left\{a = (\Kmat, x)\mid \exists k_1, k_2,\quad \Kmat\!\in\!\R^{k_1\times k_2\times c\times c},~x\!\in\!\R^{h \times w \times c}\right\}\\
@@ -364,6 +353,7 @@ Rewriting the SSM (\Cref{eq:ssm:recurrence}) to the ConvSSM formulation of \Cref
     &e^{\mathrm{Conv}_1}\coloneqq(I, 0)
 \end{align}
 \noindent where $\circledast$ is the block convolution between two kernels and $\ast$ is the convolution between a kernel and an image:
+
 \begin{align*}
     & \forall \left\{
 \begin{aligned}
@@ -381,17 +371,23 @@ Rewriting the SSM (\Cref{eq:ssm:recurrence}) to the ConvSSM formulation of \Cref
 \right., (L \circledast \Kmat)_{u,v,c_{\mathrm{in}},c_{\mathrm{out}}} = \sum_{p=0}^{l_1-1}\sum_{q=0}^{l_2-1}\sum_{c_{k}=1}^{c} L_{p,q,c_{k},c_{\mathrm{out}}} \Kmat_{u-p,v-q,c_{\mathrm{in}},c_{k}}\text{, $\Kmat$ being zero-padded}
 \end{align*}
 \noindent with $L\!\in\!\R^{l_1\times l_2\times c \times c}$, $\Kmat\!\in\!\R^{k_1\times k_2\times c \times c}$ and $x\!\in\!\R^{h \times w \times c}$.
+
 With this structure, the key aspect is that the spatial size of the kernel resulting from $\circledast$ is the sum of the sizes of the input kernels. Therefore, the parallel scan algorithm operates on larger and larger kernel sizes, with sizes growing exponentially with the depth in the tree structure. The complexity of the $\oplus^{\mathrm{Conv}_1}$ operator is thus no more constant as it depends on the depth. The bottleneck is at the very last layer of the upward scan, where kernel size is $O(Tk)$, with $k$ the size of the original kernels $\overline{\Kmat}_t$, resulting in a single $\ast$ operation whose complexity is in $O(T^2)$. This bottleneck is illustrated in \Cref{fig:parallel_scan_conv_spatial}.
+
 \begin{proposition}[Spatial ConvSSM Complexity]
     Let $(\mathcal{M}, \oplus) \coloneqq (\mathcal{M}^{\mathrm{Conv}_1}, \oplus^{\mathrm{Conv}_1})$ be the monoid defined by \Cref{eq:M_SSM,eq:+_SSM,eq:0_SSM}. Let $(a_i)_{i\in I}\in (\mathcal{M}^{\mathrm{Conv}_1})^I$.
+
 \begin{align}
     W&= O(T^2)\\
     T_\infty&= O(W)
 \end{align}
 \end{proposition}
+
 \begin{proof}
 The proof of \Cref{prop:scan_integer_complexity} applies with the major difference that in the upward scan, at level $l$, each $\oplus^{\mathrm{Conv}_1}$ operation has complexity $(k+(2^l-1)(k-1))^2 \times c^3 = O((2^l)^2\times k^2 \times c^3)$ for the kernel-kernel convolution on the left, $O(h w \times (2^l)^2 k^2 \times c^2)$ for the kernel-image convolution and $h w c$ for the image addition on the right. The same goes on for the downward scan.
+
 Thus, \Cref{eq:W_integer,eq:T_integer} become :
+
 \begin{align}
 \label{eq:W_conv}
 W &= O(2 \sum_{l=0}^{\log_2(T)-1} 2^{\log_2(T)-(l+1)} \times \left[ (2^l)^2 k^2 \times c^3 + h w \times (2^l)^2 k^2 \times c^2\right])\\
@@ -401,15 +397,19 @@ T_\infty&= O(2\sum_{l=0}^{\log_2(T)-1} \left[ (2^l)^2 k^2 \times c^3 + h w \time
 &= O(W)
 \end{align}
 \end{proof}
+
 \begin{figure}[ht]
     \centering
     \includegraphics[height=0.3\textheight]{figures/scan_conv.pdf}
     \caption{Parallel scan applied to the monoid structure defined for spatial convolution SSM. Highlighted is the core of the issue : growing kernels lead to a bottleneck where a single operation has $O(T^2)$ complexity.}
     \label{fig:parallel_scan_conv_spatial}
 \end{figure}
+
 Moreover, as mentioned in the main text, the discretization step of the SSM leads to kernels with full spatial support, meaning that the initialization of the scan is $(a_t)_{t\in I} = ((\overline{\Kmat}_t, x_t))_{t\in I}$ with $\overline{\Kmat}_t$ of size $h \!\times\! w$. Thus, even the first step of the scan is intractable.
+
 \subsection{Spectral ConvSSM Complexity}
 \label{app:Spectral_ConvSSM_complexity}
+
 To dispell the curse of growing kernels we move to the spectral domain and the ConvSSM formulation of \Cref{eq:convssm}. In this domain, our monoid becomes:
 \begin{align}
 \label{eq:M_SSM_spectral}
@@ -425,15 +425,19 @@ To dispell the curse of growing kernels we move to the spectral domain and the C
     &e\coloneqq(I, 0)
 \end{align}
 \noindent with $\odot$ the element-wise matrix multiplication and $\cdot$ the element-wise matrix-vector multiplication. With this operator, the kernel grows no more, the cost is again a constant of time and depth, depending only on $h$, $w$ and $c$. We are thus back to a time complexity for the parallel scan of $O(\log T)$.
+
 \begin{proposition}[Spectral ConvSSM Complexity]
     Let $(\mathcal{M}, +) \coloneqq (\mathcal{M}^{\mathrm{Conv}_2}, \oplus^{\mathrm{Conv}_2})$ be the monoid defined by \Cref{eq:M_SSM_spectral,eq:+_SSM_spectral,eq:0_SSM_spectral}. Let $(a_i)_{i\in I}\in (\mathcal{M}^{\mathrm{Conv}_2})^I$.
+
 \begin{align}
     W&= O(T)\\
     T_\infty&= O(\log_2T)
 \end{align}
 \end{proposition}
+
 \begin{proof}
 The proof of \Cref{prop:scan_integer_complexity} applies with the only difference that now, each $\oplus^{\mathrm{Conv}_2}$ operation has complexity $h w c^3$ for the kernel-kernel multiplication on the left, $h w c^2$ for the kernel-image multiplication and $h w c$ for the image addition on the right. This gives :
+
 \begin{align}
 \label{eq:W_spectral}
     W&= O(T \times h w c^3)\\
@@ -441,10 +445,14 @@ The proof of \Cref{prop:scan_integer_complexity} applies with the only differenc
     T_\infty&= O(\log_2T \times h w c^3)
 \end{align}
 \end{proof}
+
 \subsection{Taking down the constant factors}
 \label{app:constant_factors}
+
 Now that we have solved the main issue of complexity explosion with time, we tackle the problem of the constant factor. As mentioned in \Cref{prop:SSM_complexity}, as is, the work complexity is $O(T)$ with a constant that is $O(d^3)$ due to matrix multiplications.
 %
 The diagonal SSM (\Cref{eq:ssm:diagonal}) reduces this constant from $O(d^3)$ to $O(d)$. The complexity gain comes from the change of basis being absorbed outside of the recurrence such that the recurrence can operate on diagonalized matrices.
+
 In the case of the Spectral SSM (\Cref{eq:ssm:spectral}), the $O(c^3)$ is even more prohibitive as it is repeated over each pixel position, with the total constant being $O(hwc^3)$ in the spectral domain (\Cref{eq:W_spectral,eq:T_spectral}). Hence the diagonal spectral SSM (\Cref{eq:ssm:diagonal_spectral}), which reduces the constant to $O(hwc)$. Our ConvSSM formulation (\Cref{eq:convssm}) exploits this diagonal spectral SSM and couples it with convolutional input and output transforms in order to make the whole model tractable.
+
 \end{document}

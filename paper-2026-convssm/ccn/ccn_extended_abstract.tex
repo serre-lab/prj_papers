@@ -1,0 +1,134 @@
+% -----------------------------------------------------------------------
+% CCN Conference - Extended Abstract Track Template
+% For papers up to 2 pages (excluding references); no supplement.
+% -----------------------------------------------------------------------
+\documentclass{ccn}  % options: submission (default), preprint, extended-abstract
+\usepackage{macros}
+
+\addbibresource{references.bib}
+
+\title{Spectral State Space Models for Horizontal Connections and Visual Modeling}
+
+\author{%
+  Author One\affmark{1} \And
+  Author Two\affmark{1} \And
+  Author Three\affmark{2} \And
+  Author Four\affmark{2,3} \AND
+  Author Five\affmark{3} \And
+  Author Six\affmark{4} \And
+  Author Seven\affmark{4} \And
+  Author Eight\affmark{1,4}%
+}
+\affiliation{1}{Department of Neuroscience, First University}
+\affiliation{2}{Institute for Brain Research, Second University}
+\affiliation{3}{Center for Neural Computation, Third University}
+\affiliation{4}{Department of Psychology, Fourth University}
+\emails{author1@first.edu, author3@second.edu, corresponding@fourth.edu}
+
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+% The abstract should be identical to the text version submitted in the web form and
+% should not exceed 300 words.
+% CCN has an interdisciplinary audience.
+% Hence a good abstract should (a) give context about what the problem is and why it
+% matters (b) give the contents and explain what was done and what was found (c) give a
+% clear conclusion including what we learned and how it changes the way we think about
+% the universe.
+% And because Konrad is writing this, he can not avoid shamelessly plugging his writing
+% guide: \url{doi.org/10.1371/journal.pcbi.1005619}.
+% See you at CCN.
+%
+% --- v1: led with horizontal connections + kernel explosion (too methods-forward for CCN) ---
+% Horizontal connections in visual cortex---local, recurrent circuits linking neurons across the topographic map---are thought to underlie contour integration, perceptual grouping, and other forms of long-range spatial coordination \citep{field1993,gilbert1989,bosking1997}. Computational models such as the horizontal gated recurrent unit (hGRU) capture this principle through repeated local interactions \citep{linsley2018}, achieving strong performance on perceptual tasks with few parameters. However, these models rely on nonlinear recurrence and are fundamentally sequential, limiting their scalability to large inputs and long temporal horizons.
+% State space models (SSMs) offer an alternative: linear recurrent dynamics that can be parallelized efficiently \citep{gu2022,smith2023s5,dao2024}. Yet existing extensions of SSMs to spatiotemporal data either decouple space and time, as in S4ND \citep{nguyen2022}, or restrict the recurrence to pointwise ($1\!\times\!1$) operations, as in ConvS5 \citep{smith2023convs5}, eliminating the spatial coupling that makes horizontal connections computationally powerful. We show that this is not a design choice but a structural barrier: incorporating convolutional spatial interactions into the SSM recurrence causes kernel sizes to grow exponentially during parallel computation, making the standard algorithm quadratic in sequence length.
+% We resolve this by lifting the convolutional SSM into the Fourier domain. Because convolution operators are diagonalized by the discrete Fourier transform, spatiotemporal entanglement decomposes into independent frequency channels. Convolution composition reduces to pointwise multiplication, restoring linear work complexity and logarithmic parallel depth---matching standard SSMs while preserving full spatial coupling.
+% The resulting model, the Spectral Convolutional State Space Model (ConvSSM), provides a scalable instantiation of horizontal recurrent processing. [1--2 sentences on key experimental results -- TO FILL.] This work reconnects efficient sequence models with the neuroscience of lateral cortical interactions, offering a framework in which horizontal connectivity can be studied at scales previously inaccessible to recurrent approaches.
+%
+% --- v2: lead with the scaling problem for RNNs in computational neuroscience ---
+Recurrent neural networks are a central modeling tool in computational neuroscience, used to study sensory processing, decision-making, motor control, and memory. Yet RNNs are inherently sequential and do not scale: training is slow, models stay small, and experiments are confined to toy tasks and synthetic data. Meanwhile, transformers scale but lack the recurrent inductive biases that make RNNs natural models of neural circuits. State space models (SSMs) bridge this gap---they are linear recurrences that admit efficient parallel training---but existing spatiotemporal SSMs either decouple space from time or strip out spatial interactions entirely, losing the very structure that makes recurrent models useful for vision.
+%
+We take a concrete case: horizontal connections in visual cortex, the local recurrent circuits that support contour integration and perceptual grouping. The horizontal gated recurrent unit (hGRU) \citep{linsley2018} captures this principle and solves challenging perceptual tasks with few parameters, but does not scale. We show how to reformulate hGRU-style convolutional recurrence as an SSM---and identify why naive approaches fail: composing spatial convolutions during parallel scan causes kernel sizes to explode, making computation quadratic. Our fix is to lift the entire recurrence into the Fourier domain, where convolution composition becomes pointwise multiplication, restoring linear complexity with full spatial coupling intact.
+%
+The resulting Spectral Convolutional State Space Model (ConvSSM) is a scalable instantiation of horizontal recurrent processing. [1-2 sentences on key experimental results | TO FILL.] More broadly, this work offers a path toward training neuroscience-motivated recurrent architectures at scale, on naturalistic data and tasks, closing the gap between biological plausibility and modern computational demands.
+\end{abstract}
+
+\section{Introduction}
+
+% --- v1: four paragraphs from full paper, too long for 2-page abstract ---
+% \paragraph{}Visual perception relies on the integration of information across space and time. In the visual cortex, neurons are organized topographically and interact through local horizontal connections \citep{gilbert1989,bosking1997,stettler2002}, allowing activity to propagate across the visual field while preserving structure. These circuits are thought to underlie key perceptual phenomena such as contour integration and perceptual grouping, where global structure emerges from repeated local interactions~\citep{field1993,gilbertli2013}.
+% \paragraph{}Computational models have long sought to capture this principle. Architectures based on horizontal recurrent interactions implement local connectivity together with iterative processing, enabling the emergence of long-range dependencies from short-range computations. However, these models are typically formulated as nonlinear recurrent neural networks (RNN), which are inherently sequential and therefore difficult to scale to large inputs or long time horizons. As a result, there is a gap between biologically grounded models of horizontal processing~\citep{linsley2018} and modern scalable architectures~\citep{vaswani2017}.
+% \paragraph{}State space models (SSMs) have recently emerged as a powerful alternative for sequence modeling, combining linear recurrent dynamics with efficient parallel algorithms~\citep{gu2022,gu2022s4d,smith2023s5,gu2023,dao2024}. Their favorable scaling properties make them an appealing backbone for modeling long-range dependencies. This raises a natural question: can SSMs serve as a scalable foundation for models of horizontal interactions? Existing extensions of SSMs to high-dimensional data suggest a negative answer. Current approaches either decouple spatial and temporal dynamics~\citep{nguyen2022} or restrict spatial interactions in a way that eliminates true spatio-temporal coupling~\citep{smith2023convs5}. More fundamentally, directly incorporating convolutional spatial interactions into SSMs leads to a kernel growth phenomenon that breaks the parallel algorithms underlying their efficiency.
+% \paragraph{}In this work, we resolve this limitation by introducing a spectral formulation of convolutional state space models. By exploiting the fact that convolutional operators are diagonalized in the Fourier domain, we transform \emph{spatio-temporal entanglement} into \emph{decoupled frequency channels}. This representation preserves both spatio-temporal interactions and efficient parallel computation.
+% We introduce the Spectral Convolutional State Space Model (ConvSSM), a scalable framework that combines the inductive bias of horizontal connectivity with the computational advantages of state space models. This formulation provides a principled backbone for computational models of visual processing, enabling the study of horizontal interactions in regimes that were previously inaccessible to recurrent approaches.
+%
+% --- v2: two tight paragraphs, aligned with v2 abstract pitch ---
+\paragraph{Recurrent neural networks} are central to computational neuroscience, serving as models of sensory processing, decision-making, and memory. In vision, horizontal connections---local recurrent circuits linking neurons across the cortical topographic map---support contour integration, perceptual grouping, and figure-ground segregation~\citep{gilbert1989,bosking1997,field1993,gilbertli2013}. The horizontal gated recurrent unit (hGRU)~\citep{linsley2018} translates this principle into a computational architecture that solves challenging perceptual tasks with orders of magnitude fewer parameters than feedforward alternatives~\citep{linsley2018,kim2019}. But like all nonlinear RNNs, the hGRU is inherently sequential: it cannot be parallelized, training is slow, and in practice models remain small and confined to toy datasets. Transformers~\citep{vaswani2017} scale but lack recurrent structure; they fail on tasks like Path-X~\citep{tay2021} that demand structured long-range spatial integration.
+
+\paragraph{State space models} (SSMs)~\citep{gu2022,smith2023s5,gu2023,dao2024} offer a way forward: linear recurrences that admit efficient parallel training while retaining sequential inductive biases. But extending SSMs to spatiotemporal data has required sacrificing spatial coupling. S4ND~\citep{nguyen2022} separates dynamics along each axis; ConvS5~\citep{smith2023convs5} restricts the recurrence to $1\!\times\!1$ convolutions. We show this is a structural barrier, not a design choice: composing spatial convolutions in the parallel scan causes kernel sizes to grow exponentially, making the algorithm quadratic. We resolve this by lifting the convolutional SSM into the Fourier domain, where convolution composition becomes pointwise multiplication, restoring linear complexity with full spatial coupling. The resulting model---which we call [MODEL NAME]---is, to our knowledge, the first SSM that preserves the horizontal connectivity structure of biological vision while scaling to naturalistic data. [One sentence on results -- TO FILL.]
+
+\section{The Spectral ConvSSM}
+
+\paragraph{SSM.} is a class of recurrent model with linear recurrent dynamics. Their most general formulation is that of continuous-time (\Cref{eq:ssm}), which can be discretised as in \Cref{eq:ssm:recurrence}, with transition matrices depending on the desired step size. This continuous time formulation allows the handling of arbitrary sampling rates for free.
+
+\begin{minipage}[t]{.50\linewidth}
+\vspace{-4mm}
+  \begin{subequations}
+    \label{eq:ssm}
+    \begin{align}
+      \hvec'(t) &= \Amat \hvec(t) + \Bmat \xvec(t) \\
+      \yvec(t) &= \Cmat \hvec(t) + \Dmat \xvec(t)
+    \end{align}
+  \end{subequations}
+\end{minipage}%
+\begin{minipage}[t]{.45\linewidth}
+\vspace{-4mm}
+  \begin{subequations}
+    \label{eq:ssm:recurrence}
+    \begin{align}
+    \label{eq:ssm:recurrence:1}
+      \hvec_{t} &= \overline{\Amat} \hvec_{t-1} + \overline{\Bmat} \xvec_t \\
+    \label{eq:ssm:recurrence:2}
+      \yvec_t &= \Cmat \hvec_t + \Dmat \xvec_t
+    \end{align}
+  \end{subequations}
+\end{minipage}%
+
+\paragraph{ConvSSM.} Convolutional state space models (ConvSSMs) are a principled translation of horizontal recurrent circuits into the SSM framework, providing coupled spatio-temporal dynamics in a single, scalable model.
+%
+Rewriting the SSM equations (\Cref{eq:ssm}) for kernel convolutions, we get the following spatial ConvSSM:
+
+\begin{minipage}[t]{.75\linewidth}
+\vspace{-5mm}
+  \begin{subequations}
+    \label{eq:conv_ssm_continuous}
+    \begin{align}
+    \label{eq:conv_ssm_continuous:1}
+      \frac{\partial \hvec}{\partial t}(r,t) &= \Kmat_h \ast \hvec(r, t) + \Kmat_x \ast \xvec(r, t) \\
+      \yvec(r, t) &= \Kmat_y \ast \hvec(r, t)
+    \end{align}
+  \end{subequations}
+\vspace{-5mm}
+\end{minipage}%
+
+Where $r$ is the spatial position, $\Kmat$ are convolution kernels and $\ast$ is the convolution operator. However, the spatial ConvSSM is fundamentally unscalable due to entanglement of spatial and temporal dynamics \citep{smith2023convs5}.
+
+\paragraph{Spectral ConvSSM.}We reformulate this spatial ConvSSM as an equivalent spectral ConvSSM as follows:
+%
+\begin{align}
+\label{eq:convssm}
+\Amat = \Lmat \qquad
+\Bmat = FFT \circ \Kmat_x \qquad
+\Cmat = \Kmat_y \circ iFFT
+\end{align}
+%
+where $\Lmat$ is a diagonal.
+
+\section{Experiments}
+
+\paragraph{}...
+
+\end{document}

@@ -1,0 +1,85 @@
+\documentclass[10pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{parskip}
+\usepackage{titlesec}
+\usepackage{hyperref}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.4em}
+
+\titleformat{\section}{\large\bfseries}{\thesection}{0.6em}{}
+\titlespacing*{\section}{0pt}{0.7em}{0.3em}
+
+\begin{document}
+
+\begin{center}
+    {\Large \textbf{Tracing Sparse Feature Circuits in Vision Transformers}}\\[0.5em]
+    Zirui Hu
+\end{center}
+
+\section{Introduction}
+
+Recent mechanistic interpretability work has made substantial progress toward recovering circuits in large language models. Rather than describing behavior only at the level of neurons or layers, these approaches aim to identify intermediate computational units and trace how they interact to support downstream predictions. However, comparable circuit-level understanding in vision models, especially Vision Transformers (ViTs), remains much more limited.
+
+ViTs are a compelling setting for this question because they process spatially structured inputs through layered attention and token mixing, suggesting that meaningful computations may be distributed across both depth and space. At the same time, their internal activations are high-dimensional, distributed, and difficult to align with stable visual concepts. In practice, simply selecting highly activated features often returns numerically salient but visually inconsistent candidates, making robust and interpretable feature identification a prerequisite for circuit-level analysis in ViTs.
+
+\section{An End-to-End Sparse Feature Pipeline for ViT Circuit Tracing}
+
+To address this problem, we implemented an end-to-end pipeline for sparse feature discovery, feature validation, and intervention-based circuit probing in ViTs. Our approach combines sparse feature learning, candidate filtering, visual and semantic validation, and feature-level interventions into a single framework.
+
+We begin by training sparse autoencoders (SAEs) on intermediate activations from selected ViT layers. This stage replaces the original dense activation space with a more factorized sparse feature space for isolating candidate computational units. Earlier versions of the pipeline explored a broader multi-stream setup across different internal representations. In practice, these broader configurations were harder to stabilize, so the current implementation focuses on attention-output representations as a more direct and stable basis for sparse feature discovery, candidate selection, and cross-layer intervention analysis.
+
+A central part of our work is that sparse features obtained from SAE training are not treated as automatically interpretable. Many candidate features remain unstable, weakly meaningful, or driven by a small number of atypical examples. To address this, we developed a multi-stage filtering procedure that evaluates candidate features using both statistical and visually grounded criteria. Specifically, we examine activation coverage, spike-like behavior, top-activating examples, patch-level activation maps, and class-conditional response patterns to determine whether a feature is stable and visually coherent enough to support downstream circuit analysis. This filtering stage is designed to address a practical bottleneck in ViT interpretability: naive selection by activation magnitude alone often produces candidates that are numerically prominent but unreliable for mechanism-level analysis.
+
+The retained features are then used for preliminary cross-layer circuit analysis. We probe whether perturbing selected feature activations produces repeatable changes in downstream features or model outputs, allowing us to identify candidate dependencies across layers. Our current aim is not to claim full recovery of a global causal graph, but rather to establish a reliable basis for tracing sparse feature interactions in ViTs and to identify an initial set of plausible cross-layer circuit components.
+
+\begin{figure}[H]
+    \centering
+    % Replace with your actual figure file later:
+    % \includegraphics[width=\linewidth]{figures/pipeline.pdf}
+    \fbox{%
+        \parbox[c][4.7cm][c]{0.92\linewidth}{%
+            \centering
+            Pipeline figure placeholder\\[0.5em]
+            Input image $\rightarrow$ ViT activations $\rightarrow$ SAE features\\[0.2em]
+            $\rightarrow$ feature filtering $\rightarrow$ visual/semantic validation\\[0.2em]
+            $\rightarrow$ interventions $\rightarrow$ preliminary circuit graph
+        }%
+    }
+    \caption{
+    Overview of our pipeline for tracing sparse feature circuits in Vision Transformers. Intermediate activations are decomposed with sparse autoencoders, filtered using statistical and visual criteria, and then analyzed with interventions to recover preliminary cross-layer circuit structure.
+    }
+    \label{fig:pipeline}
+\end{figure}
+
+\section{Preliminary Results}
+
+Our main preliminary result is that feature quality is the decisive bottleneck for circuit tracing in ViTs. When candidate features are selected using activation magnitude alone, many top-ranked units fail to exhibit meaningful semantic coherence. Their top-activating examples are often heterogeneous, and their patch-level activation maps may emphasize broad, noisy, or weakly meaningful image regions rather than stable visual patterns. This indicates that naive feature selection can make downstream circuit analysis difficult to interpret, even when the selected units appear numerically prominent.
+
+In contrast, our filtering pipeline substantially improves the quality of candidate features. After filtering, the retained features are more coherent both statistically and visually: their activations are more stably distributed across examples, their top-activating images are easier to interpret, and their patch-level maps more often focus on stable regions or recurring structures. Visual and class-conditional checks further reduce features that are merely high-activation artifacts. These observations suggest that feature filtering is not merely a convenient preprocessing step, but a necessary component of reliable circuit tracing in vision models.
+
+Using these filtered features, we also begin to recover sparse dependencies between candidate units across layers. Although the resulting graphs remain preliminary and incomplete, feature-level perturbations already indicate that a subset of retained features participates in repeatable downstream effects. Taken together, these results suggest that a major challenge in ViT circuit tracing is not the lack of candidate features, but the difficulty of identifying ones that are stable and interpretable enough to support mechanistic analysis. They also show that our pipeline provides a practical improvement over naive selection and establishes a more reliable basis for subsequent cross-layer circuit discovery.
+
+\section{Discussion and Next Steps}
+
+Our immediate next steps are to expand the number of robust candidate features, improve the fidelity of feature-level interventions, and consolidate the resulting cross-layer relations into clearer circuit hypotheses. A longer-term goal is to move from local candidate dependencies to more interpretable end-to-end visual circuits that explain how ViTs transform image structure into class-relevant computations.
+
+More broadly, we view this work as an attempt to adapt circuit-tracing methods from language models to vision models while accounting for the distinct challenges of visual representations. Our results suggest that such an adaptation is feasible, but only with feature-selection and validation procedures that explicitly address the visual and spatial structure of ViT activations.
+
+\end{document}
