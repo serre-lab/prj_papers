@@ -118,7 +118,7 @@ In the remainder of this work, we will omit the residual connection given by $\D
 %
 (\emph{iii}) the SSD algorithm \citep{dao2024}, which relies on structured matrix multiplications.
 %
-These parallel algorithms allow SSMs to handle long-range dependencies efficiently, making them particularly suitable for tasks such as language modeling and video processing. We focus our analysis on the parallel scan algorithm. We compare in \cref{TODO} the parallel scan to the matrix-multiplication based algorithm of SSD \citep{dao2024} across a wide range of temporal and spatial regimes.
+These parallel algorithms allow SSMs to handle long-range dependencies efficiently, making them particularly suitable for tasks such as language modeling and video processing. We focus our analysis on the parallel scan algorithm. We compare the parallel scan to the matrix-multiplication-based SSD algorithm \citep{dao2024} across a wide range of temporal and spatial regimes (\cref{app:complexity_proofs}).
 \begin{proposition}[SSM Complexity]
 \label{prop:SSM_complexity}
     Let $(\mathcal{M}, \oplus, e)$ be the monoid corresponding to the SSM, defined by \Cref{eq:M_SSM,eq:+_SSM,eq:0_SSM}. Let $(a_i)_{i\in \intint{0}{T-1}}\in \mathcal{M}^{\intint{0}{T-1}}$. Then, the parallel scan over $(a_i)$ has work and time complexity of:
@@ -261,7 +261,7 @@ This constraint removes spatio-temporal coupling from the temporal ODE, i.e., th
 \label{sec:final_model}
 \greg{Find a better section title...}
 \paragraph{The Core.} \greg{Spectral ConvSSM}
-\paragraph{Parameterization.} \greg{Rework this paragraph} We parameterize $\Amat$ as a complex-valued vector $\Lmat \in \C^N$. As for $\Bmat$ and $\Cmat$, we can either parameterize them as kernels in the spatial domain, or as block-diagonal matrices in the spectral domain.
+\paragraph{Parameterization.} \greg{Rework this paragraph} We parameterize $\Amat$ as a complex-valued vector $\Lmat \in \Complex^N$. As for $\Bmat$ and $\Cmat$, we can either parameterize them as kernels in the spatial domain, or as block-diagonal matrices in the spectral domain.
 %
 The spatial parameterization leads to input and output transforms of $O(c c_\mathrm{in} k^2)$ parameters and either $\underbrace{O(hwk^2cc_\mathrm{in})}_{\text{spatial convolution}} + \underbrace{O(hw \log(hw) c)}_{\text{FFT}}$ or $\underbrace{O(hwcc_\mathrm{in})}_{\text{spectral product}} + \underbrace{O(hw \log(hw) c c_\mathrm{in})}_{\text{FFT}}$ complexities depending on the order of operations.
 %
@@ -415,8 +415,8 @@ To dispell the curse of growing kernels we move to the spectral domain and the C
 \label{eq:M_SSM_spectral}
     &\mathcal{M}^{\mathrm{Conv}_2}\coloneqq \left\{ a = (\Lmat_c, x)\,\middle|\,\exists (\Kmat, x')\in \mathcal{M}^{\mathrm{Conv}_1},\Bigl\{
 \begin{aligned}
-    &\Lmat_c = P^{-1} \mathrm{Circ}(\Kmat_{\mathrm{padded}}) P \in \C^{hwc \times hwc}\\
-    &x = P^{-1} x' \in \C^{h w c}
+    &\Lmat_c = P^{-1} \mathrm{Circ}(\Kmat_{\mathrm{padded}}) P \in \Complex^{hwc \times hwc}\\
+    &x = P^{-1} x' \in \Complex^{h w c}
 \end{aligned}
 \Bigr.\right\}\\
 \label{eq:+_SSM_spectral}

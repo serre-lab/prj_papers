@@ -11,11 +11,11 @@
   \end{subequations}
 \end{minipage}%
 
-\begin{thomas}
+\begin{ThomasAnnotation}
   CONTINUOUS-TIME STATE SPACE MODEL. The hidden state $h(t) \in \mathbb{R}^d$ evolves continuously under linear dynamics: inputs $x(t)$ are processed through $B$, the state is fed back through $A$, and the rate of change $h'(t)$ is their sum. The output $y(t)$ is a linear readout of the state via $C$. This is the canonical form for linear dynamical systems in control theory.
   
   INTUITION: Think of $h$ as activations flowing through a circuit. The $A$ term creates self-recurrence (feedback loops), $B$ is the input gain, and $C$ extracts relevant features. The linearity means dynamics decouple by mode (each eigenmode of $A$ evolves independently).
-\end{thomas}
+\end{ThomasAnnotation}
 
 \begin{minipage}[t]{.30\linewidth}
   \begin{subequations}
@@ -29,7 +29,7 @@
   \end{subequations}
 \end{minipage}%
 
-\begin{thomas}
+\begin{ThomasAnnotation}
   DISCRETE-TIME RECURRENCE. This is the sampled version of \Cref{eq:ssm}, obtained by integrating the continuous ODE over one time step $\Delta$ and evaluating at discrete times $t = 0, \Delta, 2\Delta, \ldots$. The matrices $\overline{A}$ and $\overline{B}$ depend on $\Delta$ and encode how much the state evolves and how much new input enters per step.
   
   WHY IT FOLLOWS: Starting from $h'(t) = Ah(t) + Bx_0$ (with $x_0$ constant under ZOH), we solve via the INTEGRATING FACTOR method:
@@ -42,7 +42,7 @@
   Evaluating at $t = \Delta$ gives $h(\Delta) = e^{A\Delta}h(0) + \bigl(\int_0^\Delta e^{A(\Delta-s)}ds\bigr)Bx_0$, which yields the $\overline{A}$ and $\overline{B}$ in \Cref{eq:zoh}.
   
   INTUITION: The discrete recurrence is a difference equation---think of it as a feedback loop that runs once per time step, accumulating information from inputs and the previous state.
-\end{thomas}
+\end{ThomasAnnotation}
 
 \begin{minipage}[t]{.39\linewidth}
   \begin{subequations}%
@@ -56,13 +56,13 @@
   \end{subequations}
 \end{minipage}
 
-\begin{thomas}
+\begin{ThomasAnnotation}
   CONVOLUTION REPRESENTATION. The discrete recurrence can be unrolled into a linear time-invariant (LTI) input-output relationship: the output at each step is a sum of current and past inputs, each weighted by powers of $\overline{A}$ applied to $x$. The kernel element $\bm{C}\bm{\overline{A}}^{k}\bm{\overline{B}}$ is the response to an impulse $k$ steps in the past.
   
   WHY IT FOLLOWS: Unroll \Cref{eq:ssm:recurrence:1} backward: $h_t = \overline{A}(\overline{A}h_{t-2} + \overline{B}x_{t-1}) + \overline{B}x_t = \overline{A}^2 h_{t-2} + \overline{A}\overline{B}x_{t-1} + \overline{B}x_t$. Continuing, $h_t = \overline{A}^{t+1}h_{-1} + \sum_{k=0}^{t} \overline{A}^{k}\overline{B}x_{t-k}$. Apply $C$ and drop the initial condition (assumes $h_{-1} = 0$ or is negligible): $y_t = \sum_{k=0}^{t} \underbrace{C\overline{A}^k\overline{B}}_{K_k} x_{t-k} = (x \ast K)[t]$.
   
   INTUITION: Any LTI system can be written as convolution with an impulse response kernel. The SSM is an efficient way to parameterize and compute this kernel for recurrent (not just feedforward) systems.
-\end{thomas}
+\end{ThomasAnnotation}
 
 \paragraph{Discretisation.} Various rules can be used for discretisation, such as the zero-order hold (ZOH) whose solution is given in \Cref{eq:zoh}.
 \begin{equation}
@@ -73,7 +73,7 @@
 \end{equation}
 where $\Delta$ is the time step.
 
-\begin{thomas}
+\begin{ThomasAnnotation}
   ZERO-ORDER HOLD (ZOH) DISCRETIZATION. This formula gives the exact discrete-time matrices $\overline{A}$ and $\overline{B}$ assuming the input $x(t)$ is piecewise constant (zero-order hold) over time intervals of length $\Delta$.
   
   DERIVATION CHECK (CORRECT): Assume $h'(\tau) = Ah(\tau) + Bx_0$ for $\tau \in [0, \Delta]$, with initial condition $h(0) = h_0$ and $x(\tau) = x_0$ (constant). The homogeneous solution is $e^{A\tau}h_0$. The particular solution via variation of parameters is:
@@ -85,9 +85,9 @@ where $\Delta$ is the time step.
   INTUITION: The matrix exponential $e^{\Delta A}$ is the propagator: it evolves the state over time $\Delta$ under the unforced dynamics $h' = Ah$. The second term accumulates input: imagine the input as a constant impulse that decays backward in time under $e^{-As}$.
   
   CAVEAT: Assumes $A$ is invertible. For singular or nearly singular $A$ (e.g., integrators), use the full formula or matrix exponential directly.
-\end{thomas}
+\end{ThomasAnnotation}
 
-\begin{thomas}
+\begin{ThomasAnnotation}
 SIDE-BY-SIDE: STANDARD SSM VS.\ CONVSSM. The spatial coupling below generalizes the scalar SSM (\Cref{eq:ssm,eq:ssm:recurrence}) by replacing matrix--vector products with convolutions. Here is the correspondence:
 
 \medskip
@@ -109,7 +109,7 @@ Self-recurrence only
 
 \medskip
 The key move: every matrix multiply becomes a convolution. This adds spatial coupling between units in the same layer (horizontal/lateral connections), which is what standard SSMs lack.
-\end{thomas}
+\end{ThomasAnnotation}
 
 \paragraph{Spatial Coupling.} Rewriting \Cref{eq:ssm} to include horizontal connections yields \Cref{eq:conv_ssm_continuous}, with the corresponding discrete time formulations in \Cref{eq:conv_ssm_discrete}.
 
@@ -135,7 +135,7 @@ The key move: every matrix multiply becomes a convolution. This adds spatial cou
   \end{subequations}
 \end{minipage}
 
-\begin{thomas}
+\begin{ThomasAnnotation}
   SPATIAL COUPLING VIA CONVOLUTION. Instead of a single global state $h(t)$, each spatial location $r$ (e.g., a pixel) has its own state $h(r,t)$. The state at $r$ is updated by: (1) local input via $K_x \ast x$, and (2) horizontal connections from neighboring spatial locations via $K_h \ast h$. The output is also spatially localized convolution of $h$ with $K_y$.
   
   WHY THIS MAKES SENSE: This is the natural extension of SSMs to spatial/visual data. The convolution kernels $K_h(\text{offset})$ and $K_x(\text{offset})$ control how far information spreads horizontally and are typically localized (e.g., $3 \times 3$ or $5 \times 5$).
@@ -143,17 +143,17 @@ The key move: every matrix multiply becomes a convolution. This adds spatial cou
   DISCRETE VERSION: The continuous \Cref{eq:conv_ssm_continuous:1} is discretized in time using ZOH or similar. The continuous-time convolution kernels $K_h$, $K_x$ become discrete kernels $\overline{K}_h$, $\overline{K}_x$. Note: the discretization formula \Cref{eq:zoh} cannot be applied directly here because the spatial convolution couples all pixels---we need spectral domain methods (see below).
   
   POTENTIAL ISSUE: Notation shift from matrix $A$ to kernel $K_h$: implicitly, $K_h$ is a spatial kernel that, when applied via convolution to the flattened state vector, acts like the matrix $A$ from \Cref{eq:ssm}. This is clarified in the next paragraph.
-\end{thomas}
+\end{ThomasAnnotation}
 
 However, discretization of the convolution kernel isn't as straightforward due to spatial coupling. Indeed, in order to be in the linear recurrence case, we need to view a whole image as a single vector $x\in \R^{(h\cdot w) \times c}$ and expand the convolution kernel into a circulant matrix $A \in \R^{(h\cdot w)^2 \times c^2}$. Now, following \Cref{eq:zoh}, we can compute $\overline{A}$. However, $\overline{B}$ requires the inverse of $A$ which typically has full spatial support, making it intractable in spatial domain.
 
-\begin{thomas}
+\begin{ThomasAnnotation}
   CIRCULANT MATRIX REPRESENTATION. When the spatial domain uses periodic boundary conditions (or is treated as periodic via padding), a spatial convolution with kernel $K_h$ becomes multiplication by a circulant matrix $A$. A circulant matrix has all rows as cyclic shifts of one vector (the flattened kernel), so convolving a flattened image $\vec{h}$ with $K_h$ is equivalent to computing $A \vec{h}$.
   
   WHY THIS MATTERS: Now \Cref{eq:zoh} applies: $\overline{A} = e^{\Delta A}$ and $\overline{B} = (\Delta A)^{-1}(e^{\Delta A} - I)\Delta B$. However, inverting a circulant matrix of size $(h \cdot w)^2$ (for spatial resolution $h \times w$) in the spatial domain is expensive---the inverse is dense and full-rank, requiring $O(n^3)$ operations or careful sparse methods.
   
   THE BOTTLENECK: The term $(\Delta A)^{-1}$ requires computing the inverse of a $(h \cdot w)^2 \times (h \cdot w)^2$ matrix, which is intractable for even modest image sizes (e.g., $32 \times 32 = 1024$ pixels means $\sim 10^6 \times 10^6$ matrices). This is why spectral (Fourier) methods are essential (see next section).
-\end{thomas}
+\end{ThomasAnnotation}
 
 By diagonalizing the circulant matrix in spectral domain, the set of spatially coupled partial differential equations (PDE) from \Cref{eq:conv_ssm_continuous:1} becomes a set of spectrally decoupled ordinary differential equations (ODE) (\Cref{eq:conv_ssm_continuous_spectral})~:
 
@@ -166,7 +166,7 @@ By diagonalizing the circulant matrix in spectral domain, the set of spatially c
   \end{subequations}
 \end{minipage}%
 
-\begin{thomas}
+\begin{ThomasAnnotation}
   SPECTRAL DECOUPLING VIA DFT. The Fourier transform (DFT) diagonalizes any circulant matrix. Specifically, if $A$ is circulant with first row $[k_0, k_1, \ldots, k_{n-1}]$ (the flattened kernel), then the DFT matrix $F$ satisfies $F A F^* = \Lambda$ where $\Lambda$ is diagonal. The diagonal entries are the DFT of the kernel: $\lambda_j = \sum_{k=0}^{n-1} k_k e^{-2\pi i jk/n}$.
   
   WHY THIS WORKS: Applying DFT to the PDE $\frac{\partial h}{\partial t} = Ah + Bx$ gives $\frac{\partial \widehat{h}}{\partial t} = F A F^* \widehat{h} + F B F^* \widehat{x} = \Lambda \widehat{h} + \widehat{B} \widehat{x}$. Since $\Lambda$ is diagonal, each Fourier mode evolves independently (decoupled ODEs). Here, $\widehat{K}_h(w) = \lambda_w$ is the $w$-th diagonal entry of $\Lambda$, i.e., the DFT of the spatial kernel $K_h$ evaluated at frequency $w$.
@@ -174,7 +174,7 @@ By diagonalizing the circulant matrix in spectral domain, the set of spatially c
   INTUITION: In spatial domain, information spreads via horizontal connections (convolution). In spectral domain, each Fourier mode (spatial frequency pattern) evolves independently under a scalar ODE. This is the standard trick: convolution (couples all locations) becomes pointwise multiplication (decouples modes) under DFT.
   
   NOTATION: $\widehat{h}(w,t)$ is the Fourier-transformed state at frequency $w$. The hat denotes Fourier transform. $w$ indexes spatial frequencies (wavenumber or frequency index).
-\end{thomas}
+\end{ThomasAnnotation}
 
 making \Cref{eq:zoh} applicable to every spatial frequency separately~:
 \begin{equation}
@@ -184,7 +184,7 @@ making \Cref{eq:zoh} applicable to every spatial frequency separately~:
 \overline{K_x}(w) = (\Delta \bm{\widehat{K}}_h(w))^{-1} (e^{\Delta \bm{\widehat{K}}_h(w)} - \bm{I}) \cdot \Delta \bm{\widehat{K}}_x(w)
 \end{equation}
 
-\begin{thomas}
+\begin{ThomasAnnotation}
   SPECTRAL ZOH DISCRETIZATION. After DFT, each frequency mode $w$ satisfies a scalar ODE (since $\widehat{K}_h(w)$ is a scalar in 1D or a small matrix in higher dimensions):
   $$\frac{\partial \widehat{h}}{\partial t} = \widehat{K}_h(w) \widehat{h} + \widehat{K}_x(w) \widehat{x}$$
   Applying ZOH discretization to this scalar ODE gives:
@@ -196,7 +196,7 @@ making \Cref{eq:zoh} applicable to every spatial frequency separately~:
   CAVEAT: The formula assumes $\widehat{K}_h(w) \neq 0$ (no pole at that frequency). If some $\widehat{K}_h(w) = 0$, that mode is uncontrolled by the state feedback and must be handled separately (e.g., pure integration).
   
   NOTATION ISSUE: The paper uses $\overline{K}_x$ (with bar) and $\widehat{K}_x$ (with hat) to denote the discrete time and Fourier domain versions, respectively. Be careful: $\overline{K}_x(w)$ is discrete-time, spectral domain; $\widehat{K}_x(w)$ is continuous-time, spectral domain. The formula mixes them slightly---clarification: both sides are evaluated at frequency $w$, and the ZOH formula relates continuous-spectral to discrete-spectral.
-\end{thomas}
+\end{ThomasAnnotation}
 
 \paragraph{Stability.} The continuous time ODEs imply exponential dynamics of the state over time. This dynamics are controlled by the eigenvalues $\lambda^A_i$ of the transition matrix $A$ ($\widehat{K}_h(w)$ in our case). The imaginary part controls the angular speed, while the real part controls the modulus' exponential growth. Thus, stability is achieved when
 
@@ -211,7 +211,7 @@ The corresponding discrete time condition is thus given by
     |\lambda^{\overline{A}}_i| \leq 1
 \end{align}
 
-\begin{thomas}
+\begin{ThomasAnnotation}
   CONTINUOUS-TIME STABILITY. The ODE $\frac{\partial h}{\partial t} = Ah$ has solution $h(t) = e^{At}h_0$. For stability (bounded growth as $t \to \infty$), we need $\|e^{At}\| \not\to \infty$. The matrix exponential $e^{At}$ can be diagonalized: if $A = Q \Lambda Q^{-1}$, then $e^{At} = Q e^{\Lambda t} Q^{-1}$, where $e^{\Lambda t}$ is diagonal with entries $e^{\lambda_i t}$. For $e^{\lambda_i t}$ to remain bounded, we need $|e^{\lambda_i t}| = e^{\mathrm{Re}(\lambda_i) t} \leq C$ for all $t \geq 0$, which requires $\mathrm{Re}(\lambda_i) \leq 0$. $\checkmark$ Correct.
   
   DISCRETE-TIME STABILITY. The recurrence $h_t = \overline{A}h_{t-1}$ has solution $h_t = \overline{A}^t h_0$. For stability, we need $\|\overline{A}^t\| \not\to \infty$ as $t \to \infty$. By similar diagonalization, this requires $|\lambda_i|^t \to 0$ or stay bounded, so $|\lambda_i| \leq 1$. $\checkmark$ Correct.
@@ -219,11 +219,11 @@ The corresponding discrete time condition is thus given by
   CONNECTION: The relationship between continuous and discrete eigenvalues under ZOH is $\lambda_{\text{discrete}} = e^{\Delta \lambda_{\text{continuous}}}$. If $\mathrm{Re}(\lambda_{\text{cont}}) \leq 0$, then $|e^{\Delta \lambda_{\text{cont}}}| = e^{\Delta \mathrm{Re}(\lambda_{\text{cont}})} \leq 1$. Conversely, if the discrete eigenvalue satisfies $|\lambda_{\text{disc}}| \leq 1$, we can write $\lambda_{\text{disc}} = e^{\Delta \lambda'}$ for some $\lambda'$ with $\mathrm{Re}(\lambda') \leq 0$ (taking the principal log). So the two conditions are equivalent under ZOH discretization.
   
   INTUITION: Stability means the state doesn't explode. In continuous time, the real part of eigenvalues controls decay/growth. In discrete time, the magnitude controls decay/growth per step. A negative real part (continuous) or magnitude less than 1 (discrete) ensures exponential decay.
-\end{thomas}
+\end{ThomasAnnotation}
 
 State of the art SSM parameterisation enforces \Cref{eq:discrete_stability} on $A$. They remark that in general it does not seem to work (which is expected as it is not the correct condition), but in the special case of HiPPO matrices, it happens to work well. Through a happy accident, these matrices can be decomposed in a normal plus low rank (NPLR) form with a normal component that satisfies the correct condition of \Cref{eq:stability}.
 
-\begin{thomas}
+\begin{ThomasAnnotation}
   THE CONFUSION: ENFORCING DISCRETE STABILITY ON THE CONTINUOUS $A$. State-of-the-art methods (e.g., S4, Mamba) are trained with parameters of the continuous-time matrix $A$. However, the stability condition that \emph{must} hold is \Cref{eq:discrete_stability} on the discretized $\overline{A}$. Some methods try to enforce stability on $A$ directly (e.g., via regularization or constraints), which is often incorrect.
   
   WHY NAIVE DISCRETE CONSTRAINTS ON $A$ FAIL: There is no simple condition on $A$ that ensures $|\lambda_i^{\overline{A}}| \leq 1$ for arbitrary $A$ and $\Delta$. As noted, $\lambda_i^{\overline{A}} = e^{\Delta \lambda_i^A}$, so:
@@ -233,6 +233,6 @@ State of the art SSM parameterisation enforces \Cref{eq:discrete_stability} on $
   THE HIPPO EXCEPTION: HiPPO (High-order Polynomial Projection Operators) matrices are specifically constructed to satisfy $\mathrm{Re}(\lambda_i) < 0$, so they automatically satisfy \Cref{eq:stability}. Moreover, they have special structure (NPLR decomposition) that makes them efficient. This is why they ``accidentally'' work well even when using incorrect stability constraints---the construction ensures the correct condition anyway.
   
   IMPLICATION: If this paper's method uses arbitrary $A$ matrices (not restricted to HiPPO structure), it must enforce \Cref{eq:stability} directly, not \Cref{eq:discrete_stability}. This is a critical distinction for training stability.
-\end{thomas}
+\end{ThomasAnnotation}
 
 \paragraph{Link to Neural Circuits.} As mentioned in \cref{sec:background}, the state space model implements \emph{recurrent} connections through linear dynamics to make them parallelisable. State of the art approaches in vision make these \emph{self-recurrent} only \citep{TODO}. Our approach adds \emph{intra-recurrence} through \emph{horizontal} connections for visual systems in such a way that preserves computational stability and complexity, while adding expressivity and biological plausibility.

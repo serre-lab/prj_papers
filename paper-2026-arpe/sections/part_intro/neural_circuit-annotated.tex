@@ -24,9 +24,9 @@ h_{t+1} = \overline{F}(h_t)
 where $F$ and $\overline{F}$ are functions that define the dynamics of the circuit.
 \end{definition}
 
-\begin{thomas}
+\begin{ThomasAnnotation}
 \textbf{Framing suggestion.} This definition is correct but feels graph-theoretic rather than dynamical-systems. The graph $(V,E)$ and weights $w_{uv}$ are introduced but then $F$ is left completely general---so the graph structure is formally redundant until you specialize to the linear case two paragraphs later. Consider reframing around the state equation directly: start from $h'(t) = F(h(t), x(t))$ and let the connectivity \emph{emerge} as a structural property of $F$, i.e., a connection $j \to i$ exists iff $\partial F_i / \partial h_j \not\equiv 0$. This way the graph is derived from the dynamics rather than bolted on. Benefits: (1) connects directly to the SSM linearization in Part~II ($F$ linear $\Rightarrow$ $h' = Ah + Bx$, and the sparsity of $A$ \emph{is} the graph); (2) makes the stability analysis natural (eigenvalues of the Jacobian $\partial F / \partial h$); (3) lands better for the ICLR audience, who think in RNNs and state equations. You can still introduce the graph perspective when you get to the connectivity taxonomy (feedforward/feedback/lateral, circulant, block-sparse)---that's where it genuinely helps.
-\end{thomas}
+\end{ThomasAnnotation}
 
 \begin{wrapfigure}{r}{0.3\textwidth}
     \centering
@@ -43,9 +43,9 @@ To prevent this system's dynamic to depend only on its initial state, we can int
     &h_c'(t) = (h_a + h_c)(t),&h_d'(t) &= (h_b + h_c)(t)
 \end{align*}
 
-\begin{thomas}
+\begin{ThomasAnnotation}
 Note: these equations are all linear with unit weights ($w_{uv}=1$) and no nonlinearity. Node $a$ is the input (driven externally). Node $b$ receives input from $a$ (feedforward), from itself (self-recurrence), and from $d$ (feedback). Node $c$ receives from $a$ and itself. Node $d$ receives from $b$ and $c$ (feedforward from a lower ``layer''). This matches the graph in Figure~\ref{fig:circuit_example}. The system is a coupled linear ODE: $\mathbf{h}' = W\mathbf{h} + \mathbf{b}x(t)$, where $W$ encodes the connectivity.
-\end{thomas}
+\end{ThomasAnnotation}
 
 \paragraph{Circuit Scales.}
 At the finest level, a circuit's units may correspond to individual neurons, while at coarser levels they may represent populations of neurons, other circuits, or entire brain regions. Fine-grained circuits may be embedded within larger-scale networks, with interactions occurring across multiple spatial and temporal scales. They often exhibit block-structured connectivity patterns, both in biological and artificial systems, where blocks are commonly referred to as layers due to their hierarchical arrangement with respect to information flow from input units. These blocks can be \emph{contracted} into single nodes, whose edges with other blocks represent the connectivity pattern between the units of the two blocks.
@@ -59,9 +59,9 @@ The most common models both for biological and artificial neural systems define 
 h_{t+1} &= \sigma\left(\overline{W} h_t + \overline{b}\right)
 \end{align}
 
-\begin{thomas}
+\begin{ThomasAnnotation}
 These are the ``standard neural network'' equations. In continuous time, $h'(t) = \sigma(Wh(t)+b)$ is a nonlinear ODE---much harder to analyze and simulate than the linear version. The nonlinearity $\sigma$ is applied pointwise (e.g., ReLU, sigmoid). Note: this places the nonlinearity \emph{outside} the linear transformation, matching the biological interpretation of synaptic integration (linear) followed by spike generation (nonlinear). The later SSM framework (\Cref{sec:ConvSSM_definition}) will drop $\sigma$ inside the recurrence to make it linear and parallelizable, applying nonlinearity only between layers.
-\end{thomas}
+\end{ThomasAnnotation}
 
 where $W \in \R^{|V| \times |V|}$ is the weight matrix with $W_{uv} = w_{uv}$ if $(u,v) \in E$ and $0$ otherwise, $b \in \R^{|V|}$ is a bias vector, and $\sigma$ is a pointwise nonlinearity. However, other types of interactions are possible, such as multiplicative (or divisive) interactions (used in the KV circuits of attention layers, or [TODO: biological example]), which can then generate gating mechanisms (GRU, [TODO: biological example]), etc.
 

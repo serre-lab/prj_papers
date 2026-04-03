@@ -1,7 +1,6 @@
 \documentclass{article} 
 % \usepackage{iclr2026_conference,times}
 \usepackage{macros}
-\usepackage{hyperref}
 \usepackage{url}
 \usepackage[toc,page,header]{appendix}
 \usepackage{geometry}
@@ -67,6 +66,15 @@ We introduce the Spectral Convolutional State Space Model (ConvSSM), a scalable 
     \end{align}
   \end{subequations}
 \end{minipage}%
+
+\paragraph{Discretization.}
+With zero-order hold (ZOH) and step size $\Delta$,
+\begin{equation}
+\label{eq:zoh}
+\overline{\Amat} = e^{\Delta \Amat}
+\qquad
+\overline{\Bmat} = (\Delta \Amat)^{-1} (e^{\Delta \Amat} - \Imat) \cdot \Delta \Bmat .
+\end{equation}
 
 \begin{proposition}[SSM Complexity]
 \label{prop:SSM_complexity}
