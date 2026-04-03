@@ -3,11 +3,11 @@
 \usepackage{stfloats}
 \addbibresource{ccn_references.bib}
 \usepackage{booktabs}
-\usepackage{bm}
+
 % Coauthor fill-in markers; delete once text is finalized.
 \newcommand{\TS}[1]{\textcolor{gray}{\footnotesize[TS: #1]}}
 
-\title{Latent Dimensions of Interpretability in Visual Representations}
+\title{Can Human Perceptual Similarity Alignment Improve Interpretability in Visual Representations?}
 
 \author{%
   Author One\affmark{1} \And
@@ -35,7 +35,7 @@
 % What makes visual representations interpretable? In this work, we address this question by measuring the interpretability of visual features and examining how it relates to the alignment of models with properties of human perception, specifically human perceptual similarity. We find that models aligned with coarse—but not fine-grained—human similarity judgments tend to be more interpretable. Together, these results suggest that identifying properties of representations that promote interpretability provides a path toward making models systematically more interpretable to humans.
 
 \begin{abstract}
-  What makes the features learned by vision models interpretable to humans? We introduce a psychophysics protocol that directly measures feature interpretability—the degree to which a person, given a feature visualization and importance maps, can predict where that feature will activate in a new image. The logic is simple: if a feature captures a recognizable visual concept, observers should be able to localize it; if it does not, they will struggle. Applying this protocol to sparse autoencoder features from a range of vision transformers, we find that self-supervised and foundation models are consistently less interpretable than their supervised counterparts. While fine-grained alignment with human similarity judgments is uniformly high across models and does not predict interpretability, coarse-grained alignment—capturing semantic rather than perceptual structure—is a stronger correlate, suggesting that interpretability depends less on perceptual fidelity than on whether a model's representations reflect the semantic organization of human perception.
+What makes the features learned by vision models interpretable to humans? We introduce a psychophysics protocol that directly measures feature interpretability—the degree to which a person, given a feature visualization and importance maps, can predict where that feature will activate in a new image. The logic is simple: if a feature captures a recognizable visual concept, observers should be able to localize it; if it does not, they will struggle. Applying this protocol to sparse autoencoder features from a range of vision transformers, we find that self-supervised and foundation models are consistently less interpretable than their supervised counterparts. While fine-grained alignment with human similarity judgments is uniformly high across models and does not predict interpretability, coarse-grained alignment—capturing semantic rather than perceptual structure—is a stronger correlate, suggesting that further improvements in interpretability depend less on perceptual fidelity than on whether a model's representations reflect the semantic organization of human perception.
 \end{abstract}
 
 \begin{figure*}[!b]
@@ -49,34 +49,18 @@
 
 \section{Introduction}
 
-% ORIGINAL P1:
-% Understanding the internal representations of deep neural networks remains a major challenge, particularly in high-stakes domains such as medical applications, where trust in model predictions depends on understanding which features drive them. Despite growing interest in interpretability, it remains unclear what makes a representation easier for humans to understand.
+A growing hope in the field is that aligning vision models with human perception will make them more interpretable~\citep{fel2022harmonizing, muttenthaler2025nature}. Yet this hypothesis remains largely untested: we lack both a rigorous measure of the interpretability of individual model features and a systematic comparison across models with varying degrees of human alignment. Here we address both gaps.
 
-A growing hope in the field is that aligning vision models with human perception will make them more interpretable. Yet this hypothesis remains largely untested: we lack both a rigorous measure of the interpretability of individual model features and a systematic comparison across models with varying degrees of human alignment. Here we address both gaps.
-
-% ORIGINAL P2:
-% A growing hope is that aligning models with human perception might make models more interpretable, but the impact of alignments on interpretability is still not well understood as there is a lack of human evaluation of the interpretability of models.
-
-% ORIGINAL P3:
-% In this work, we focus on representations and, more specifically, their visual features. We say that the visual feature of a model is interpretable to the extent that people can predict its location in new images. To operationalize this, we introduce a psychophysics protocol in which we explain a feature to participants and then ask them to localize it on novel images (Fig.~\ref{protocol}). This enables a direct and fine-grained assessment of human understanding of individual visual features.
-
-We operationalize feature interpretability through a psychophysics protocol: participants are shown a feature visualization and importance maps, and asked to localize the feature on novel images (Fig.~\ref{protocol}). If a feature captures a recognizable visual concept, observers should be able to find it; if it does not, they will struggle. We apply this protocol to sparse autoencoder features extracted from a diverse set of vision transformers trained under different learning frameworks.
-
-% ORIGINAL P4-5:
-% We apply this experimental protocol to a diverse set of vision transformers (ViT) and investigate how their interpretability relates to alignment with human perceptual similarity judgments.
-% We find that foundation models are generally harder to interpret than their supervised counterpart. Importantly, models aligned with coarse—but not fine-grained—human similarity judgments exhibit higher interpretability
+We operationalize feature interpretability through a psychophysics protocol: participants are shown a feature visualization and importance maps, and are asked to localize the feature on novel images (Fig.~\ref{protocol}). If a feature captures a recognizable visual concept, observers should be able to find it; if it does not, they will struggle. We apply this protocol to sparse autoencoder features extracted from a diverse set of vision transformers trained under different learning frameworks.
 
 We find that foundation models are consistently less interpretable than their supervised counterparts. Critically, while fine-grained alignment with human similarity judgments does not predict interpretability, coarse-grained alignment does—suggesting that representations capturing the semantic structure of human perception yield features that are easier for people to understand.
 
 
 \section{Methodology}
 
-% ORIGINAL:
-% \paragraph{Models} We use a range of vision transformer trained under different representation learning framework. Unless specified otherwise, we use the base variant of the architecture. The specific models considered are: ViT-small, ViT, DINOv2, DINOv3, CLIP-ViT, SigLIP.
+\paragraph{Features and models} For each model, we train a sparse autoencoder (SAE) to decompose the activations of the last layer into a dictionary of $K = 7{,}680$ (or $K = 3{,}840$ for ViT-S) individual features over the ImageNet training set~\citep{imagenet_cvpr09}. A linear probe is trained on top of the frozen representations to estimate feature importance. Figure~\ref{features} shows examples of extracted features for two representative classes. We evaluate a diverse set of vision transformers spanning supervised and self-supervised learning frameworks: \texttt{ViT-S/16} and \texttt{ViT-B/16} (supervised), \texttt{DINOv2 ViT-B/14}, \texttt{DINOv3 ViT-B/16}, \texttt{CLIP ViT-B/16}, and \texttt{SigLIP ViT-B/16}. All models and their interpretability scores are summarized in Table~\ref{tab:results}.
 
-\paragraph{Features and models} For each model, we train a sparse autoencoder (SAE) to decompose the activations of the last layer into a dictionary of \TS{Julien fill: number of latent features, e.g., ``$K = 4{,}096$ latent features''} individual features over the ImageNet training set. A linear probe is trained on top of the frozen representations to estimate feature importance. Figure~\ref{features} shows examples of extracted features for two representative classes. We evaluate a diverse set of vision transformers spanning supervised and self-supervised learning frameworks: \TS{Julien fill: complete list with architecture sizes, e.g., ``ViT-S/16, ViT-B/16 (supervised), DINOv2 ViT-B/14, DINOv3 ViT-B/14, CLIP ViT-B/16, and SigLIP ViT-B/16''}. All models and their interpretability scores are summarized in Table~\ref{tab:results}.
-
-\paragraph{Psychophysics experiment} For a given visual feature, we illustrate it via (i) a synthetic visualization, (ii) highly activating images, and (iii) corresponding importance heatmaps, and we ask participants to indicate its location on a novel query image (Fig.~\ref{protocol}). We select a representative set of features by sampling one image per superordinate class of ImageNet and retaining the top-3 most important features per image for the prediction of the model on that image (1,677 trials/model).
+\paragraph{Psychophysics experiment} For a given visual feature, we illustrate it via (i) a synthetic visualization~\citep{fel2023maco}, (ii) highly activating images, and (iii) corresponding importance heatmaps~\citep{petsiuk2018rise}, and we ask participants to indicate its location on a novel query image (Fig.~\ref{protocol}). We select a representative set of features by sampling one image per superordinate class of ImageNet and retaining the top-3 most important features per image for the prediction of the model on that image (1,677 trials/model).
 
 \begin{figure}[ht]
   \centering
@@ -84,6 +68,7 @@ We find that foundation models are consistently less interpretable than their su
   \caption{\textbf{Psychophysics experiment.} Example of a trial for DINOv3. The more interpretable the feature, the more likely participants are to correctly identify an area where the feature is present in the image.}
   \label{protocol}
 \end{figure}
+\vspace{-0.2in}
 
 \paragraph{Interpretability score} Responses are scored using the empirical cumulative distribution function (ECDF) of the query heatmap value at the clicked location, measuring how strongly the selected region aligns with the feature relative to all possible locations in the image:
 %
@@ -98,14 +83,16 @@ We find that foundation models are consistently less interpretable than their su
 where $n$ is the number of pixels and $x_i$ denotes the degree to which the location $i$ contributes to the activation of the feature.
 
 \paragraph{Alignment}
-Human perceptual similarity is commonly measured with an odd-one-out task in which participants choose the least similar image from a triplet. The granularity of the resulting judgments depends on how the triplets are constructed. We leverage two complementary datasets: the THINGS odd-one-out dataset from Hebart et al.\ for coarse-grained similarity judgments, and the NIGHTS dataset for fine-grained similarity judgments. For each model, we measure alignment as agreement with human responses and relate it to the model's interpretability score.
+Human perceived similarity is commonly evaluated using an odd-one-out task~\citep{hebart2020revealing, fu2023dreamsim}, where three images are presented to participants, and they must indicate which image from the triplet is least similar to the other two. Depending on how this triplet is constructed, different levels of similarity will be captured.
+
+To test whether alignment with human representations can benefit interpretability, we leverage the dataset of human coarse-grained similarity judgment from~\citet{hebart2020revealing} collected on the THINGS dataset~\citep{hebart2023things}, and we leverage the NIGHTS dataset from~\citep{fu2023dreamsim} for fine-grained similarity judgments.
 
 
 \section{Discussion}
-
+\vspace{-0.1in}
 
 \begin{table}[h]
-\caption{Interpretability results.}
+\caption{Interpretability, accuracy and alignments score (in $\%$) across models. Chance level is $50\%$ for interpretability and accuracy, and $33\%$ for alignments. \textbf{Bold}: best. \underline{Underline}: second best.}
 \label{tab:results}
 \vskip 0.05in
 \centering
@@ -114,26 +101,31 @@ Human perceptual similarity is commonly measured with an odd-one-out task in whi
 \resizebox{\columnwidth}{!}{
 \begin{tabular}{lcccccc}
 \toprule
- & ViT-S & ViT & DINOv2 & DINOv3 & CLIP-ViT & SigLIP \\
+ & ViT-S & ViT & DINOv2 & DINOv3 & CLIP & SigLIP \\
 \midrule
-Interpretability $\uparrow$  & 79.6 & \bm{85.9} & 70.4 & \underline{78.2} & 78 & 70.8 \\
-Fine-grained Alignment $\uparrow$  & 85.2 & 83.9 & \underline{86.8} & \bm{87.8} & 83.5 & 85.1 \\
-Coarse-grained Alignment $\uparrow$  & 47.5 & \underline{50.6} & 41.9 & 43.3 & \bm{50.7} & 40.8 \\
+Interpretability $\uparrow$  & \underline{79.9} & \textbf{86.1} & 70.43& 79 & 79.7 & 71.4 \\
+ImageNet Accuracy $\uparrow$   & 78.2 & 78.9 & \textbf{84} & \textbf{84} & 78.2 & \underline{80} \\
+Fine-grained Alignment $\uparrow$  & 85.2 & 83.9 & \underline{86.8} & \textbf{87.8} & 83.5 & 85.1 \\
+Coarse-grained Alignment $\uparrow$  & 47.5 & \underline{50.6} & 41.9 & 43.3 & \textbf{50.7} & 40.8 \\
 \bottomrule
-\multicolumn{7}{l}{\scriptsize All values in \%. \textbf{Bold}: best. \underline{Underline}: second best.}
 \end{tabular}
 }
 \end{table}
 
-Increasing model capacity can help: ViT-B is more interpretable than ViT-S. More strikingly, self-supervised models (DINOv2, DINOv3) and vision-language models (CLIP, SigLIP) are consistently less interpretable than their supervised counterparts, despite comparable or superior classification accuracy. Indeed, classification performance on ImageNet~\cite{imagenet_cvpr09} is not correlated with interpretability ($r$=X, $p$=P).
+We analyze responses from 243 participants ($\sim$40 per model). Interpretability differs significantly across models ($H(6)=144.36$, $p<.001$), with supervised ViT-B achieving the highest score ($p<.001$, Dunn's test). Surprisingly, we find that foundation models are consistently less interpretable than their supervised counterparts ($p<.001$). 
 
-Turning to alignment, fine-grained similarity scores are uniformly high across all models (83--88\%) and show no relationship with interpretability. Coarse-grained alignment, by contrast, is positively correlated with interpretability, consistent with the idea that features become more interpretable when a model's representations capture the semantic structure of human perception.
+Interpretability is not predicted by classification performance $(r=-0.51, p=0.3)$, nor by fine-grained alignment with human similarity judgments $(r=-0.45, p=0.37)$. In contrast, coarse-grained alignment strongly correlates with interpretability $(r=0.85, p=0.03)$.
 
+This suggests that differences in interpretability are driven less by already-saturated perceptual fidelity and more by how representations organize semantic structure. While fine-grained similarity is largely shared across models~\citep{groger2026aristotelian}, coarse-grained structure reflects model-specific invariances. When these align with human perception, features appear more stable and easier to interpret (Fig.~\ref{features}).
 
 \section{Conclusion}
-Our results provide direct evidence that aligning models with human perception—specifically at a semantic, coarse-grained level—is a promising route toward more interpretable vision models. Interpretability is often framed along two complementary axes: \emph{where} a feature activates and \emph{what} it represents. Here we have focused on the where; evaluating the complementary what is a natural next step toward a fuller picture of what makes representations interpretable.
+
+We introduced a human-centered measure of feature interpretability based on the ability to localize features in images. Using this framework, we find that foundation models are less interpretable than supervised models, and that interpretability is not explained by performance or fine-grained perceptual alignment.
+
+Instead, interpretability is best predicted by coarse-grained alignment with human similarity judgments, suggesting that improving interpretability will require models to better capture the semantic organization of visual experience. These results provide initial evidence that aligning representations with human perception is a promising direction for improving interpretability and identify semantic structure as a key target for future work.
 
 
+\newpage
 \printbibliography
 
 \end{document}

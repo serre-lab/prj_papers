@@ -14,7 +14,7 @@
 \addbibresource{ccn_references.bib}
 
 
-\title{Ecological Data and Temporal Prediction Align DNNs with Human Vision}
+\title{Temporal Prediction Produces Viewpoint-Consistent, Human-Aligned Vision in DNNs}
 
 % Authors are automatically anonymized in submission mode.
 %
@@ -68,46 +68,54 @@
 \maketitle
 \cleardoublepage
 
+\begin{abstract}
+A long tradition in computational neuroscience proposes that the temporal structure of visual experience shapes how biological systems learn to see. Deep neural networks (DNNs), typically trained on static labeled images, lack this inductive pressure. Could the learning regime explain their growing misalignment with human vision? We fine-tuned large pretrained vision transformers on naturalistic videos of real-world objects, systematically comparing self-supervised objectives that range from reconstructing the current frame to interpolating between frames to predicting the next frame. Next-frame prediction in pixel space produced the largest gain, raising alignment with humans to near the human ceiling while maintaining classification accuracy and near-human-level viewpoint stability. These results offer a step toward identifying the learning principles that wire up biological vision.
+\end{abstract}
 
-% \section{Abstract}{}
-% \begin{quote}
-% \small
-% \textbf{Keywords:} Computer Vision; Saliency Alignment
-% \end{quote}
-\section{Abstract}{A long tradition in computational neuroscience proposes that temporal structure in visual experience shapes how biological systems learn to see. Deep neural networks (DNNs), typically trained on static labeled images, lack this inductive pressure. Could the learning regime explain their growing misalignment with human vision? We fine-tuned large pretrained vision transformers on naturalistic video of real-world objects, systematically comparing self-supervised objectives that range from reconstructing the current frame, to interpolating between frames, to predicting the next frame. Next-frame prediction in pixel space produced the largest gain, raising alignment with humans to near the human ceiling while maintaining classification accuracy, with near-human-level viewpoint stability. These results offer a step toward identifying the learning principles that wire up biological vision.}
 \begin{quote}
 \small
 \textbf{Keywords:} Computer Vision; Human Alignment; Self-Supervised Learning; Biological Vision; Predictive Learning
 \end{quote}
 
-% \section{Introduction}
+\section{Introduction}
 % Deep neural networks (DNNs) trained on large-scale image datasets now surpass human performance on a variety of visual tasks. Yet their utility as models of biological vision---for predicting behavior and neural activity---has precipitously declined in recent years \citep{LINSLEY2025}. A key reason is that DNNs and humans rely on different features and strategies when processing visual information\citep{geirhos2022imagenettrainedcnnsbiasedtexture}. Previous work has attempted to close this gap by directly constraining DNN feature importance maps to match human saliency data \citep{fel2022harmonizing}. While effective, this approach sidesteps a fundamental question through supervised learning with human behavioral data: what is the root-cause of DNN misalignment with biological vision? We hypothesize that the divergence between human and DNN visual strategies arises from a more fundamental difference between how they learn about the visual world. If this is the case, then identifying the right learning routine should produce DNNs that achieve human-level accuracy and human-like feature strategies without explicit alignment supervision.
 % To test this hypothesis, we trained vision transformers on natural videos of real-world objects rendered from 3D Gaussian Splatting reconstructions using variations of four learning objectives: supervised classification, spatial reconstruction, temporal reconstruction, and temporal prediction. We then evaluated each model's classification accuracy and separately, its alignment with human visual strategies by measuring the correlation between human and model saliency maps and the stability of these maps across viewing angles.
-%
+
 % We find that training DNNs to predict future frames in natural video dramatically increases their alignment with human visual strategies, improving saliency map correlation from 0.017 to 0.63 (human ceiling: 0.71), while slightly increasing classification accuracy. Models trained with this objective also exhibit near-human-level representation stability across viewpoints. Notably, these improvements are specific to pixel-level prediction; latent-space variants (i.e., JEPA \citep{assran2023selfsupervisedlearningimagesjointembedding} or DINO-like learning \citep{dinov1}) of the same temporal objectives yield substantially smaller gains. These results suggest that the learning objective is a primary lever for aligning artificial and biological vision, and optimizing over these objectives is a systematic approach towards identifying the principles which wire up biological vision.
-\section{Introduction}
-Deep neural networks (DNNs) now surpass human performance on many visual tasks, yet their ability to predict human behavior and neural activity has plateaued and in some cases worsened as accuracy has increased \citep{LINSLEY2025}. A key reason is that DNNs and humans rely on different visual features and strategies \citep{geirhos2022imagenettrainedcnnsbiasedtexture}. One response is to directly supervise DNN feature maps with human psychophysics data \citep{fel2022harmonizing}, but this sidesteps a more fundamental question: what learning principles give rise to human-like vision in the first place? A long tradition in computational neuroscience holds that temporal structure in visual experience is central to learning invariant representations. 
+
+Deep neural networks (DNNs) now surpass human performance on many visual tasks, yet their ability to predict human behavior and neural activity has plateaued and, in some cases, worsened as accuracy has increased \citep{LINSLEY2025}. A key reason is that DNNs and humans rely on different visual features and strategies \citep{geirhos2022imagenettrainedcnnsbiasedtexture}. One response is to directly supervise DNN feature maps with human psychophysics data \citep{fel2022harmonizing}, but this sidesteps a more fundamental question: what learning principles give rise to human-like vision in the first place? A long tradition in computational neuroscience holds that temporal structure in visual experience is central to learning invariant representations. 
 
 F\"{o}ldi\'{a}k's trace rule showed how temporal continuity could teach viewpoint invariance \citep{foldiak1991learning}, and slow feature analysis formalized the broader principle that useful visual features are those that change slowly over time \citep{wiskott2002slow}. Recent work with deep networks supports this view: self-supervised objectives produce ventral-stream-like representations without category labels \citep{zhuang2021unsupervised}, predictive learning over video gives rise to dorsal/ventral specialization \citep{bakhtiari2021functional}, and models trained on egocentric child video develop robust object representations \citep{orhan2024child, lake2017building}. Yet it remains unclear which aspects of temporal learning matter most: the temporal structure itself, the nature of the prediction task, or the space in which learning occurs.
 
-We address this by fine-tuning vision transformers on naturalistic video of real-world objects, systematically varying self-supervised objectives along two axes: temporal task (reconstruct, interpolate, or predict) and target space (pixel or latent). We evaluate each model on classification accuracy and alignment with human visual strategies, measured via human psychophysics and viewpoint stability. We find that next-frame prediction in pixel space produces the largest alignment gain, approaching the human ceiling while maintaining classification accuracy.
+We address this by fine-tuning vision transformers \citep{dosovitskiy2020vit} on naturalistic real-world video, systematically varying self-supervised objectives along two axes: temporal task (reconstruction, interpolation, or prediction) and target space (pixel or latent). We evaluate each model on classification accuracy and alignment with human visual strategies, measured via human psychophysics and viewpoint stability. Pixel Prediction (next-frame prediction in pixel space) produces the largest gain, increasing alignment from 0.017 to 0.63 (human ceiling: 0.71) while maintaining classification accuracy, with near-human-level viewpoint stability. 
+
+%Latent-space variants, analogous to JEPA \citep{assran2023selfsupervisedlearningimagesjointembedding} and DINO \citep{dinov1}, yield substantially smaller gains, suggesting that it is not temporal structure alone but pixel-level prediction that drives alignment with biological vision.
+
 \begin{figure*}[ht]
     \begin{center}
         \includegraphics[width=\linewidth]{figures/main.png}
     \end{center}
-    \caption{\textbf{Pixel Predict aligns DNNs with human vision.} \textbf{(A)} Feature importance maps from humans and models fine-tuned with different learning objectives. Pixel Predict shifts model importance toward human-like feature strategies. \textbf{(B)} Alignment (correlation between human and model importance maps) vs.\ classification accuracy. Pixel Predict achieves the highest alignment without sacrificing accuracy. Background points show 495 pretrained DNNs from TIMM \citep{rw2019timm}. \textbf{(C)} Representation stability across viewing angles. Pixel Predict produces near-human-level stability. Stability is measured by projecting importance maps across viewpoints using 3D Gaussian Splatting reconstructions and computing correlations at each target angle.}
+   \caption{\textbf{Temporal Prediction aligns DNNs with human vision.} \textbf{(A)} Feature importance maps from humans and models fine-tuned with different temporal tasks. Prediction shifts model importance toward human-like feature strategies. \textbf{(B)} Alignment (correlation between human and model importance maps) vs.\ classification accuracy of 495 pretrained DNNs from TIMM. \textbf{(C)} Effects of different temporal tasks on BeitV2-Large \citep{beitv2}. Pixel Prediction achieves the highest alignment without sacrificing accuracy. \textbf{(C)} Alignment vs.\ stability of humans and fine-tuned models. Pixel Prediction produces near-human-level stability. Stability is measured by projecting importance maps across viewpoints and computing correlations at each target angle. Embedded images are example images and human importance maps across viewpoints.}
     \label{fig:result-figure}
 \end{figure*}
 
 \section{Approach and Method}
 
-\paragraph{Data generation.}
+\paragraph{Data generation.} 
+% To generate ecological data, we used 3D Gaussian Splatting \citep{kerbl3Dgaussians} trained with Common Objects in 3D (Co3D) \citep{reizenstein21co3d}, which contains videos of real-world objects from 50 MS-COCO categories \citep{mscoco}.
+% We trained 27,823 Gaussian Splatting models and rendered 50 frames along a smooth trajectory.
+% The models are trained on sequences of 8 frames sampled from the smoothed video at a step size of 4.
+
+% Human saliency maps were collected through online psychophysics. 
+% Given an image, human subjects are asked to mark parts of the image that best describe the object category.
+% We take the average labels across subjects as the human saliency map.
+
 We used 3D Gaussian Splatting (3DGS) \citep{kerbl3Dgaussians} to generate naturalistic video with two properties not available in standard datasets: smooth, controlled viewpoint trajectories for training, and ground-truth 3D geometry for measuring representation stability across viewing angles. We fit 27,823 3DGS models to Common Objects in 3D (Co3D) \citep{reizenstein21co3d}, which contains videos of real-world objects from 50 MS-COCO categories \citep{mscoco}, and rendered 50 frames along a smooth trajectory per object. Models are trained on sequences of 8 frames sampled at a step size of 4.
 
 Human feature importance maps were collected using ClickMe \citep{linsley2019clickme}, a large-scale online psychophysics platform where participants identify the image regions most relevant to recognizing an object's category. Each importance map is the average across multiple participants.
 
 \paragraph{Model training.} 
-To understand how well DNNs align with humans on our dataset, we trained linear probes on 495 DNNs from TIMM \citep{rw2019timm} and measured their classification accuracies and human alignment.
+To understand how well DNNs align with humans on our dataset, we trained linear probes on 495 DNNs from TIMM \citep{rw2019timm} and measured their classification accuracies and their alignment with humans.
 To explore the space of training routines, we fine-tuned an ImageNet-21K \citep{ridnik2021imagenet21kpretrainingmasses} pretrained BEiT-V2 Large \citep{beitv2} from TIMM with seven self-supervised objectives, along with supervised classification as control.
 The starting model was selected as a representative SOTA DNN due to its high classification accuracy on our dataset.
 % The seven self-supervised objectives are grouped into three categories: spatial reconstruction, temporal reconstruction, and prediction.
@@ -117,33 +125,37 @@ The starting model was selected as a representative SOTA DNN due to its high cla
 % Finally, the prediction objective makes the models predict the next frame given previous frames as context.
 % To maximize the utilization of video information, we implemented temporal reconstruction and prediction using teacher forcing \citep{teacherforcing}.
 % Inspired by recent developments in self-supervised learning \citep{dinov1, ijepa}, we included versions of temporal reconstruction and prediction methods with latent-space supervision, using the same design as in \cite{dinov1}.
-The seven self-supervised objectives vary along two axes: the temporal task and the target space. The temporal task is one of \textit{reconstruct} (recover the current frame from full or masked input), \textit{interpolate} (fill in intermediate frames in a sequence), or \textit{predict} (generate the next frame from preceding context). Reconstruction includes MAE \citep{mae}, VideoMAE \citep{videomae}, and autoencoder \citep{hinton_autoencoder} variants. For interpolation and prediction, we use teacher forcing \citep{teacherforcing} to leverage the full temporal structure. Each temporal objective is implemented in both pixel space and latent space, the latter following a DINO-style \citep{dinov1} design. 
-During self-supervised fine-tuning, we also regularize the model using embeddings from the original pretrained model to prevent catastrophic forgetting of learned visual features.
+The seven self-supervised objectives vary along two axes: the temporal task and the target space. The temporal task is one of \textit{reconstruction} (recover the current frames from full or masked input), \textit{interpolation} (fill in intermediate frames in a sequence), or \textit{prediction} (generate the next frame from preceding context). Reconstruction includes MAE \citep{mae}, VideoMAE \citep{videomae}, and autoencoder \citep{hinton_autoencoder} variants. For interpolation and prediction, we use teacher forcing \citep{teacherforcing} to leverage the full temporal structure. Each temporal objective is implemented in both pixel space and latent space, the latter following a DINO-style \citep{dinov1} design.
+During self-supervised fine-tuning, we also regularize the model using embeddings from the original model to prevent catastrophic forgetting of learned visual features.
+For each task, we selected the variation with the greatest effect on alignment to represent that task's effect.
 
-\paragraph{Alignment evaluation.}
-Model feature importance maps are computed by training a linear classification probe on each model and differentiating the output score with respect to the input image.
+\paragraph{Model Evaluation.}
+Model importance maps are computed by training a linear classification probe on each model and differentiating the output score with respect to the input image.
 We then measure human alignment as the Spearman's rank correlation coefficient between the human and model importance maps.
 
-\paragraph{Stability evaluation.} 
-We evaluated human and model representation stability by projecting feature importance maps from one angle of an object to other angles, and computing Spearman's rank correlation coefficients between the projected maps and the maps at the target angle.
+We evaluated human and model representation stability by projecting importance maps from one angle of an object to other angles, and computing Spearman's rank correlation coefficients between the projected maps and the maps from each target angle.
+We take the average correlation across angles as the score.
 The projection is achieved using 3D reconstructions from 3D Gaussian Splatting and camera matrices estimated with COLMAP \citep{schoenberger2016sfm, schoenberger2016mvs}.
 
 \section{Results}
 % When probed on our datasets, DNNs exhibit a divergence from biological vision similar to that reported in previous research.
-% Namely, alignment with humans increases with classification accuracy for weaker models, but decreases with higher accuracy for better-performing models (Fig. 1B).
+% Namely, alignment with humans increases with classification accuracy for weaker models, but decreases with higher accuracy for better-performing models (Fig. 1B). 
 % Learning routines that utilize temporal information break this trend and yield models with greater human alignment without losing classification accuracy.
 % Pixel-level temporal prediction produces the greatest improvement in alignment.
 % Specifically, alignment increases from 0.017 to 0.63 (Human Ceiling: 0.71).
 % To our surprise, latent versions of temporal learning routines have much smaller effects on alignment.
 % When examining the model saliency map, we see that the same routine produces maps that focus on the foreground and features similar to those found in human saliency maps (Fig. 1A).
-% Stability
-Among 495 pretrained DNNs, alignment with humans increases with classification accuracy for weaker models but decreases for stronger ones (Fig.~\ref{fig:result-figure}B), consistent with prior reports of a divergence between DNN performance and biological plausibility. Self-supervised fine-tuning with temporal objectives breaks this trend. Pixel Predict produces the largest alignment gain, raising correlation between human and model importance maps from 0.017 to 0.63 (human ceiling: 0.71) without loss of classification accuracy. Qualitatively, Pixel Predict importance maps shift toward the foreground features highlighted in human maps (Fig.~\ref{fig:result-figure}A). Latent-space variants of the same temporal objectives yield much smaller improvements, indicating that alignment depends on pixel-level optimization, not just temporal structure. Pixel Predict also produces near-human-level representation stability across viewing angles (Fig.~\ref{fig:result-figure}C), while other objectives degrade more steeply with angular distance.
+% In addition, DNN trained to predict future frames demonstrates near-human level representation stability (Fig. 1C). 
+% This further supports the notion that the combination of future prediction and natural videos drives DNNs' visual strategies closer to humans. 
+Among 495 pretrained DNNs, alignment with humans increases with classification accuracy for weaker models but decreases for stronger ones (Fig.~\ref{fig:result-figure}B), consistent with prior reports of a divergence between DNN performance and biological plausibility. Self-supervised fine-tuning with temporal objectives breaks this trend. Pixel Prediction produces the largest alignment gain, raising correlation between human and model importance maps from 0.017 to 0.63 (human ceiling: 0.71) without loss of classification accuracy (Fig.~\ref{fig:result-figure}C). Qualitatively, Pixel Prediction importance maps shift toward the foreground features highlighted in human maps (Fig.~\ref{fig:result-figure}A). Latent-space variants of the same temporal objectives yield much smaller improvements, indicating that alignment depends on pixel-level optimization, not just temporal structure. Pixel Prediction also produces near-human-level representation stability across viewing angles (Fig.~\ref{fig:result-figure}D), while other objectives degrade more steeply with angular distance.
+
+
 
 %\section{Conclusion}
 
 
 \newpage
-\section{Acknowledgments}
+%\section{Acknowledgments}
 
 \printbibliography
 
