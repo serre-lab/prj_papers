@@ -1,15 +1,10 @@
 
 \documentclass{ccn}  % options: submission (default), preprint, extended-abstract
 \usepackage{amsthm}
+\usepackage{graphicx}
 \newtheorem{prop}{Proposition} % Defines the 'prop' environment
-
-
 \addbibresource{ccn_references.bib}
-
-
 \title{What Does the Global Latent Workspace Learn?}
-
-
 \author{%
   Author One\affmark{1} \And
   Author Two\affmark{1} \And
@@ -25,100 +20,51 @@
 \affiliation{3}{Center for Neural Computation, Third University}
 \affiliation{4}{Department of Psychology, Fourth University}
 \emails{author1@first.edu, author3@second.edu, corresponding@fourth.edu}
-
-
 \begin{document}
-
 \maketitle
-
 % --- ABSTRACT HISTORY ---
 % v1 (original): Multimodal cognition depends on mechanisms that integrate information...
 % v2 (students, Overleaf): Multimodal cognition requires neural systems that do more than process sensory streams in parallel...
 % v3-v4: iterative rewrites (see git history)
 % v5 (current): brain-first opening, GWT framing, CLIP anchor, plain language
-
 \begin{abstract}
-The brain integrates information across sensory modalities to form coherent representations of the world. This requires more than parallel processing of separate sensory streams---it demands shared representations that can support integration, inference, and flexible reuse across perception, memory, and action. Global Workspace Theory \citep{baars1993cognitive,dehaene1998neuronal} offers a promising account of how this is achieved: specialized processors operate in parallel while a shared workspace broadcasts selected information across systems. Recent deep learning architectures make this idea concrete by connecting modality-specific modules through a common latent space \citep{vanrullen2021deep,devillers2024semi}, much as vision--language models like CLIP learn shared representations by aligning visual and linguistic inputs \citep{radford2021learning}. Yet it remains unclear what structure these training procedures actually produce and when the resulting workspace is genuinely multimodal rather than merely compressive.
-
-We develop a theoretical framework in a simplified linear setting. The decisive factor is what the workspace is asked to do. If each module only reconstructs its own input, the workspace compresses each modality on its own. Within-modality variance is preserved, but nothing shared across modalities is captured. If modules must translate into each other's format---as in contrastive or cross-modal objectives---the workspace aligns with the statistical structure common to both modalities. Controlled experiments match both regimes. A workspace becomes integrative only when training pressures alignment across modalities, not compression within each modality alone.
+Cognition requires more than parallel processing of separate sensory streams. It demands shared representations that can support integration and flexible reuse across perception, memory, and action. Global Workspace Theory offers a framework of how this is achieved: specialized processors operate in parallel while a shared workspace broadcasts selected information across brain areas. Recent deep learning architectures make this idea concrete by connecting modality-specific modules through a common latent space. Yet it remains unclear what structure these training procedures actually produce and when the resulting workspace is genuinely multimodal rather than merely compressive. % We develop a theoretical framework in a simplified linear setting, a regime where the problem is analytically tractable and the role of the training objective can be isolated from nonlinear confounds. We show that the nature of the learned workspace depends critically on other training objectives.
+We develop a theoretical framework in a simplified linear setting where the problem admits closed-form solutions. We show that the structure of the learned workspace depends critically on what it is trained to do. If each module only reconstructs its own input, the workspace compresses each modality independently. If modules translate into each other's format the workspace aligns with the statistical structure common to both modalities. This suggests that a workspace becomes integrative only when training pressures translation across modalities, not compression within each modality alone.
 \end{abstract}
 \section{Introduction}
-
-Multimodal integration is fundamental to cognition because signals in one modality often constrain the interpretation of signals in another. A canonical example is audiovisual speech perception: under noisy listening conditions, an auditory speech signal may be ambiguous on its own, whereas concurrent visual information from the speaker's mouth movements can disambiguate the input and enable correct recognition. Such cases suggest that cognition depends not only on modality-specific processing streams, but also on mechanisms that integrate information across modalities into a coherent and usable representation.
-
-Converging neuroscientific evidence suggests that this integration is supported by a distributed cortical network. The superior temporal sulcus (STS) is one of the most consistently identified loci for audiovisual integration, particularly in speech and socially relevant dynamic signals. The middle temporal gyrus (MTG) has also been implicated in heteromodal representation and in the combination of visual and auditory information \citep{okada2013fmri,gao2023audiovisual,beauchamp2005see,watson2014people}. Together, these findings support the view that multimodal processing depends on a broad network rather than a single integration site.
-
-% OVERLEAF INTRO ¶3 (students):
-% At the same time, identifying multisensory responses is not yet the same as explaining the computational principles that give rise to them. Why should some neural representations become modality-specific while others become genuinely cross-modal? What learning pressures shape a shared representational format that is useful across systems? The Global Workspace framework \citep{baars1993cognitive,dehaene1998neuronal} addresses this by proposing that specialized processors operate in parallel, while only a limited subset of information gains access to a shared workspace, where it can be broadcast to systems supporting memory, report, and action \citep{dehaene1998neuronal,dehaene2011experimental}. More recent work \citep{vanrullen2021deep,devillers2024semi} has made this proposal computationally explicit by implementing a shared latent workspace that mediates communication among modality-specific encoders and decoders. In these models, each modality has its own representational stream, while the shared workspace provides a common intermediate code that can support reconstruction and information exchange across modalities.
-%
-% OVERLEAF INTRO ¶4 (students):
-% However, the existence of such an implementation is not sufficient to explain the theoretical principles that make a shared workspace effective for multimodal integration. In particular, it remains necessary to understand, at a more abstract level, what properties such a workspace must satisfy in order to support stable integration, information exchange, and flexible reuse across modalities. Our work takes up this theoretical question directly. Building on these deep learning developments, we develop a more general theoretical account of global workspace and analyze how it can support multimodal integration in a principled manner.
-
-These findings raise a deeper question: how does multimodal information become globally available for flexible cognitive use? Identifying multisensory regions does not by itself explain how information is stabilized, coordinated, and broadcast across distributed systems. The Global Workspace framework \citep{baars1993cognitive,dehaene1998neuronal} addresses this gap by proposing that specialized processors operate in parallel, while only a limited subset of information gains access to a shared workspace from which it can be broadcast to systems supporting memory, report, and action \citep{dehaene1998neuronal,dehaene2011experimental}. Recent deep learning architectures make this idea concrete by linking modality-specific encoders through a shared latent space trained with cycle-consistency objectives \citep{vanrullen2021deep,devillers2024semi}. Yet building such a system does not, by itself, explain what makes it work. What representational structure must a shared workspace have in order to support genuine multimodal integration rather than mere compression?
-
-We address this question theoretically. In a linear two-modality setting, we analyze the global workspace that emerges under different cycle-consistency objectives and show that the decoder determines what the workspace learns: self-reconstruction yields independent PCA solutions that preserve modality-specific variance, whereas cross-modal translation recovers the canonical subspaces of CCA, organizing the workspace around shared statistical structure. These results provide a principled account of when and why a global workspace becomes integrative.
-
-% Figure 1: taken from Overleaf (students upgraded to full-width + new figure)
+Multimodal integration is fundamental to cognition because signals in one modality often constrain the interpretation of signals in another---as when visual lip movements disambiguate an auditory speech signal under noisy conditions \citep{mcgurk1976hearing}. Such cases suggest that cognition depends not only on modality-specific processing streams, but also on mechanisms that integrate information across modalities into a coherent and usable representation.
+Neuroscientific evidence supports this view: regions such as the superior temporal sulcus and middle temporal gyrus are consistently implicated in audiovisual integration \citep{okada2013fmri,gao2023audiovisual,beauchamp2005see,watson2014people}, suggesting a distributed cortical network rather than a single integration site. However, identifying multisensory regions does not by itself explain how information is stabilized, coordinated, and made available for flexible cognitive use. The Global Workspace framework \citep{baars1993cognitive,dehaene1998neuronal} addresses this gap by proposing that specialized processors operate in parallel, while only a limited subset of information gains access to a shared workspace from which it can be broadcast to systems supporting memory, report, and action \citep{dehaene1998neuronal,dehaene2011experimental}. Recent deep learning architectures make this idea concrete by linking modality-specific encoders through a shared latent space trained with cycle-consistency objectives---requiring that information passed from one modality to another and back is faithfully preserved \citep{vanrullen2021deep,devillers2024semi}. Yet building such a system does not, by itself, explain what makes it work. What representational structure must a shared workspace have in order to support genuine multimodal integration rather than mere compression?
+We address this question theoretically. In a linear two-modality setting, we analyze the global workspace that emerges under different cycle-consistency objectives and show that the decoder determines what the workspace learns: self-reconstruction yields independent principal component analysis (PCA) solutions that preserve modality-specific variance, whereas cross-modal translation recovers the subspaces of canonical correlation analysis (CCA), organizing the workspace around shared statistical structure (Figure~\ref{fig:linear_validation} A).
 \begin{figure*}[t]
     \centering
-    \includegraphics[width=0.9\textwidth]{ccn-template-main/figure/new_full_cycle_consistency_figure.pdf}
-    \caption{Schematic illustration of different loss.}
-    \label{fig:gw}
-\end{figure*}
-\section{Results}
-
-To make the computational logic of a shared workspace analytically transparent, we study the problem first in a linear setting. This allows us to ask, in the simplest possible form, what kind of shared subspace is selected by different notions of cycle consistency.
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=0.5\textwidth]{ccn-template-main/figure/results.pdf}
-    \caption{Empirical validation in a linear-Gaussian setting. Subspace distance to the CCA target (left) and PCA target (right) across optimization for five training objectives.}
+    \includegraphics[width=0.85\textwidth]{figure/horizontal_full_cycle_consistency_figure_results.pdf}
+    \caption{\textbf{(A)} Training objectives for one cycle (the symmetric $Y$ cycle omitted). Full cycle consistency maps each modality through the other and back. Combined with self-reconstruction decoders (top), it reduces to PCA; combined with cross-reconstruction decoders (bottom), it recovers CCA. \textbf{(B)} Linear-Gaussian validation. Subspace distance to PCA (left) and CCA (right) targets during optimization for five objectives. Solid: cycle-consistency variants; dashed: single-step baselines. Shading: $\pm$1 SD across five seeds.}
     \label{fig:linear_validation}
-\end{figure}
+\end{figure*}
 \subsection{Theoretical derivation}
-
-Let \(x \in \mathbb{R}^{d_x}\) and \(y \in \mathbb{R}^{d_y}\) denote zero-mean random vectors corresponding to two modalities, with covariance matrices \(\Sigma_{xx} = \mathbb{E}[xx^\top]\), \(\Sigma_{yy} = \mathbb{E}[yy^\top]\), and \(\Sigma_{xy} = \mathbb{E}[xy^\top]\). We consider \(k\)-dimensional linear encoders \(z_x = W_x x\) and \(z_y = W_y y\), where \(W_x \in \mathbb{R}^{k \times d_x}\) and \(W_y \in \mathbb{R}^{k \times d_y}\), together with linear decoders \(\hat y = V_y z_x\) and \(\hat x = V_x z_y\), where \(V_y \in \mathbb{R}^{d_y \times k}\) and \(V_x \in \mathbb{R}^{d_x \times k}\). The full cycle-consistency loss is
+Let \(x \in \mathbb{R}^{d_x}\) and \(y \in \mathbb{R}^{d_y}\) denote zero-mean random vectors corresponding to two modalities, with covariance matrices \(\Sigma_{xx} = \mathbb{E}[xx^\top]\), \(\Sigma_{yy} = \mathbb{E}[yy^\top]\), and cross-covariance \(\Sigma_{xy} = \mathbb{E}[xy^\top]\). We consider \(k\)-dimensional linear encoders \(z_x = W_x x\) and \(z_y = W_y y\), where \(W_x \in \mathbb{R}^{k \times d_x}\) and \(W_y \in \mathbb{R}^{k \times d_y}\), together with linear decoders \(\hat y = V_y z_x\) and \(\hat x = V_x z_y\), where \(V_y \in \mathbb{R}^{d_y \times k}\) and \(V_x \in \mathbb{R}^{d_x \times k}\). The full cycle-consistency loss:
 \[
 \mathcal L_{\mathrm{cy}} = \mathbb E\!\left[\|x - V_x W_y V_y W_x x\|^2\right]_{x} + \mathbb E\!\left[\|y - V_y W_x V_x W_y y\|^2\right]_{y}.
 \]
-Throughout, we impose the whitening constraints \(W_x \Sigma_{xx} W_x^\top = I_k\) and \(W_y \Sigma_{yy} W_y^\top = I_k\). We also define \(U := W_x \Sigma_{xx}^{1/2}\), \(V := W_y \Sigma_{yy}^{1/2}\), and \(A := \Sigma_{xx}^{-1/2}\Sigma_{xy}\Sigma_{yy}^{-1/2}\), so that \(UU^\top = I_k\) and \(VV^\top = I_k\).
-
+Throughout, we impose whitening constraints \(W_x \Sigma_{xx} W_x^\top = I_k\) and \(W_y \Sigma_{yy} W_y^\top = I_k\), which remove trivial scale degrees of freedom and ensure the latent dimensions are decorrelated. We also define \(U := W_x \Sigma_{xx}^{1/2}\) and \(V := W_y \Sigma_{yy}^{1/2}\), so that \(UU^\top = I_k\) and \(VV^\top = I_k\).
+How does the choice of decoder shape the workspace? We consider two cases: decoders optimized to reconstruct each modality from its own encoding (self-reconstruction), and decoders optimized to translate between modalities (cross-translation). The two choices lead to qualitatively different solutions.
+\textbf{Self-reconstruction yields PCA.} If the decoders are optimized to reconstruct each modality from their own latent embedding, the cycle-consistency loss simply preserves the directions of greatest variance within each input.
 \begin{prop}
 Suppose \(V_x\) and \(V_y\) are chosen as the optimal linear self-reconstruction decoders, i.e.,
-\[
-V_x \in \arg\min_{\tilde V_x} \mathbb E\!\left[\|x-\tilde V_x W_x x\|^2\right],
-\]
-\[
-V_y \in \arg\min_{\tilde V_y} \mathbb E\!\left[\|y-\tilde V_y W_y y\|^2\right].
-\]
-Then \(\arg\min \mathcal L_{\mathrm{cy}}\) is attained by taking the rows of \(U\) and \(V\) to span the top-\(k\) eigenspaces of \(\Sigma_{xx}\) and \(\Sigma_{yy}\), respectively. Equivalently, under self-reconstruction-optimal decoders, full cycle consistency reduces to two independent PCA objectives.
+Let \(V_x\in\arg\min_{\tilde V_x}\mathbb E\|x-\tilde V_xW_xx\|^2\) and \(V_y\in\arg\min_{\tilde V_y}\mathbb E\|y-\tilde V_yW_yy\|^2\). Then \(\arg\min \mathcal L_{\mathrm{cy}}\) is achieved when the row spaces of \(U\) and \(V\) are the top-\(k\) eigenspaces of \(\Sigma_{xx}\) and \(\Sigma_{yy}\).
 \end{prop}
-
+\textbf{Cross-translation yields CCA.} If the decoders are instead optimized to translate each modality into the other's format, the cycle-consistency loss selects the directions along which the two modalities are most mutually predictive.
 \begin{prop}
-Suppose \(V_x\) and \(V_y\) are chosen as the optimal linear cross-translation decoders, i.e.,
-\[
-V_y \in \arg\min_{\tilde V_y} \mathbb E\!\left[\|y-\tilde V_y W_x x\|^2\right]
-\]
-\[
-V_x \in \arg\min_{\tilde V_x} \mathbb E\!\left[\|x-\tilde V_x W_y y\|^2\right].
-\]
-Then \(\arg\min \mathcal L_{\mathrm{cy}}\) is attained by taking the rows of \(U\) and \(V\) to span the top-\(k\) left and right singular subspaces of \(A=\Sigma_{xx}^{-1/2}\Sigma_{xy}\Sigma_{yy}^{-1/2}\). Equivalently, under cross-translation-optimal decoders, full cycle consistency recovers the canonical subspaces of linear CCA.
+Let \(V_y\in\arg\min_{\tilde V_y}\mathbb E\|y-\tilde V_yW_xx\|^2\) and \(V_x\in\arg\min_{\tilde V_x}\mathbb E\|x-\tilde V_xW_yy\|^2\). Then \(\arg\min \mathcal L_{\mathrm{cy}}\) is achieved when the row spaces of \(U\) and \(V\) are the top-\(k\) left and right singular subspaces of \(\Sigma_{xx}^{-1/2}\Sigma_{xy}\Sigma_{yy}^{-1/2}\).
 \end{prop}
-
 \subsection{Empirical validation}
-
-We tested these predictions in a controlled linear-Gaussian setting and compared the learned encoder subspaces against the theoretical CCA and PCA targets across optimization (Figure~\ref{fig:linear_validation}). The left panel directly tracks distance to the CCA subspaces. Here, the blue curve (\texttt{cross\_cycle\_maha}) is the only one that converges essentially to zero, indicating recovery of the CCA solution. The red curve (\texttt{cross\_reconstruction\_only}) decreases substantially but plateaus around \(0.9\), showing that cross reconstruction alone moves the representation toward the shared subspace but does not fully recover it. By contrast, the orange (\texttt{self\_cycle\_maha}), green (\texttt{full\_cycle\_only}), and purple (\texttt{self\_reconstruction\_only}) curves all remain high, indicating that these objectives do not identify the canonical shared structure.
-
-The right panel shows the complementary pattern for distance to the PCA subspaces. The purple (\texttt{self\_reconstruction\_only}) curves collapse rapidly to nearly zero, and the orange curve (\texttt{self\_cycle\_maha}) also decreases monotonically to zero, consistent with convergence to PCA-like modality-specific subspaces. In contrast, the green (\texttt{full\_cycle\_only}), the blue (\texttt{cross\_cycle\_maha}), and red (\texttt{cross\_reconstruction\_only}) curves stay far from zero, which shows that these cross-modal objectives do not reduce to PCA.
-
-% OVERLEAF CONCLUSION (students):
-% These results clarify a basic computational point for global workspace theories. Cycle consistency by itself does not guarantee an integrative workspace: when coupled only to self-reconstruction, it preserves modality-specific variance and yields PCA-like solutions. What makes the shared space genuinely multimodal is the pressure to support translation across modalities. Under that pressure, the optimal latent subspace is organized by cross-modal statistical structure, not by within-modality variance alone. In this sense, a useful workspace is not simply a low-dimensional bottleneck, but a bottleneck tuned to information that is mutually informative across modalities.
-
+We validated these predictions in a controlled linear-Gaussian setting by tracking the
+projection Frobenius distance between learned encoder subspaces and the theoretical PCA and CCA targets across optimization (Figure~\ref{fig:linear_validation} B). As predicted, self reconstruction and self-cycle combination converge to PCA but not CCA, while the cross-cycle combination converges to CCA but not PCA. Cross reconstruction alone moves toward CCA but plateaus before recovering it. Full cycle consistency alone, converges to neither target cleanly.
 \section{Conclusion}
 Our analysis identifies a sharp condition under which a global workspace supports genuine multimodal integration. Cycle consistency alone is not sufficient: when paired with self-reconstruction, it preserves modality-specific variance and yields independent PCA solutions. Integration emerges only when the workspace is shaped by pressure to translate across modalities, in which case it recovers the canonical subspaces that capture shared statistical structure.
-
-This distinction mirrors a pattern across existing vision--language architectures. Models trained with cross-modal objectives---contrastive alignment in CLIP \citep{radford2021learning}, or cross-modal translation in the global latent workspace \citep{vanrullen2021deep,devillers2024semi}---learn shared representations that transfer broadly across tasks. Models trained only to reconstruct within each modality do not, even when they share an architectural bottleneck. Our results offer a theoretical account of why: cross-modal pressure selectively retains what is mutually informative across modalities, whereas reconstruction preserves modality-specific variance that may be irrelevant to integration. For Global Workspace theories more broadly, this means that the capacity to broadcast useful information across specialized systems is not a passive property of a shared bottleneck but depends on the learning objective that shapes it.
-
-
+This distinction mirrors a pattern across existing vision--language architectures. Models trained with cross-modal objectives (e.g., contrastive alignment in CLIP \citep{radford2021learning}) learn shared representations that transfer broadly across tasks. Models trained only to reconstruct within each modality do not, even when they share an architectural bottleneck (e.g., deep generative models \citep{suzuki2016joint}). Our results offer a theoretical account of why: cross-modal pressure selectively retains what is mutually informative across modalities, whereas reconstruction preserves modality-specific variance that may be irrelevant to integration. For Global Workspace theories more broadly, this means that the capacity to broadcast useful information across specialized systems is not a passive property of a shared bottleneck but depends on the learning objective that shapes it.
+\section*{Acknowledgments}
+We used Claude to assist with editing purpose and debugging experiment code.
+% All scientific content, theoretical derivations, and interpretations were produced by the authors, who take full responsibility for the accuracy of the manuscript.
 \printbibliography
-
 \end{document}
