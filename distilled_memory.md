@@ -100,3 +100,26 @@
   }
   ```
 - **Fixing `.bib` parsing errors**: Replace `#chapter X` with `% chapter X` and run `biber` + 2x `lualatex`.
+
+
+---
+## Distilled 2026-04-04 08:00 UTC
+
+## Decisions
+- **Stage all relevant files (`.tex`, `.bib`, figures, etc.) when pushing to GitHub** (why: user preference to avoid missing related changes during routine pushes)
+- **Exclude large files (>100MB) from GitHub pushes** (why: GitHub's file size limit; use alternative storage for large assets)
+
+## Context Updates
+- **GitHub push preference**: When instructed to "push to gh," stage all files that reasonably belong with the changes (not just the immediate fixes).
+- **Large file handling**: Files over GitHub's 100MB limit (e.g., `papers/incoming/full_book_rev_15_feb_4_1.pdf`) are excluded and should be stored elsewhere (e.g., Drive, LFS).
+- **Multi-repo sync**: `~/Work` contains 25 Git repos; 19 are user-owned (`tserre/*` or `serre-lab/*`). Third-party clones (e.g., `neuromatch_neuroai`, `welch_labs_code`) are skipped unless forked.
+
+## Procedures
+- **Full-workspace Git sync**:
+  1. Identify all Git repos under `~/Work` with remotes matching `tserre/*` or `serre-lab/*`.
+  2. Run `git add -A` in each repo to stage all changes.
+  3. Force-add ignored PDFs in `research/papers` (`git add -f *.pdf`).
+  4. Commit with a generic message (e.g., `chore: sync local work YYYY-MM-DD`).
+  5. Push to `origin` (or `gh` if no `origin`).
+  6. Skip third-party repos unless explicitly forked.
+- **Handling GitHub file limits**: Add oversized files to `.gitignore` and document their local-only status.
